@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.snackbar.product.application.usecases.*;
 import com.snackbar.product.domain.entity.Product;
+import com.snackbar.product.infrastructure.controllers.dto.ResponseDTO;
 
 import java.util.List;
 
@@ -43,53 +44,52 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<CreateProductResponse> createProduct(@RequestBody CreateProductRequest request) {
+    public ResponseEntity<ResponseDTO> createProduct(@RequestBody CreateProductRequest request) {
         Product product = productDTOMapper.createRequestToDomain(request);
         Product createdProduct = createProductUseCase.createProduct(product);
         CreateProductResponse response = productDTOMapper.createToResponse(createdProduct);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(new ResponseDTO(true, "Product created successfully", response));
     }
 
     @GetMapping("/id/{id}")
-    public ResponseEntity<GetProductResponse> getProductById(@PathVariable("id") String id) {
+    public ResponseEntity<ResponseDTO> getProductById(@PathVariable("id") String id) {
         Product retrievedProduct = getProductByIdUseCase.getProductById(id);
         GetProductResponse response = productDTOMapper.getToResponse(retrievedProduct);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(new ResponseDTO(true, "Product retrieved successfully", response));
     }
 
     @GetMapping
-    public ResponseEntity<List<GetProductResponse>> listProduct() {
+    public ResponseEntity<ResponseDTO> listProduct() {
         List<Product> retrievedProductList = listProductUseCase.listProduct();
         List<GetProductResponse> response = productDTOMapper.listToResponse(retrievedProductList);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(new ResponseDTO(true, "Products retrieved successfully", response));
     }
 
     @GetMapping("/category/{category}")
-    public ResponseEntity<List<GetProductResponse>> getProductByCategory(@PathVariable("category") String category) {
+    public ResponseEntity<ResponseDTO> getProductByCategory(@PathVariable("category") String category) {
         List<Product> retrievedProductList = getProductByCategoryUseCase.getProductByCategory(category);
         List<GetProductResponse> response = productDTOMapper.listToResponse(retrievedProductList);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(new ResponseDTO(true, "Products retrieved successfully", response));
     }
 
     @GetMapping("/name/{name}")
-    public ResponseEntity<GetProductResponse> getProductByName(@PathVariable("name") String name) {
+    public ResponseEntity<ResponseDTO> getProductByName(@PathVariable("name") String name) {
         Product retrievedProduct = getProductByNameUseCase.getProductByName(name);
         GetProductResponse response = productDTOMapper.getToResponse(retrievedProduct);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(new ResponseDTO(true, "Product retrieved successfully", response));
     }
 
     @PutMapping("/id/{id}")
-    public ResponseEntity<CreateProductResponse> updateProductById(@PathVariable("id") String id, @RequestBody CreateProductRequest request) {
+    public ResponseEntity<ResponseDTO> updateProductById(@PathVariable("id") String id, @RequestBody CreateProductRequest request) {
         Product product = productDTOMapper.createRequestToDomain(request);
         Product updatedProduct = updateProductByIdUseCase.updateProductById(id, product);
         CreateProductResponse response = productDTOMapper.createToResponse(updatedProduct);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(new ResponseDTO(true, "Product updated successfully", response));
     }
 
     @DeleteMapping("/id/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable String id) {
+    public ResponseEntity<ResponseDTO> deleteProduct(@PathVariable String id) {
         deleteProductByIdUseCase.deleteProductById(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(new ResponseDTO(true, "Product deleted successfully", null));
     }
-
 }
