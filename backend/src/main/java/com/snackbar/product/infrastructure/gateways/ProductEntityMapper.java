@@ -6,18 +6,40 @@ import com.snackbar.product.domain.entity.Product;
 import com.snackbar.product.infrastructure.persistence.ProductEntity;
 
 public class ProductEntityMapper {
-    ProductEntity toEntity(Product productDomainObj) {
-        return new ProductEntity(productDomainObj.id (), productDomainObj.name (), productDomainObj.category(), productDomainObj.description(), productDomainObj.price(), productDomainObj.cookingTime());
+    public ProductEntity toEntity(Product productDomainObj) {
+        if (productDomainObj == null) {
+            return null;
+        }
+        return new ProductEntity(
+            productDomainObj.id(), 
+            productDomainObj.name(), 
+            productDomainObj.category(), 
+            productDomainObj.description(), 
+            productDomainObj.price(), 
+            productDomainObj.cookingTime()
+        );
     }
     
-    Product toDomainObj(ProductEntity productEntity) {
-        return new Product(productEntity.getId(), productEntity.getName(), productEntity.getCategory(), productEntity.getDescription(), productEntity.getPrice(), productEntity.getCookingTime());
+    public Product toDomainObj(ProductEntity productEntity) {
+        if (productEntity == null) {
+            return null;
+        }
+        return new Product(
+            productEntity.getId(), 
+            productEntity.getName(), 
+            productEntity.getCategory(), 
+            productEntity.getDescription(), 
+            productEntity.getPrice(), 
+            productEntity.getCookingTime()
+        );
     }
 
-    List<Product> toDomainListObj(List<ProductEntity> productEntityList) {
+    public List<Product> toDomainListObj(List<ProductEntity> productEntityList) {
+        if (productEntityList == null) {
+            return List.of();
+        }
         return productEntityList.stream()
             .map(this::toDomainObj)
             .toList();
     }
-
 }

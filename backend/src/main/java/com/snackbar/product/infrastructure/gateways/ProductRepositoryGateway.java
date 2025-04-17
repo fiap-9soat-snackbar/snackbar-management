@@ -4,9 +4,9 @@ import java.util.List;
 
 import com.snackbar.product.application.gateways.ProductGateway;
 import com.snackbar.product.domain.entity.Product;
+import com.snackbar.product.domain.exceptions.ProductNotFoundException;
 import com.snackbar.product.infrastructure.persistence.ProductEntity;
 import com.snackbar.product.infrastructure.persistence.ProductRepository;
-
 
 public class ProductRepositoryGateway implements ProductGateway {
 
@@ -28,7 +28,8 @@ public class ProductRepositoryGateway implements ProductGateway {
     
     @Override
     public Product getProductById(String productId) {
-        ProductEntity retrievedObj = productRepository.findById(productId).orElse(null);
+        ProductEntity retrievedObj = productRepository.findById(productId)
+            .orElseThrow(() -> new ProductNotFoundException(productId));
         Product retrievedProduct = productEntityMapper.toDomainObj(retrievedObj);
         return retrievedProduct;
     }
@@ -38,7 +39,6 @@ public class ProductRepositoryGateway implements ProductGateway {
         List<ProductEntity> retrievedObjList = productRepository.findAll();
         List<Product> retrievedProductList = productEntityMapper.toDomainListObj(retrievedObjList);
         return retrievedProductList;
-        
     }
 
     @Override
@@ -50,13 +50,19 @@ public class ProductRepositoryGateway implements ProductGateway {
 
     @Override
     public Product getProductByName(String productName) {
-        ProductEntity retrievedObj = productRepository.findByName(productName).orElse(null);
+        ProductEntity retrievedObj = productRepository.findByName(productName)
+            .orElseThrow(() -> new ProductNotFoundException("Product not found with name: " + productName));
         Product retrievedProduct = productEntityMapper.toDomainObj(retrievedObj);
         return retrievedProduct;
     }
 
     @Override
     public Product updateProductById(String id, Product product) {
+        // Check if product exists
+        if (!productRepository.existsById(id)) {
+            throw new ProductNotFoundException(id);
+        }
+        
         ProductEntity productEntity = productEntityMapper.toEntity(product);
         productEntity.setId(id);
         ProductEntity savedObj = productRepository.save(productEntity);
@@ -66,8 +72,8 @@ public class ProductRepositoryGateway implements ProductGateway {
 
     @Override
     public void deleteProductById(String id) {
-        ProductEntity retrievedObj = productRepository.findById(id).orElse(null);
+        ProductEntity retrievedObj = productRepository.findById(id)
+            .orElseThrow(() -> new ProductNotFoundException(id));
         productRepository.delete(retrievedObj);
     }
-
 }
