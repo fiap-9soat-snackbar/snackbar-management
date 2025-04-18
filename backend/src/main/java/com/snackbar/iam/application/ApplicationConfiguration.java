@@ -1,6 +1,7 @@
 package com.snackbar.iam.application;
 
-
+import com.snackbar.iam.domain.UserDetailsEntity;
+import com.snackbar.iam.domain.UserEntity;
 import com.snackbar.iam.infrastructure.IamRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,8 +25,20 @@ public class ApplicationConfiguration {
 
     @Bean
     UserDetailsService userDetailsService() {
-        return cpf -> userRepository.findByCpf(cpf)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return cpf -> {
+            UserEntity user = userRepository.findByCpf(cpf)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found with CPF: " + cpf));
+            
+            // Convert UserEntity to UserDetailsEntity
+            return UserDetailsEntity.builder()
+                    .id(user.getId())
+                    .name(user.getName())
+                    .email(user.getEmail())
+                    .cpf(user.getCpf())
+                    .role(user.getRole())
+                    .password(user.getPassword())
+                    .build();
+        };
     }
 
     @Bean

@@ -6,8 +6,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "user")
 @Data
-@Getter
-@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class UserEntity {
     @Id

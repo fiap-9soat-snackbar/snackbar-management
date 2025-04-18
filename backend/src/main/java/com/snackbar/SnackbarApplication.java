@@ -7,7 +7,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @SpringBootApplication(scanBasePackages = {
     "com.snackbar", 
     "com.snackbar.iam", 
-    "com.snackbar.productv2"
+    "com.snackbar.product"
 })
 @EnableFeignClients
 public class SnackbarApplication {

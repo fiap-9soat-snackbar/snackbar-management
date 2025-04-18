@@ -1,6 +1,6 @@
 package com.snackbar.iam.application;
 
-import com.snackbar.cooking.domain.exceptions.UserNotFoundException;
+import com.snackbar.iam.domain.exceptions.UserNotFoundException;
 import com.snackbar.iam.domain.IamRole;
 import com.snackbar.iam.domain.UserDetailsEntity;
 import com.snackbar.iam.domain.UserEntity;
@@ -52,7 +52,17 @@ public class AuthenticationService {
     }
 
     public UserDetailsEntity findByCpf(String cpf) {
-        return userRepository.findByCpf(cpf)
+        UserEntity user = userRepository.findByCpf(cpf)
                 .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado para o CPF: " + cpf));
+        
+        // Convert UserEntity to UserDetailsEntity
+        return UserDetailsEntity.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .cpf(user.getCpf())
+                .role(user.getRole())
+                .password(user.getPassword())
+                .build();
     }
 }
