@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import com.snackbar.product.domain.exceptions.InvalidProductDataException;
 import com.snackbar.product.domain.exceptions.ProductNotFoundException;
 import com.snackbar.product.infrastructure.controllers.dto.ResponseDTO;
 
@@ -15,6 +16,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ResponseDTO> handleProductNotFoundException(ProductNotFoundException ex) {
         ResponseDTO responseDTO = new ResponseDTO(false, ex.getMessage(), null);
         return new ResponseEntity<>(responseDTO, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(InvalidProductDataException.class)
+    public ResponseEntity<ResponseDTO> handleInvalidProductDataException(InvalidProductDataException ex) {
+        ResponseDTO responseDTO = new ResponseDTO(false, ex.getMessage(), null);
+        return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
