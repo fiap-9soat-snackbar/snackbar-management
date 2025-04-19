@@ -2,6 +2,7 @@
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/test/java/com/snackbar/product/domain/exceptions/InvalidProductDataExceptionTest.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/test/java/com/snackbar/product/domain/event/ProductDeletedEventTest.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/test/java/com/snackbar/product/application/ports/in/CreateProductInputPortTest.java
+/home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/test/java/com/snackbar/product/infrastructure/messaging/SQSDomainEventPublisherTest.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/test/java/com/snackbar/product/application/ports/in/UpdateProductByIdInputPortTest.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/test/java/com/snackbar/product/application/ports/out/DomainEventPublisherTest.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/test/java/com/snackbar/product/application/usecases/DeleteProductByIdUseCaseTest.java
@@ -11,6 +12,7 @@
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/test/java/com/snackbar/product/application/ports/in/ListProductInputPortTest.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/test/java/com/snackbar/product/application/ports/in/GetProductByIdInputPortTest.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/test/java/com/snackbar/product/application/ports/in/GetProductByCategoryInputPortTest.java
+/home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/test/java/com/snackbar/product/infrastructure/messaging/ProductMessageTest.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/test/java/com/snackbar/product/application/ports/in/GetProductByNameInputPortTest.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/test/java/com/snackbar/product/application/usecases/GetProductByNameUseCaseTest.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/test/java/com/snackbar/product/infrastructure/config/ProductConfigTest.java
@@ -27,7 +29,9 @@
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/test/java/com/snackbar/product/domain/exceptions/ProductNotFoundExceptionTest.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/test/java/com/snackbar/product/infrastructure/controllers/GlobalExceptionHandlerTest.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/test/java/com/snackbar/product/infrastructure/controllers/GetProductResponseTest.java
+/home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/test/java/com/snackbar/product/infrastructure/messaging/NoOpDomainEventPublisherTest.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/test/java/com/snackbar/product/infrastructure/gateways/ProductRepositoryGatewayTest.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/test/java/com/snackbar/product/infrastructure/controllers/CreateProductResponseTest.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/test/java/com/snackbar/product/infrastructure/controllers/ProductControllerTest.java
+/home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/test/java/com/snackbar/product/infrastructure/messaging/ProductMessageMapperTest.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/test/java/com/snackbar/product/application/usecases/ListProductUseCaseTest.java

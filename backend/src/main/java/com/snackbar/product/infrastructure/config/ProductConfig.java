@@ -2,6 +2,7 @@ package com.snackbar.product.infrastructure.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 import com.snackbar.product.application.gateways.ProductGateway;
 import com.snackbar.product.application.ports.out.DomainEventPublisher;
@@ -65,8 +66,9 @@ public class ProductConfig {
     }
     
     @Bean
+    @Profile("!prod") // Use this implementation in non-production environments
     DomainEventPublisher domainEventPublisher() {
-        // Temporary no-op implementation until we implement the SQS publisher
+        // No-op implementation for development and testing
         return new NoOpDomainEventPublisher();
     }
 }
