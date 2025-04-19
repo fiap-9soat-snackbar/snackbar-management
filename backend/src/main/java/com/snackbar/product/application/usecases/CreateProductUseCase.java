@@ -12,8 +12,10 @@ public class CreateProductUseCase {
     }
 
     public Product createProduct(Product product) {
-        Product createdProduct = productGateway.createProduct(product);
-        return createdProduct;
+        if (product == null) {
+            throw new IllegalArgumentException("Product cannot be null");
+        }
+        return productGateway.createProduct(product);
     }
 
 }

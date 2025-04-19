@@ -12,8 +12,10 @@ public class GetProductByIdUseCase {
     }
 
     public Product getProductById(String id) {
-        Product retrievedProduct = productGateway.getProductById(id);
-        return retrievedProduct;
+        if (id == null || id.trim().isEmpty()) {
+            throw new IllegalArgumentException("Product ID cannot be null or empty");
+        }
+        return productGateway.getProductById(id);
     }
 
 }

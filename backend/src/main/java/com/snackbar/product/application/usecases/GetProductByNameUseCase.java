@@ -4,7 +4,7 @@ import com.snackbar.product.application.gateways.ProductGateway;
 import com.snackbar.product.domain.entity.Product;
 
 public class GetProductByNameUseCase {
-        
+    
     private final ProductGateway productGateway;
 
     public GetProductByNameUseCase(ProductGateway productGateway) {
@@ -12,8 +12,10 @@ public class GetProductByNameUseCase {
     }
 
     public Product getProductByName(String name) {
-        Product retrievedProduct = productGateway.getProductByName(name);
-        return retrievedProduct;
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Product name cannot be null or empty");
+        }
+        return productGateway.getProductByName(name);
     }
 
 }

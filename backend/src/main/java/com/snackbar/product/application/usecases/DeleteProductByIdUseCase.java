@@ -11,7 +11,10 @@ public class DeleteProductByIdUseCase {
     }
 
     public void deleteProductById(String id) {
+        if (id == null || id.trim().isEmpty()) {
+            throw new IllegalArgumentException("Product ID cannot be null or empty");
+        }
         productGateway.deleteProductById(id);
     }
-        
+
 }

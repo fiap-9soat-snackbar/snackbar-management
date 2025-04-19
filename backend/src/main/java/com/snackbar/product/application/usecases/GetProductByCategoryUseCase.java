@@ -14,8 +14,10 @@ public class GetProductByCategoryUseCase {
     }
 
     public List<Product> getProductByCategory(String category) {
-        List<Product> retrievedProduct = productGateway.getProductByCategory(category);
-        return retrievedProduct;
+        if (category == null || category.trim().isEmpty()) {
+            throw new IllegalArgumentException("Product category cannot be null or empty");
+        }
+        return productGateway.getProductByCategory(category);
     }
 
 }
