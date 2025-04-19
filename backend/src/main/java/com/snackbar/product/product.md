@@ -1,3 +1,97 @@
+# Product Module
+
+The Product module is responsible for managing the products offered by the snack bar. It follows a clean architecture approach with distinct layers for domain, application, and infrastructure.
+
+## Domain Layer
+
+### Entities
+
+#### Product
+
+The `Product` entity is a record class that represents a product in the snack bar. It has the following attributes:
+
+- `id`: Unique identifier for the product
+- `name`: Name of the product (minimum 3 characters)
+- `category`: Category of the product (must be one of: "Lanche", "Acompanhamento", "Bebida", "Sobremesa")
+- `description`: Description of the product (minimum 10 characters)
+- `price`: Price of the product (must be greater than zero)
+- `cookingTime`: Time in minutes required to prepare the product (must be zero or positive)
+
+The entity includes validation logic to ensure all data meets business requirements.
+
+### Exceptions
+
+- `InvalidProductDataException`: Thrown when product data doesn't meet validation requirements
+- `ProductNotFoundException`: Thrown when a product cannot be found in the repository
+
+## Application Layer
+
+### Use Cases
+
+The application layer contains the following use cases:
+
+1. `CreateProductUseCase`: Creates a new product
+2. `GetProductByIdUseCase`: Retrieves a product by its ID
+3. `GetProductByNameUseCase`: Retrieves a product by its name
+4. `GetProductByCategoryUseCase`: Retrieves products by category
+5. `ListProductUseCase`: Lists all available products
+6. `UpdateProductByIdUseCase`: Updates an existing product
+7. `DeleteProductByIdUseCase`: Deletes a product by its ID
+
+## Infrastructure Layer
+
+### Controllers
+
+The `ProductController` exposes the following REST endpoints:
+
+- `POST /api/product`: Create a new product
+- `GET /api/product`: List all products
+- `GET /api/product/id/{id}`: Get a product by ID
+- `GET /api/product/name/{name}`: Get a product by name
+- `GET /api/product/category/{category}`: Get products by category
+- `PUT /api/product/id/{id}`: Update a product
+- `DELETE /api/product/id/{id}`: Delete a product
+
+### Persistence
+
+- `ProductEntity`: MongoDB document representation of a product
+- `ProductRepository`: Spring Data MongoDB repository for product persistence
+- `ProductRepositoryGateway`: Implementation of the repository pattern for products
+
+## Testing
+
+The Product module has comprehensive test coverage:
+
+- **Domain Tests**: 100% coverage of the `Product` entity, including all validation rules
+- **Application Tests**: Tests for all use cases with mocked repositories
+- **Integration Tests**: Tests for the repository gateway and controllers
+
+### Test Coverage
+
+The `Product` entity has 100% test coverage, including:
+- Successful product creation
+- Name validation (null, empty, too short)
+- Category validation (null, empty, invalid)
+- Description validation (null, empty, too short)
+- Price validation (null, zero, negative)
+- Cooking time validation (null, negative, zero)
+
+## Running Tests
+
+To run the tests for the Product module:
+
+```bash
+mvn -f backend/pom.xml test
+```
+
+To generate a test coverage report:
+
+```bash
+mvn -f backend/pom.xml clean test jacoco:report
+```
+
+The coverage report will be available at `backend/target/site/jacoco/index.html`.
+
 ## 📍Products Endpoints
 
 ✅ All endpoints below have been implemented with standardized responses in `/api/product`:
@@ -146,12 +240,3 @@
     "data": null
 }
 ```
-
-## 🔄 Next Steps
-
-4. Implement validation for product fields:
-   - name: required, min length 3
-   - category: required, must be one of: ["Lanche", "Acompanhamento", "Bebida", "Sobremesa"]
-   - description: required, min length 10
-   - price: required, must be greater than 0
-   - cookingTime: required, must be greater than or equal to 0
