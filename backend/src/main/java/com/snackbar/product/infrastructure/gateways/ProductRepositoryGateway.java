@@ -29,7 +29,7 @@ public class ProductRepositoryGateway implements ProductGateway {
     @Override
     public Product getProductById(String productId) {
         ProductEntity retrievedObj = productRepository.findById(productId)
-            .orElseThrow(() -> new ProductNotFoundException(productId));
+            .orElseThrow(() -> ProductNotFoundException.withId(productId));
         Product retrievedProduct = productEntityMapper.toDomainObj(retrievedObj);
         return retrievedProduct;
     }
@@ -51,7 +51,7 @@ public class ProductRepositoryGateway implements ProductGateway {
     @Override
     public Product getProductByName(String productName) {
         ProductEntity retrievedObj = productRepository.findByName(productName)
-            .orElseThrow(() -> new ProductNotFoundException("Product not found with name: " + productName));
+            .orElseThrow(() -> ProductNotFoundException.withName(productName));
         Product retrievedProduct = productEntityMapper.toDomainObj(retrievedObj);
         return retrievedProduct;
     }
@@ -60,7 +60,7 @@ public class ProductRepositoryGateway implements ProductGateway {
     public Product updateProductById(String id, Product product) {
         // Check if product exists
         if (!productRepository.existsById(id)) {
-            throw new ProductNotFoundException(id);
+            throw ProductNotFoundException.withId(id);
         }
         
         ProductEntity productEntity = productEntityMapper.toEntity(product);
@@ -73,7 +73,7 @@ public class ProductRepositoryGateway implements ProductGateway {
     @Override
     public void deleteProductById(String id) {
         ProductEntity retrievedObj = productRepository.findById(id)
-            .orElseThrow(() -> new ProductNotFoundException(id));
+            .orElseThrow(() -> ProductNotFoundException.withId(id));
         productRepository.delete(retrievedObj);
     }
 }

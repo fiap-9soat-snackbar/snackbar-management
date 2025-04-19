@@ -117,14 +117,10 @@ Implemented validation for product fields:
 
 ## Next Steps
 
-1. Implement search functionality:
-   - Add endpoint to search products by name
-   - Add endpoint to search products by price range
+1. Add comprehensive logging throughout the application
 
-2. Add comprehensive logging throughout the application
+2. Implement domain events for important state changes
 
-3. Implement domain events for important state changes
+3. Add unit tests for all components
 
-4. Add unit tests for all components
-
-5. Improve documentation with Javadoc and OpenAPI annotations
+4. Improve documentation with Javadoc and OpenAPI annotations
