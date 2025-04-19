@@ -50,11 +50,12 @@ class UpdateProductByIdUseCaseTest {
     void shouldThrowExceptionWhenProductNotFound() {
         // Arrange
         String productId = "1";
+        Product product = new Product(null, "Test", "Lanche", "Test description for product", BigDecimal.valueOf(10.0), 5);
         when(getProductByIdUseCase.getProductById(productId)).thenThrow(ProductNotFoundException.withId(productId));
 
         // Act & Assert
         ProductNotFoundException exception = assertThrows(ProductNotFoundException.class,
-            () -> updateProductByIdUseCase.updateProductById(productId, null));
+            () -> updateProductByIdUseCase.updateProductById(productId, product));
         assertEquals("Product not found with id: " + productId, exception.getMessage());
         verify(getProductByIdUseCase, times(1)).getProductById(productId);
         verify(productGateway, never()).updateProductById(anyString(), any());
