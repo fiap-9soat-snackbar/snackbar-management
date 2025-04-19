@@ -70,5 +70,18 @@ class ResponseDTOTest {
             this.name = name;
             this.value = value;
         }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (obj == null || getClass() != obj.getClass()) return false;
+            TestObject testObj = (TestObject) obj;
+            return value == testObj.value && name.equals(testObj.name);
+        }
+
+        @Override
+        public int hashCode() {
+            return 31 * name.hashCode() + value;
+        }
     }
 }

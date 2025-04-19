@@ -45,14 +45,30 @@ public class ProductController {
 
     @PostMapping
     public ResponseEntity<ResponseDTO> createProduct(@RequestBody CreateProductRequest request) {
+        if (request == null) {
+            return ResponseEntity.badRequest().body(
+                new ResponseDTO(false, "Request body cannot be null", null));
+        }
+        
         Product product = productDTOMapper.createRequestToDomain(request);
         Product createdProduct = createProductUseCase.createProduct(product);
+        
+        if (createdProduct == null) {
+            return ResponseEntity.internalServerError().body(
+                new ResponseDTO(false, "Failed to create product", null));
+        }
+        
         CreateProductResponse response = productDTOMapper.createToResponse(createdProduct);
         return ResponseEntity.ok(new ResponseDTO(true, "Product created successfully", response));
     }
 
     @GetMapping("/id/{id}")
     public ResponseEntity<ResponseDTO> getProductById(@PathVariable("id") String id) {
+        if (id == null || id.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(
+                new ResponseDTO(false, "Product ID cannot be null or empty", null));
+        }
+        
         Product retrievedProduct = getProductByIdUseCase.getProductById(id);
         GetProductResponse response = productDTOMapper.getToResponse(retrievedProduct);
         return ResponseEntity.ok(new ResponseDTO(true, "Product retrieved successfully", response));
@@ -67,6 +83,11 @@ public class ProductController {
 
     @GetMapping("/category/{category}")
     public ResponseEntity<ResponseDTO> getProductByCategory(@PathVariable("category") String category) {
+        if (category == null || category.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(
+                new ResponseDTO(false, "Product category cannot be null or empty", null));
+        }
+        
         List<Product> retrievedProductList = getProductByCategoryUseCase.getProductByCategory(category);
         List<GetProductResponse> response = productDTOMapper.listToResponse(retrievedProductList);
         return ResponseEntity.ok(new ResponseDTO(true, "Products retrieved successfully", response));
@@ -74,6 +95,11 @@ public class ProductController {
 
     @GetMapping("/name/{name}")
     public ResponseEntity<ResponseDTO> getProductByName(@PathVariable("name") String name) {
+        if (name == null || name.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(
+                new ResponseDTO(false, "Product name cannot be null or empty", null));
+        }
+        
         Product retrievedProduct = getProductByNameUseCase.getProductByName(name);
         GetProductResponse response = productDTOMapper.getToResponse(retrievedProduct);
         return ResponseEntity.ok(new ResponseDTO(true, "Product retrieved successfully", response));
@@ -81,14 +107,35 @@ public class ProductController {
 
     @PutMapping("/id/{id}")
     public ResponseEntity<ResponseDTO> updateProductById(@PathVariable("id") String id, @RequestBody CreateProductRequest request) {
+        if (id == null || id.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(
+                new ResponseDTO(false, "Product ID cannot be null or empty", null));
+        }
+        
+        if (request == null) {
+            return ResponseEntity.badRequest().body(
+                new ResponseDTO(false, "Request body cannot be null", null));
+        }
+        
         Product product = productDTOMapper.createRequestToDomain(request);
         Product updatedProduct = updateProductByIdUseCase.updateProductById(id, product);
+        
+        if (updatedProduct == null) {
+            return ResponseEntity.internalServerError().body(
+                new ResponseDTO(false, "Failed to update product", null));
+        }
+        
         CreateProductResponse response = productDTOMapper.createToResponse(updatedProduct);
         return ResponseEntity.ok(new ResponseDTO(true, "Product updated successfully", response));
     }
 
     @DeleteMapping("/id/{id}")
     public ResponseEntity<ResponseDTO> deleteProduct(@PathVariable String id) {
+        if (id == null || id.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(
+                new ResponseDTO(false, "Product ID cannot be null or empty", null));
+        }
+        
         deleteProductByIdUseCase.deleteProductById(id);
         return ResponseEntity.ok(new ResponseDTO(true, "Product deleted successfully", null));
     }
