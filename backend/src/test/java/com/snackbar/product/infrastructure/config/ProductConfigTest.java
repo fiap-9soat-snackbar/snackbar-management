@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.snackbar.product.application.gateways.ProductGateway;
+import com.snackbar.product.application.ports.out.DomainEventPublisher;
 import com.snackbar.product.application.usecases.CreateProductUseCase;
 import com.snackbar.product.application.usecases.DeleteProductByIdUseCase;
 import com.snackbar.product.application.usecases.GetProductByCategoryUseCase;
@@ -33,12 +34,15 @@ class ProductConfigTest {
 
     @Mock
     private ProductRepository productRepository;
+    
+    @Mock
+    private DomainEventPublisher eventPublisher;
 
     @Test
     @DisplayName("Should create CreateProductUseCase bean")
     void createProductUseCase_ShouldCreateBean() {
         // When
-        CreateProductUseCase useCase = productConfig.createProductUseCase(productGateway);
+        CreateProductUseCase useCase = productConfig.createProductUseCase(productGateway, eventPublisher);
 
         // Then
         assertNotNull(useCase);
@@ -91,7 +95,7 @@ class ProductConfigTest {
         GetProductByIdUseCase getProductByIdUseCase = mock(GetProductByIdUseCase.class);
 
         // When
-        UpdateProductByIdUseCase useCase = productConfig.updateProductByIdUseCase(productGateway, getProductByIdUseCase);
+        UpdateProductByIdUseCase useCase = productConfig.updateProductByIdUseCase(productGateway, getProductByIdUseCase, eventPublisher);
 
         // Then
         assertNotNull(useCase);
@@ -101,7 +105,7 @@ class ProductConfigTest {
     @DisplayName("Should create DeleteProductByIdUseCase bean")
     void deleteProductByIdUseCase_ShouldCreateBean() {
         // When
-        DeleteProductByIdUseCase useCase = productConfig.deleteProductByIdUseCase(productGateway);
+        DeleteProductByIdUseCase useCase = productConfig.deleteProductByIdUseCase(productGateway, eventPublisher);
 
         // Then
         assertNotNull(useCase);
@@ -138,5 +142,15 @@ class ProductConfigTest {
 
         // Then
         assertNotNull(mapper);
+    }
+    
+    @Test
+    @DisplayName("Should create DomainEventPublisher bean")
+    void domainEventPublisher_ShouldCreateBean() {
+        // When
+        DomainEventPublisher publisher = productConfig.domainEventPublisher();
+
+        // Then
+        assertNotNull(publisher);
     }
 }

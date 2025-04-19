@@ -4,17 +4,19 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.snackbar.product.application.gateways.ProductGateway;
+import com.snackbar.product.application.ports.out.DomainEventPublisher;
 import com.snackbar.product.application.usecases.*;
 import com.snackbar.product.infrastructure.controllers.ProductDTOMapper;
 import com.snackbar.product.infrastructure.gateways.ProductEntityMapper;
 import com.snackbar.product.infrastructure.gateways.ProductRepositoryGateway;
+import com.snackbar.product.infrastructure.messaging.NoOpDomainEventPublisher;
 import com.snackbar.product.infrastructure.persistence.ProductRepository;
 
 @Configuration
 public class ProductConfig {
     @Bean
-    CreateProductUseCase createProductUseCase(ProductGateway productGateway) {
-        return new CreateProductUseCase(productGateway);
+    CreateProductUseCase createProductUseCase(ProductGateway productGateway, DomainEventPublisher eventPublisher) {
+        return new CreateProductUseCase(productGateway, eventPublisher);
     }
 
     @Bean
@@ -38,13 +40,13 @@ public class ProductConfig {
     }
 
     @Bean
-    UpdateProductByIdUseCase updateProductByIdUseCase(ProductGateway productGateway, GetProductByIdUseCase getProductByIdUseCase) {
-        return new UpdateProductByIdUseCase(productGateway, getProductByIdUseCase);
+    UpdateProductByIdUseCase updateProductByIdUseCase(ProductGateway productGateway, GetProductByIdUseCase getProductByIdUseCase, DomainEventPublisher eventPublisher) {
+        return new UpdateProductByIdUseCase(productGateway, getProductByIdUseCase, eventPublisher);
     }
 
     @Bean
-    DeleteProductByIdUseCase deleteProductByIdUseCase(ProductGateway productGateway) {
-        return new DeleteProductByIdUseCase(productGateway);
+    DeleteProductByIdUseCase deleteProductByIdUseCase(ProductGateway productGateway, DomainEventPublisher eventPublisher) {
+        return new DeleteProductByIdUseCase(productGateway, eventPublisher);
     }
 
     @Bean
@@ -60,5 +62,11 @@ public class ProductConfig {
     @Bean
     ProductDTOMapper productDTOMapper() {
         return new ProductDTOMapper();
+    }
+    
+    @Bean
+    DomainEventPublisher domainEventPublisher() {
+        // Temporary no-op implementation until we implement the SQS publisher
+        return new NoOpDomainEventPublisher();
     }
 }

@@ -1,9 +1,10 @@
 package com.snackbar.product.application.usecases;
 
 import com.snackbar.product.application.gateways.ProductGateway;
+import com.snackbar.product.application.ports.in.GetProductByIdInputPort;
 import com.snackbar.product.domain.entity.Product;
 
-public class GetProductByIdUseCase {
+public class GetProductByIdUseCase implements GetProductByIdInputPort {
     
     private final ProductGateway productGateway;
 
@@ -17,5 +18,4 @@ public class GetProductByIdUseCase {
         }
         return productGateway.getProductById(id);
     }
-
 }

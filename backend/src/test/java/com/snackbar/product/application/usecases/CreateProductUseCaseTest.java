@@ -4,7 +4,9 @@ import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.snackbar.product.application.gateways.ProductGateway;
+import com.snackbar.product.application.ports.out.DomainEventPublisher;
 import com.snackbar.product.domain.entity.Product;
+import com.snackbar.product.domain.event.ProductCreatedEvent;
 import com.snackbar.product.domain.exceptions.InvalidProductDataException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,12 +16,14 @@ import java.math.BigDecimal;
 class CreateProductUseCaseTest {
 
     private ProductGateway productGateway;
+    private DomainEventPublisher eventPublisher;
     private CreateProductUseCase createProductUseCase;
 
     @BeforeEach
     void setUp() {
         productGateway = mock(ProductGateway.class);
-        createProductUseCase = new CreateProductUseCase(productGateway);
+        eventPublisher = mock(DomainEventPublisher.class);
+        createProductUseCase = new CreateProductUseCase(productGateway, eventPublisher);
     }
 
     @Test
@@ -38,6 +42,16 @@ class CreateProductUseCaseTest {
         assertEquals("1", result.id());
         assertEquals("Burger", result.name());
         verify(productGateway, times(1)).createProduct(product);
+        verify(eventPublisher, times(1)).publish(any(ProductCreatedEvent.class));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenProductIsNull() {
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, 
+            () -> createProductUseCase.createProduct(null));
+        assertEquals("Product cannot be null", exception.getMessage());
+        verify(eventPublisher, never()).publish(any());
     }
 
     @Test

@@ -1,9 +1,10 @@
 package com.snackbar.product.application.usecases;
 
 import com.snackbar.product.application.gateways.ProductGateway;
+import com.snackbar.product.application.ports.in.GetProductByNameInputPort;
 import com.snackbar.product.domain.entity.Product;
 
-public class GetProductByNameUseCase {
+public class GetProductByNameUseCase implements GetProductByNameInputPort {
     
     private final ProductGateway productGateway;
 
@@ -17,5 +18,4 @@ public class GetProductByNameUseCase {
         }
         return productGateway.getProductByName(name);
     }
-
 }

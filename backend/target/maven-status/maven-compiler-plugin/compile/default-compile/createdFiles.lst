@@ -35,6 +35,7 @@ com/snackbar/iam/infrastructure/UserRepository.class
 com/snackbar/iam/web/dto/UserResponse$UserResponseBuilder.class
 com/snackbar/product/domain/event/ProductDeletedEvent.class
 com/snackbar/product/domain/event/DomainEvent.class
+com/snackbar/product/infrastructure/messaging/NoOpDomainEventPublisher.class
 com/snackbar/product/application/usecases/CreateProductUseCase.class
 com/snackbar/product/application/ports/out/DomainEventPublisher.class
 com/snackbar/iam/domain/UserEntity.class

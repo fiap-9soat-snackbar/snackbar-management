@@ -3,9 +3,10 @@ package com.snackbar.product.application.usecases;
 import java.util.List;
 
 import com.snackbar.product.application.gateways.ProductGateway;
+import com.snackbar.product.application.ports.in.ListProductInputPort;
 import com.snackbar.product.domain.entity.Product;
 
-public class ListProductUseCase {
+public class ListProductUseCase implements ListProductInputPort {
 
     private final ProductGateway productGateway;
     
