@@ -7,6 +7,7 @@ services:
       - "8080:8080"
     volumes:
       - .:/app
+      - ~/.aws:/root/.aws:ro  # Mount AWS credentials
     depends_on:
       - mongodb
     environment:
@@ -18,6 +19,9 @@ services:
       - MONGODB_OPTIONS=${MONGODB_OPTIONS}
       - JWT_SECRET=${JWT_SECRET}
       - JWT_EXPIRES=${JWT_EXPIRES}
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_SQS_PRODUCT_EVENTS_QUEUE_URL=${AWS_SQS_PRODUCT_EVENTS_QUEUE_URL}
       
 
   mongodb:

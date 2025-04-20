@@ -18,6 +18,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.snackbar.product.domain.entity.Product;
 import com.snackbar.product.domain.event.ProductCreatedEvent;
 
+import software.amazon.awssdk.services.sqs.SqsClient;
+import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
+import software.amazon.awssdk.services.sqs.model.SendMessageResponse;
+
 @ExtendWith(MockitoExtension.class)
 class SQSDomainEventPublisherTest {
 
@@ -27,12 +31,15 @@ class SQSDomainEventPublisherTest {
     @Mock
     private ObjectMapper objectMapper;
     
+    @Mock
+    private SqsClient sqsClient;
+    
     private SQSDomainEventPublisher publisher;
     private final String queueUrl = "https://sqs.us-east-1.amazonaws.com/123456789012/test-queue";
     
     @BeforeEach
     void setUp() {
-        publisher = new SQSDomainEventPublisher(messageMapper, objectMapper, queueUrl);
+        publisher = new SQSDomainEventPublisher(messageMapper, objectMapper, sqsClient, queueUrl);
     }
     
     @Test
@@ -45,7 +52,8 @@ class SQSDomainEventPublisherTest {
                 new ProductMessage.ProductData("1", "Test Product", "Lanche", "Test description", BigDecimal.valueOf(10.99), 5));
         
         when(messageMapper.toMessage(event)).thenReturn(message);
-        doReturn("{\"messageId\":\"msg-id\"}").when(objectMapper).writeValueAsString(any());
+        when(objectMapper.writeValueAsString(any())).thenReturn("{\"messageId\":\"msg-id\"}");
+        when(sqsClient.sendMessage(any(SendMessageRequest.class))).thenReturn(SendMessageResponse.builder().messageId("msg-id").build());
         
         // Act
         publisher.publish(event);
@@ -53,6 +61,7 @@ class SQSDomainEventPublisherTest {
         // Verify
         verify(messageMapper).toMessage(event);
         verify(objectMapper).writeValueAsString(any());
+        verify(sqsClient).sendMessage(any(SendMessageRequest.class));
     }
     
     @Test
@@ -65,7 +74,7 @@ class SQSDomainEventPublisherTest {
                 new ProductMessage.ProductData("1", "Test Product", "Lanche", "Test description", BigDecimal.valueOf(10.99), 5));
         
         when(messageMapper.toMessage(event)).thenReturn(message);
-        doThrow(new JsonProcessingException("Test error") {}).when(objectMapper).writeValueAsString(any());
+        when(objectMapper.writeValueAsString(any())).thenThrow(new JsonProcessingException("Test error") {});
         
         // Act & Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () -> publisher.publish(event));
@@ -74,10 +83,11 @@ class SQSDomainEventPublisherTest {
         // Verify
         verify(messageMapper).toMessage(event);
         verify(objectMapper).writeValueAsString(any());
+        verify(sqsClient, never()).sendMessage(any(SendMessageRequest.class));
     }
     
     @Test
-    void shouldThrowExceptionWhenMessageMapperFails() {
+    void shouldThrowExceptionWhenMessageMapperFails() throws JsonProcessingException {
         // Arrange
         Product product = new Product("1", "Test Product", "Lanche", "Test description", BigDecimal.valueOf(10.99), 5);
         ProductCreatedEvent event = new ProductCreatedEvent(product);
@@ -90,6 +100,30 @@ class SQSDomainEventPublisherTest {
         
         // Verify
         verify(messageMapper).toMessage(event);
-        // No need to verify objectMapper as it should never be called
+        verify(objectMapper, never()).writeValueAsString(any());
+        verify(sqsClient, never()).sendMessage(any(SendMessageRequest.class));
+    }
+    
+    @Test
+    void shouldThrowExceptionWhenSqsClientFails() throws JsonProcessingException {
+        // Arrange
+        Product product = new Product("1", "Test Product", "Lanche", "Test description", BigDecimal.valueOf(10.99), 5);
+        ProductCreatedEvent event = new ProductCreatedEvent(product);
+        
+        ProductMessage message = new ProductMessage("msg-id", "PRODUCT_CREATED", Instant.now(), 
+                new ProductMessage.ProductData("1", "Test Product", "Lanche", "Test description", BigDecimal.valueOf(10.99), 5));
+        
+        when(messageMapper.toMessage(event)).thenReturn(message);
+        when(objectMapper.writeValueAsString(any())).thenReturn("{\"messageId\":\"msg-id\"}");
+        when(sqsClient.sendMessage(any(SendMessageRequest.class))).thenThrow(new RuntimeException("SQS error"));
+        
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> publisher.publish(event));
+        assertEquals("Failed to publish event", exception.getMessage());
+        
+        // Verify
+        verify(messageMapper).toMessage(event);
+        verify(objectMapper).writeValueAsString(any());
+        verify(sqsClient).sendMessage(any(SendMessageRequest.class));
     }
 }

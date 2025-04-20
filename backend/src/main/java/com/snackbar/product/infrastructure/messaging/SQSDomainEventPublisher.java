@@ -11,9 +11,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.snackbar.product.application.ports.out.DomainEventPublisher;
 import com.snackbar.product.domain.event.DomainEvent;
 
+import software.amazon.awssdk.services.sqs.SqsClient;
+import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
+
 /**
- * Implementation of DomainEventPublisher that simulates publishing events to SQS.
- * This class converts domain events to SQS messages and logs them.
+ * Implementation of DomainEventPublisher that publishes events to AWS SQS.
  */
 @Component
 @Profile("prod") // Only use this implementation in production profile
@@ -24,14 +26,19 @@ public class SQSDomainEventPublisher implements DomainEventPublisher {
     private final ProductMessageMapper messageMapper;
     private final ObjectMapper objectMapper;
     private final String queueUrl;
+    private final SqsClient sqsClient;
     
     public SQSDomainEventPublisher(
             ProductMessageMapper messageMapper,
             ObjectMapper objectMapper,
-            @Value("${aws.sqs.product-events-queue-url:https://sqs.us-east-1.amazonaws.com/123456789012/product-events}") String queueUrl) {
+            SqsClient sqsClient,
+            @Value("${aws.sqs.product-events-queue-url}") String queueUrl) {
         this.messageMapper = messageMapper;
         this.objectMapper = objectMapper;
+        this.sqsClient = sqsClient;
         this.queueUrl = queueUrl;
+        
+        logger.info("SQSDomainEventPublisher initialized with queue URL: {}", queueUrl);
     }
     
     @Override
@@ -40,8 +47,14 @@ public class SQSDomainEventPublisher implements DomainEventPublisher {
             ProductMessage message = messageMapper.toMessage(event);
             String messageBody = objectMapper.writeValueAsString(message);
             
-            // Log the message instead of sending to SQS
-            logger.info("Event would be published to SQS queue {}: {}", 
+            SendMessageRequest sendMessageRequest = SendMessageRequest.builder()
+                .queueUrl(queueUrl)
+                .messageBody(messageBody)
+                .build();
+                
+            sqsClient.sendMessage(sendMessageRequest);
+            
+            logger.info("Event published to SQS queue {}: {}", 
                     queueUrl, messageBody);
             
         } catch (JsonProcessingException e) {
