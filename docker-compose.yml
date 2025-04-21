@@ -1,3 +1,4 @@
+# Base docker-compose file with common services
 services:
   app:
     build: backend
@@ -7,22 +8,20 @@ services:
       - "8080:8080"
     volumes:
       - .:/app
-      - ~/.aws:/root/.aws:ro  # Mount AWS credentials
     depends_on:
       - mongodb
     environment:
+      # Database configuration
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
       - APP_DB=${APP_DB}
       - MONGODB_USER=${MONGODB_USER}
       - MONGODB_PASSWORD=${MONGODB_PASSWORD}
       - MONGODB_OPTIONS=${MONGODB_OPTIONS}
+      
+      # JWT configuration
       - JWT_SECRET=${JWT_SECRET}
       - JWT_EXPIRES=${JWT_EXPIRES}
-      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
-      - AWS_REGION=${AWS_REGION}
-      - AWS_SQS_PRODUCT_EVENTS_QUEUE_URL=${AWS_SQS_PRODUCT_EVENTS_QUEUE_URL}
-      
 
   mongodb:
     image: mongo:8.0.1
@@ -40,6 +39,10 @@ services:
     volumes:
       - mongodb_data:/data/db
       - ./database/init-scripts/:/docker-entrypoint-initdb.d/
+
+networks:
+  default:
+    name: snackbar-network
 
 volumes:
   mongodb_data:

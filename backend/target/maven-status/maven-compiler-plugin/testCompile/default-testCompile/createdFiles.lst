@@ -1,4 +1,3 @@
-com/snackbar/product/infrastructure/messaging/SQSDomainEventPublisherTest$1.class
 com/snackbar/product/infrastructure/messaging/ProductMessageTest.class
 com/snackbar/product/application/usecases/CreateProductUseCaseTest.class
 com/snackbar/product/infrastructure/controllers/ProductControllerTest.class

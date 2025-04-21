@@ -1,5 +1,9 @@
 package com.snackbar.product.infrastructure.config;
 
+import java.net.URI;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -7,47 +11,50 @@ import org.springframework.context.annotation.Profile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.snackbar.product.infrastructure.messaging.ProductMessageMapper;
 
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.sqs.SqsClient;
-import java.net.URI;
+import software.amazon.awssdk.services.sqs.SqsClientBuilder;
 
 /**
- * Configuration for AWS SQS client.
- * This class sets up the connection to AWS SQS using the AWS SDK.
+ * Configuration for AWS SQS.
  */
 @Configuration
 public class SQSConfig {
     
-    @Value("${aws.region:us-east-1}")
-    private String awsRegion;
+    private static final Logger logger = LoggerFactory.getLogger(SQSConfig.class);
     
-    @Value("${aws.endpoint.url:}")
-    private String awsEndpointUrl;
+    @Value("${aws.region}")
+    private String region;
     
-    @Value("${aws.access.key:}")
-    private String awsAccessKey;
+    @Value("${aws.endpoint.url:#{null}}")
+    private String endpointUrl;
     
-    @Value("${aws.secret.key:}")
-    private String awsSecretKey;
+    @Value("${aws.access.key:#{null}}")
+    private String accessKey;
+    
+    @Value("${aws.secret.key:#{null}}")
+    private String secretKey;
+    
+    @Value("${dev.aws.region}")
+    private String devRegion;
+    
+    @Value("${dev.aws.endpoint.url}")
+    private String devEndpointUrl;
+    
+    @Value("${dev.aws.access.key}")
+    private String devAccessKey;
+    
+    @Value("${dev.aws.secret.key}")
+    private String devSecretKey;
     
     /**
-     * Creates a ProductMessageMapper bean.
-     *
-     * @return The configured ProductMessageMapper
-     */
-    @Bean
-    public ProductMessageMapper productMessageMapper() {
-        return new ProductMessageMapper();
-    }
-    
-    /**
-     * Creates an ObjectMapper bean for JSON serialization/deserialization.
-     * Registers the JavaTimeModule to handle Java 8 date/time types like Instant.
-     *
+     * Creates an ObjectMapper bean with JavaTimeModule registered.
+     * This is necessary for proper serialization/deserialization of Java 8 date/time types.
+     * 
      * @return The configured ObjectMapper
      */
     @Bean
@@ -58,34 +65,60 @@ public class SQSConfig {
     }
     
     /**
-     * Creates an SQS client bean for production environment.
-     *
-     * @return The configured SQS client
+     * Creates an SQS client for the dev profile (LocalStack).
+     * 
+     * @return The SQS client
      */
     @Bean
-    @Profile("prod")
-    public SqsClient sqsClient() {
-        // Create the SQS client builder
-        var builder = SqsClient.builder();
-        
-        // Set the region
-        builder.region(Region.of(awsRegion));
+    @Profile("dev")
+    public SqsClient sqsClientDev() {
+        try {
+            logger.info("Creating SQS client for LocalStack in region: {}", devRegion);
+            logger.info("Using LocalStack endpoint: {}", devEndpointUrl);
+            logger.info("Using LocalStack access key: {}", devAccessKey);
             
-        // If endpoint URL is provided, use it (for LocalStack)
-        if (awsEndpointUrl != null && !awsEndpointUrl.isEmpty()) {
-            builder.endpointOverride(URI.create(awsEndpointUrl));
+            AwsBasicCredentials credentials = AwsBasicCredentials.create(devAccessKey, devSecretKey);
+            
+            SqsClientBuilder builder = SqsClient.builder()
+                .region(Region.of(devRegion))
+                .credentialsProvider(StaticCredentialsProvider.create(credentials))
+                .endpointOverride(URI.create(devEndpointUrl));
+            
+            SqsClient client = builder.build();
+            logger.info("LocalStack SQS client created successfully: {}", client);
+            return client;
+        } catch (Exception e) {
+            logger.error("Error creating LocalStack SQS client", e);
+            throw e;
         }
-        
-        // If credentials are provided, use them
-        if (awsAccessKey != null && !awsAccessKey.isEmpty() && 
-            awsSecretKey != null && !awsSecretKey.isEmpty()) {
-            builder.credentialsProvider(
-                StaticCredentialsProvider.create(
-                    AwsBasicCredentials.create(awsAccessKey, awsSecretKey)
-                )
-            );
+    }
+    
+    /**
+     * Creates an SQS client for the aws-local profile (real AWS).
+     * 
+     * @return The SQS client
+     */
+    @Bean
+    @Profile("aws-local")
+    public SqsClient sqsClientAwsLocal() {
+        try {
+            logger.info("Creating SQS client for AWS region: {}", region);
+            
+            // Force the endpoint to be the standard SQS endpoint for the region
+            String sqsEndpoint = "https://sqs." + region + ".amazonaws.com";
+            logger.info("Using SQS endpoint: {}", sqsEndpoint);
+            
+            SqsClientBuilder builder = SqsClient.builder()
+                .region(Region.of(region))
+                .credentialsProvider(DefaultCredentialsProvider.create())
+                .endpointOverride(URI.create(sqsEndpoint));
+            
+            SqsClient client = builder.build();
+            logger.info("SQS client created successfully: {}", client);
+            return client;
+        } catch (Exception e) {
+            logger.error("Error creating SQS client", e);
+            throw e;
         }
-        
-        return builder.build();
     }
 }

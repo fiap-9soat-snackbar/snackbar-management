@@ -3,12 +3,11 @@ package com.snackbar.product.infrastructure.messaging;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.ZoneOffset;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.snackbar.infrastructure.messaging.sqs.model.ProductMessage;
 import com.snackbar.product.domain.entity.Product;
 import com.snackbar.product.domain.event.ProductCreatedEvent;
 import com.snackbar.product.domain.event.ProductDeletedEvent;
@@ -34,21 +33,14 @@ class ProductMessageMapperTest {
         
         // Assert
         assertNotNull(message);
-        assertNotNull(message.getMessageId());
-        assertEquals("PRODUCT_CREATED", message.getEventType());
-        
-        // Convert LocalDateTime to Instant for comparison
-        Instant expectedInstant = event.getOccurredOn().atZone(ZoneOffset.UTC).toInstant();
-        assertEquals(expectedInstant, message.getTimestamp());
-        
-        ProductMessage.ProductData productData = message.getProductData();
-        assertNotNull(productData);
-        assertEquals("1", productData.getId());
-        assertEquals("Test Product", productData.getName());
-        assertEquals("Lanche", productData.getCategory());
-        assertEquals("Test description", productData.getDescription());
-        assertEquals(BigDecimal.valueOf(10.99), productData.getPrice());
-        assertEquals(5, productData.getCookingTime());
+        assertEquals(ProductMessage.EVENT_TYPE_CREATED, message.getEventType());
+        assertNotNull(message.getTimestamp());
+        assertEquals("1", message.getProductId());
+        assertEquals("Test Product", message.getName());
+        assertEquals("Lanche", message.getCategory());
+        assertEquals("Test description", message.getDescription());
+        assertEquals(BigDecimal.valueOf(10.99), message.getPrice());
+        assertEquals(5, message.getCookingTime());
     }
     
     @Test
@@ -62,21 +54,14 @@ class ProductMessageMapperTest {
         
         // Assert
         assertNotNull(message);
-        assertNotNull(message.getMessageId());
-        assertEquals("PRODUCT_UPDATED", message.getEventType());
-        
-        // Convert LocalDateTime to Instant for comparison
-        Instant expectedInstant = event.getOccurredOn().atZone(ZoneOffset.UTC).toInstant();
-        assertEquals(expectedInstant, message.getTimestamp());
-        
-        ProductMessage.ProductData productData = message.getProductData();
-        assertNotNull(productData);
-        assertEquals("1", productData.getId());
-        assertEquals("Updated Product", productData.getName());
-        assertEquals("Lanche", productData.getCategory());
-        assertEquals("Updated description", productData.getDescription());
-        assertEquals(BigDecimal.valueOf(12.99), productData.getPrice());
-        assertEquals(7, productData.getCookingTime());
+        assertEquals(ProductMessage.EVENT_TYPE_UPDATED, message.getEventType());
+        assertNotNull(message.getTimestamp());
+        assertEquals("1", message.getProductId());
+        assertEquals("Updated Product", message.getName());
+        assertEquals("Lanche", message.getCategory());
+        assertEquals("Updated description", message.getDescription());
+        assertEquals(BigDecimal.valueOf(12.99), message.getPrice());
+        assertEquals(7, message.getCookingTime());
     }
     
     @Test
@@ -90,21 +75,14 @@ class ProductMessageMapperTest {
         
         // Assert
         assertNotNull(message);
-        assertNotNull(message.getMessageId());
-        assertEquals("PRODUCT_DELETED", message.getEventType());
-        
-        // Convert LocalDateTime to Instant for comparison
-        Instant expectedInstant = event.getOccurredOn().atZone(ZoneOffset.UTC).toInstant();
-        assertEquals(expectedInstant, message.getTimestamp());
-        
-        ProductMessage.ProductData productData = message.getProductData();
-        assertNotNull(productData);
-        assertEquals("1", productData.getId());
-        assertNull(productData.getName());
-        assertNull(productData.getCategory());
-        assertNull(productData.getDescription());
-        assertNull(productData.getPrice());
-        assertEquals(0, productData.getCookingTime());
+        assertEquals(ProductMessage.EVENT_TYPE_DELETED, message.getEventType());
+        assertNotNull(message.getTimestamp());
+        assertEquals("1", message.getProductId());
+        assertNull(message.getName());
+        assertNull(message.getCategory());
+        assertNull(message.getDescription());
+        assertNull(message.getPrice());
+        assertNull(message.getCookingTime());
     }
     
     @Test
@@ -127,13 +105,16 @@ class ProductMessageMapperTest {
     @Test
     void shouldMapProductMessageToProduct() {
         // Arrange
-        ProductMessage.ProductData productData = new ProductMessage.ProductData(
-            "1", "Test Product", "Lanche", "Test description", BigDecimal.valueOf(10.99), 5
-        );
-        ProductMessage message = new ProductMessage("msg-id", "PRODUCT_CREATED", Instant.now(), productData);
+        ProductMessage message = new ProductMessage(ProductMessage.EVENT_TYPE_CREATED);
+        message.setProductId("1");
+        message.setName("Test Product");
+        message.setCategory("Lanche");
+        message.setDescription("Test description");
+        message.setPrice(BigDecimal.valueOf(10.99));
+        message.setCookingTime(5);
         
         // Act
-        Product product = mapper.toProduct(message);
+        Product product = mapper.toDomainObject(message);
         
         // Assert
         assertNotNull(product);
