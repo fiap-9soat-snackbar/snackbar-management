@@ -1,26 +1,23 @@
 package com.snackbar.product.infrastructure.messaging;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.env.Environment;
+import org.springframework.test.util.ReflectionTestUtils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.snackbar.infrastructure.messaging.sqs.model.ProductMessage;
+import com.snackbar.infrastructure.messaging.sqs.producer.SQSMessageProducer;
 import com.snackbar.product.domain.entity.Product;
 import com.snackbar.product.domain.event.ProductCreatedEvent;
-
-import software.amazon.awssdk.services.sqs.SqsClient;
-import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
-import software.amazon.awssdk.services.sqs.model.SendMessageResponse;
 
 @ExtendWith(MockitoExtension.class)
 class SQSDomainEventPublisherTest {
@@ -29,101 +26,87 @@ class SQSDomainEventPublisherTest {
     private ProductMessageMapper messageMapper;
     
     @Mock
-    private ObjectMapper objectMapper;
+    private SQSMessageProducer messageProducer;
     
     @Mock
-    private SqsClient sqsClient;
+    private Environment environment;
     
     private SQSDomainEventPublisher publisher;
-    private final String queueUrl = "https://sqs.us-east-1.amazonaws.com/123456789012/test-queue";
+    private final String awsQueueUrl = "https://sqs.us-east-1.amazonaws.com/123456789012/test-queue";
+    private final String devQueueUrl = "http://localstack:4566/000000000000/product-events";
     
     @BeforeEach
     void setUp() {
-        publisher = new SQSDomainEventPublisher(messageMapper, objectMapper, sqsClient, queueUrl);
+        publisher = new SQSDomainEventPublisher(messageMapper, messageProducer, environment);
+        
+        // Set the queue URLs using reflection
+        ReflectionTestUtils.setField(publisher, "awsQueueUrl", awsQueueUrl);
+        ReflectionTestUtils.setField(publisher, "devQueueUrl", devQueueUrl);
     }
     
     @Test
-    void shouldPublishEventSuccessfully() throws Exception {
+    void shouldPublishEventSuccessfullyWithAwsProfile() {
         // Arrange
+        when(environment.getActiveProfiles()).thenReturn(new String[]{"aws-local"});
+        
         Product product = new Product("1", "Test Product", "Lanche", "Test description", BigDecimal.valueOf(10.99), 5);
         ProductCreatedEvent event = new ProductCreatedEvent(product);
         
-        ProductMessage message = new ProductMessage("msg-id", "PRODUCT_CREATED", Instant.now(), 
-                new ProductMessage.ProductData("1", "Test Product", "Lanche", "Test description", BigDecimal.valueOf(10.99), 5));
+        ProductMessage message = new ProductMessage(ProductMessage.EVENT_TYPE_CREATED);
+        message.setProductId("1");
+        message.setName("Test Product");
         
         when(messageMapper.toMessage(event)).thenReturn(message);
-        when(objectMapper.writeValueAsString(any())).thenReturn("{\"messageId\":\"msg-id\"}");
-        when(sqsClient.sendMessage(any(SendMessageRequest.class))).thenReturn(SendMessageResponse.builder().messageId("msg-id").build());
         
         // Act
         publisher.publish(event);
         
         // Verify
         verify(messageMapper).toMessage(event);
-        verify(objectMapper).writeValueAsString(any());
-        verify(sqsClient).sendMessage(any(SendMessageRequest.class));
+        verify(messageProducer).sendMessage(eq(awsQueueUrl), eq(message));
     }
     
     @Test
-    void shouldThrowExceptionWhenJsonProcessingFails() throws Exception {
+    void shouldPublishEventSuccessfullyWithDevProfile() {
         // Arrange
+        when(environment.getActiveProfiles()).thenReturn(new String[]{"dev"});
+        
         Product product = new Product("1", "Test Product", "Lanche", "Test description", BigDecimal.valueOf(10.99), 5);
         ProductCreatedEvent event = new ProductCreatedEvent(product);
         
-        ProductMessage message = new ProductMessage("msg-id", "PRODUCT_CREATED", Instant.now(), 
-                new ProductMessage.ProductData("1", "Test Product", "Lanche", "Test description", BigDecimal.valueOf(10.99), 5));
+        ProductMessage message = new ProductMessage(ProductMessage.EVENT_TYPE_CREATED);
+        message.setProductId("1");
+        message.setName("Test Product");
         
         when(messageMapper.toMessage(event)).thenReturn(message);
-        when(objectMapper.writeValueAsString(any())).thenThrow(new JsonProcessingException("Test error") {});
         
-        // Act & Assert
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> publisher.publish(event));
-        assertEquals("Failed to serialize event to JSON", exception.getMessage());
+        // Act
+        publisher.publish(event);
         
         // Verify
         verify(messageMapper).toMessage(event);
-        verify(objectMapper).writeValueAsString(any());
-        verify(sqsClient, never()).sendMessage(any(SendMessageRequest.class));
+        verify(messageProducer).sendMessage(eq(devQueueUrl), eq(message));
     }
     
     @Test
-    void shouldThrowExceptionWhenMessageMapperFails() throws JsonProcessingException {
+    void shouldThrowExceptionWhenQueueUrlIsNull() {
         // Arrange
+        when(environment.getActiveProfiles()).thenReturn(new String[]{"aws-local"});
+        
+        // Set null queue URL
+        ReflectionTestUtils.setField(publisher, "awsQueueUrl", null);
+        
         Product product = new Product("1", "Test Product", "Lanche", "Test description", BigDecimal.valueOf(10.99), 5);
         ProductCreatedEvent event = new ProductCreatedEvent(product);
         
-        when(messageMapper.toMessage(event)).thenThrow(new IllegalArgumentException("Test error"));
-        
-        // Act & Assert
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> publisher.publish(event));
-        assertEquals("Failed to publish event", exception.getMessage());
-        
-        // Verify
-        verify(messageMapper).toMessage(event);
-        verify(objectMapper, never()).writeValueAsString(any());
-        verify(sqsClient, never()).sendMessage(any(SendMessageRequest.class));
-    }
-    
-    @Test
-    void shouldThrowExceptionWhenSqsClientFails() throws JsonProcessingException {
-        // Arrange
-        Product product = new Product("1", "Test Product", "Lanche", "Test description", BigDecimal.valueOf(10.99), 5);
-        ProductCreatedEvent event = new ProductCreatedEvent(product);
-        
-        ProductMessage message = new ProductMessage("msg-id", "PRODUCT_CREATED", Instant.now(), 
-                new ProductMessage.ProductData("1", "Test Product", "Lanche", "Test description", BigDecimal.valueOf(10.99), 5));
-        
+        ProductMessage message = new ProductMessage(ProductMessage.EVENT_TYPE_CREATED);
         when(messageMapper.toMessage(event)).thenReturn(message);
-        when(objectMapper.writeValueAsString(any())).thenReturn("{\"messageId\":\"msg-id\"}");
-        when(sqsClient.sendMessage(any(SendMessageRequest.class))).thenThrow(new RuntimeException("SQS error"));
         
         // Act & Assert
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> publisher.publish(event));
-        assertEquals("Failed to publish event", exception.getMessage());
+        Exception exception = assertThrows(IllegalStateException.class, () -> {
+            publisher.publish(event);
+        });
         
-        // Verify
-        verify(messageMapper).toMessage(event);
-        verify(objectMapper).writeValueAsString(any());
-        verify(sqsClient).sendMessage(any(SendMessageRequest.class));
+        assertEquals("SQS queue URL is not configured", exception.getMessage());
     }
 }

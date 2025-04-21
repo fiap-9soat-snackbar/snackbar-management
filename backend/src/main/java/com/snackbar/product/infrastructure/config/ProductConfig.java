@@ -66,7 +66,7 @@ public class ProductConfig {
     }
     
     @Bean
-    @Profile("!prod") // Use this implementation in non-production environments
+    @Profile("!prod && !aws-local && !dev") // Only use in test profile
     DomainEventPublisher domainEventPublisher() {
         // No-op implementation for development and testing
         return new NoOpDomainEventPublisher();

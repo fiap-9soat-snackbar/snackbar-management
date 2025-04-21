@@ -4,65 +4,72 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.snackbar.infrastructure.messaging.sqs.model.SQSMessage;
+import com.snackbar.infrastructure.messaging.sqs.producer.SQSMessageProducer;
 import com.snackbar.product.application.ports.out.DomainEventPublisher;
 import com.snackbar.product.domain.event.DomainEvent;
 
-import software.amazon.awssdk.services.sqs.SqsClient;
-import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
+import java.util.Arrays;
 
 /**
  * Implementation of DomainEventPublisher that publishes events to AWS SQS.
  */
 @Component
-@Profile("prod") // Only use this implementation in production profile
+@Profile({"aws-local", "dev"})
 public class SQSDomainEventPublisher implements DomainEventPublisher {
     
     private static final Logger logger = LoggerFactory.getLogger(SQSDomainEventPublisher.class);
     
     private final ProductMessageMapper messageMapper;
-    private final ObjectMapper objectMapper;
-    private final String queueUrl;
-    private final SqsClient sqsClient;
+    private final SQSMessageProducer messageProducer;
+    private final Environment environment;
     
-    public SQSDomainEventPublisher(
-            ProductMessageMapper messageMapper,
-            ObjectMapper objectMapper,
-            SqsClient sqsClient,
-            @Value("${aws.sqs.product-events-queue-url}") String queueUrl) {
+    @Value("${aws.sqs.product.events.queue.url:#{null}}")
+    private String awsQueueUrl;
+    
+    @Value("${dev.aws.sqs.product.events.queue.url:#{null}}")
+    private String devQueueUrl;
+    
+    public SQSDomainEventPublisher(ProductMessageMapper messageMapper, SQSMessageProducer messageProducer, Environment environment) {
         this.messageMapper = messageMapper;
-        this.objectMapper = objectMapper;
-        this.sqsClient = sqsClient;
-        this.queueUrl = queueUrl;
-        
-        logger.info("SQSDomainEventPublisher initialized with queue URL: {}", queueUrl);
+        this.messageProducer = messageProducer;
+        this.environment = environment;
     }
     
     @Override
     public void publish(DomainEvent event) {
         try {
-            ProductMessage message = messageMapper.toMessage(event);
-            String messageBody = objectMapper.writeValueAsString(message);
+            logger.debug("Publishing event: {}", event.getClass().getSimpleName());
             
-            SendMessageRequest sendMessageRequest = SendMessageRequest.builder()
-                .queueUrl(queueUrl)
-                .messageBody(messageBody)
-                .build();
-                
-            sqsClient.sendMessage(sendMessageRequest);
+            SQSMessage message = messageMapper.toMessage(event);
             
-            logger.info("Event published to SQS queue {}: {}", 
-                    queueUrl, messageBody);
+            // Determine which queue URL to use based on active profile
+            String queueUrl;
+            if (isDevProfileActive()) {
+                queueUrl = devQueueUrl;
+                logger.debug("Using LocalStack queue URL: {}", queueUrl);
+            } else {
+                queueUrl = awsQueueUrl;
+                logger.debug("Using AWS queue URL: {}", queueUrl);
+            }
             
-        } catch (JsonProcessingException e) {
-            logger.error("Failed to serialize event to JSON: {}", event.getClass().getSimpleName(), e);
-            throw new RuntimeException("Failed to serialize event to JSON", e);
+            if (queueUrl == null || queueUrl.isEmpty()) {
+                throw new IllegalStateException("SQS queue URL is not configured");
+            }
+            
+            messageProducer.sendMessage(queueUrl, message);
+            
+            logger.info("Event published to SQS: {}", event.getClass().getSimpleName());
         } catch (Exception e) {
-            logger.error("Failed to publish event: {}", event.getClass().getSimpleName(), e);
-            throw new RuntimeException("Failed to publish event", e);
+            logger.error("Failed to publish event", e);
+            throw e;
         }
+    }
+    
+    private boolean isDevProfileActive() {
+        return Arrays.asList(environment.getActiveProfiles()).contains("dev");
     }
 }

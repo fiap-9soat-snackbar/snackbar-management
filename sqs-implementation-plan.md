@@ -2,7 +2,9 @@
 
 This document outlines the step-by-step implementation plan for adding Amazon SQS-based asynchronous communication to the Snackbar Management application, following Clean Architecture principles.
 
-## Implementation Steps
+## Implementation Status (Updated April 20, 2025)
+
+### Completed Steps ✅
 
 ### 1. Domain Layer: Domain Events (Core) ✅ COMPLETED
 
@@ -12,7 +14,7 @@ Create domain event classes to represent significant state changes:
 - `ProductUpdatedEvent` ✅
 - `ProductDeletedEvent` ✅
 
-These events will be raised by the domain layer and eventually published to SQS.
+These events are raised by the domain layer and published to SQS.
 
 ### 2. Application Layer: Use Case Interfaces (Input Ports) ✅ COMPLETED
 
@@ -28,7 +30,7 @@ Create interfaces for use cases to properly implement dependency inversion:
 Create an interface for publishing domain events:
 - `DomainEventPublisher` ✅
 
-This interface will be implemented by the infrastructure layer to publish events to SQS.
+This interface is implemented by the infrastructure layer to publish events to SQS.
 
 ### 4. Application Layer: Updated Use Cases ✅ COMPLETED
 
@@ -42,52 +44,82 @@ Update existing use cases to:
 Create message models for SQS communication:
 - `ProductMessage` ✅
 
-These models will be used to serialize/deserialize messages sent to/from SQS.
+These models are used to serialize/deserialize messages sent to/from SQS.
 
-### 6. Infrastructure Layer: Event Publisher Implementation ✅ COMPLETED (PARTIAL)
+### 6. Infrastructure Layer: Event Publisher Implementation ✅ COMPLETED
 
 Implement the `DomainEventPublisher` interface with SQS:
-- `SQSDomainEventPublisher` ✅ (Currently only logs messages, needs to be updated to actually send to SQS)
+- `SQSDomainEventPublisher` ✅
 - `NoOpDomainEventPublisher` ✅ (For non-production environments)
 
-This class will convert domain events to SQS messages and publish them.
+These classes convert domain events to SQS messages and publish them.
 
 ### 7. Infrastructure Layer: Message Mapper ✅ COMPLETED
 
 Create a mapper to convert between domain objects and message models:
 - `ProductMessageMapper` ✅
 
-This will handle the translation between domain events and SQS messages.
+This handles the translation between domain events and SQS messages.
 
-### 8. Infrastructure Layer: SQS Client Configuration ✅ COMPLETED (PARTIAL)
+### 8. Infrastructure Layer: SQS Client Configuration ✅ COMPLETED
 
 Configure the AWS SQS client:
-- `SQSConfig` ✅ (Basic configuration exists, needs to be updated with actual SQS client)
+- `SQSConfig` ✅
 
-This will set up the connection to AWS SQS using the AWS SDK.
+This sets up the connection to AWS SQS using the AWS SDK.
+
+### 15. Update pom.xml ✅ COMPLETED
+
+Add AWS SDK dependencies to the pom.xml file:
+- AWS SQS SDK ✅
+- Jackson JSR-310 support for Java 8 date/time types ✅
+
+### Pending Steps ❌
 
 ### 9. Infrastructure Layer: Message Consumer ❌ NOT STARTED
 
 Create a consumer to process incoming SQS messages:
-- `SQSProductMessageConsumer`
+- `SQSProductMessageConsumer` ❌
 
 This will listen for messages and invoke the appropriate use cases.
 
 ### 10. Infrastructure Layer: Extended Message Mapper ❌ NOT STARTED
 
 Add methods to the message mapper to convert from messages to domain objects:
-- Additional methods in `ProductMessageMapper`
+- Additional methods in `ProductMessageMapper` ❌
 
-### 11. Application Properties ❌ NOT STARTED
+### 11. Application Properties ❌ PARTIALLY COMPLETED
 
 Update application properties with SQS configuration:
-- Queue URLs
-- AWS region
-- Other SQS-specific settings
+- Queue URLs ❌ (Only in docker-compose.yml environment variables)
+- AWS region ❌ (Only in docker-compose.yml environment variables)
+- Other SQS-specific settings ❌
+
+### 16. Update docker-compose.yml ✅ PARTIALLY COMPLETED
+
+- AWS credentials are mounted ✅
+- Environment variables for AWS configuration are partially set up ✅
+- LocalStack service for local testing is not added ❌
+
+### 17. Create LocalStack initialization script ❌ NOT STARTED
+
+Create a file at `localstack-init/init-aws.sh` to initialize SQS queues.
+
+### 18. Update full_test.sh ❌ NOT STARTED
+
+Add SQS testing to the full_test.sh script.
+
+### 19. Update app environment in docker-compose.yml ❌ PARTIALLY COMPLETED
+
+Add AWS environment variables to the app service.
+
+### 20. Create a .env file for local development ❌ PARTIALLY COMPLETED
+
+Add AWS configuration to the .env file.
 
 ## Additional Implementation Tasks
 
-### 12. Update SQSDomainEventPublisher.java
+### 12. Update SQSDomainEventPublisher.java ✅ COMPLETED
 
 ```java
 package com.snackbar.product.infrastructure.messaging;
@@ -158,7 +190,7 @@ public class SQSDomainEventPublisher implements DomainEventPublisher {
 }
 ```
 
-### 13. Update SQSConfig.java
+### 13. Update SQSConfig.java ✅ COMPLETED
 
 ```java
 package com.snackbar.product.infrastructure.config;
@@ -169,6 +201,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.snackbar.product.infrastructure.messaging.ProductMessageMapper;
 
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -208,12 +241,15 @@ public class SQSConfig {
     
     /**
      * Creates an ObjectMapper bean for JSON serialization/deserialization.
+     * Registers the JavaTimeModule to handle Java 8 date/time types like Instant.
      *
      * @return The configured ObjectMapper
      */
     @Bean
     public ObjectMapper objectMapper() {
-        return new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        return mapper;
     }
     
     /**
@@ -247,7 +283,7 @@ public class SQSConfig {
 }
 ```
 
-### 14. Update application.properties
+### 14. Update application.properties ❌ NOT STARTED
 
 Add the following properties to the existing application.properties file:
 
@@ -261,7 +297,7 @@ aws.access.key=
 aws.secret.key=
 ```
 
-### 15. Update pom.xml
+### 15. Update pom.xml ✅ COMPLETED
 
 Add AWS SDK dependencies to the pom.xml file:
 
@@ -274,7 +310,7 @@ Add AWS SDK dependencies to the pom.xml file:
 </dependency>
 ```
 
-### 16. Update docker-compose.yml
+### 16. Update docker-compose.yml ✅ PARTIALLY COMPLETED
 
 Add LocalStack service for local testing:
 
@@ -294,7 +330,7 @@ services:
       - ./localstack-init:/docker-entrypoint-initdb.d
 ```
 
-### 17. Create LocalStack initialization script
+### 17. Create LocalStack initialization script ❌ NOT STARTED
 
 Create a file at `localstack-init/init-aws.sh`:
 
@@ -310,7 +346,7 @@ Make it executable:
 chmod +x localstack-init/init-aws.sh
 ```
 
-### 18. Update full_test.sh
+### 18. Update full_test.sh ❌ NOT STARTED
 
 Add SQS testing to the full_test.sh script:
 
@@ -331,7 +367,7 @@ if [ "$SPRING_PROFILES_ACTIVE" = "prod" ]; then
 fi
 ```
 
-### 19. Update app environment in docker-compose.yml
+### 19. Update app environment in docker-compose.yml ✅ PARTIALLY COMPLETED
 
 Add the following environment variables to the app service:
 
@@ -349,7 +385,7 @@ services:
       - AWS_SQS_PRODUCT_EVENTS_QUEUE_URL=${AWS_SQS_QUEUE_URL:-http://localstack:4566/000000000000/product-events}
 ```
 
-### 20. Create a .env file for local development
+### 20. Create a .env file for local development ✅ PARTIALLY COMPLETED
 
 ```
 # MongoDB Configuration
@@ -376,7 +412,7 @@ AWS_SECRET_KEY=test
 AWS_SQS_QUEUE_URL=http://localstack:4566/000000000000/product-events
 ```
 
-### 21. Create a run-with-sqs.sh script
+### 21. Create a run-with-sqs.sh script ✅ COMPLETED
 
 ```bash
 #!/bin/bash
@@ -405,6 +441,14 @@ Make it executable:
 ```bash
 chmod +x run-with-sqs.sh
 ```
+
+## Key Insights and Fixes
+
+1. **Java Time Serialization**: The ObjectMapper in SQSConfig has been properly configured with JavaTimeModule to handle Java 8 date/time types like Instant.
+
+2. **AWS Credentials**: AWS credentials are mounted from the host to the Docker container using volume mapping in docker-compose.yml.
+
+3. **SQS Integration Testing**: A test_sqs.sh script has been created to test SQS event publishing, but it may require additional configuration to work properly.
 
 ## Summary of the Implementation
 

@@ -1,9 +1,10 @@
 package com.snackbar.product.infrastructure.messaging;
 
-import java.time.Instant;
 import java.time.ZoneOffset;
-import java.util.UUID;
 
+import org.springframework.stereotype.Component;
+
+import com.snackbar.infrastructure.messaging.sqs.model.ProductMessage;
 import com.snackbar.product.domain.entity.Product;
 import com.snackbar.product.domain.event.DomainEvent;
 import com.snackbar.product.domain.event.ProductCreatedEvent;
@@ -11,96 +12,70 @@ import com.snackbar.product.domain.event.ProductDeletedEvent;
 import com.snackbar.product.domain.event.ProductUpdatedEvent;
 
 /**
- * Mapper to convert between domain objects/events and message models.
- * This class handles the translation between domain events and SQS messages.
+ * Maps between domain events and SQS messages.
  */
+@Component
 public class ProductMessageMapper {
     
-    private static final String PRODUCT_CREATED_EVENT = "PRODUCT_CREATED";
-    private static final String PRODUCT_UPDATED_EVENT = "PRODUCT_UPDATED";
-    private static final String PRODUCT_DELETED_EVENT = "PRODUCT_DELETED";
-    
     /**
-     * Maps a domain event to a product message for SQS.
-     *
-     * @param event The domain event to map
-     * @return The product message for SQS
+     * Converts a domain event to an SQS message.
+     * 
+     * @param event The domain event to convert
+     * @return The SQS message
      * @throws IllegalArgumentException if the event type is not supported
      */
     public ProductMessage toMessage(DomainEvent event) {
-        if (event instanceof ProductCreatedEvent) {
-            return mapProductCreatedEvent((ProductCreatedEvent) event);
-        } else if (event instanceof ProductUpdatedEvent) {
-            return mapProductUpdatedEvent((ProductUpdatedEvent) event);
-        } else if (event instanceof ProductDeletedEvent) {
-            return mapProductDeletedEvent((ProductDeletedEvent) event);
+        ProductMessage message = new ProductMessage();
+        
+        // Set common fields
+        message.setTimestamp(event.getOccurredOn().atZone(ZoneOffset.UTC).toInstant());
+        
+        // Set event-specific fields
+        if (event instanceof ProductCreatedEvent createdEvent) {
+            message.setEventType(ProductMessage.EVENT_TYPE_CREATED);
+            mapProductToMessage(createdEvent.getProduct(), message);
+        } else if (event instanceof ProductUpdatedEvent updatedEvent) {
+            message.setEventType(ProductMessage.EVENT_TYPE_UPDATED);
+            mapProductToMessage(updatedEvent.getProduct(), message);
+        } else if (event instanceof ProductDeletedEvent deletedEvent) {
+            message.setEventType(ProductMessage.EVENT_TYPE_DELETED);
+            message.setProductId(deletedEvent.getProductId());
         } else {
-            throw new IllegalArgumentException("Unsupported event type: " + event.getClass().getSimpleName());
+            throw new IllegalArgumentException("Unsupported event type: " + event.getClass().getName());
         }
-    }
-    
-    private ProductMessage mapProductCreatedEvent(ProductCreatedEvent event) {
-        Product product = event.getProduct();
-        ProductMessage.ProductData productData = createProductData(product);
         
-        return new ProductMessage(
-            UUID.randomUUID().toString(),
-            PRODUCT_CREATED_EVENT,
-            Instant.from(event.getOccurredOn().atZone(ZoneOffset.UTC)),
-            productData
-        );
-    }
-    
-    private ProductMessage mapProductUpdatedEvent(ProductUpdatedEvent event) {
-        Product product = event.getProduct();
-        ProductMessage.ProductData productData = createProductData(product);
-        
-        return new ProductMessage(
-            UUID.randomUUID().toString(),
-            PRODUCT_UPDATED_EVENT,
-            Instant.from(event.getOccurredOn().atZone(ZoneOffset.UTC)),
-            productData
-        );
-    }
-    
-    private ProductMessage mapProductDeletedEvent(ProductDeletedEvent event) {
-        ProductMessage.ProductData productData = new ProductMessage.ProductData();
-        productData.setId(event.getProductId());
-        
-        return new ProductMessage(
-            UUID.randomUUID().toString(),
-            PRODUCT_DELETED_EVENT,
-            Instant.from(event.getOccurredOn().atZone(ZoneOffset.UTC)),
-            productData
-        );
-    }
-    
-    private ProductMessage.ProductData createProductData(Product product) {
-        return new ProductMessage.ProductData(
-            product.id(),
-            product.name(),
-            product.category(),
-            product.description(),
-            product.price(),
-            product.cookingTime()
-        );
+        return message;
     }
     
     /**
-     * Maps a product message from SQS to a domain product.
-     *
-     * @param message The product message from SQS
-     * @return The domain product
+     * Maps a product entity to a message.
+     * 
+     * @param product The product entity
+     * @param message The message to populate
      */
-    public Product toProduct(ProductMessage message) {
-        ProductMessage.ProductData data = message.getProductData();
+    private void mapProductToMessage(Product product, ProductMessage message) {
+        message.setProductId(product.id());
+        message.setName(product.name());
+        message.setCategory(product.category());
+        message.setDescription(product.description());
+        message.setPrice(product.price());
+        message.setCookingTime(product.cookingTime());
+    }
+    
+    /**
+     * Converts an SQS message to a product domain object.
+     * 
+     * @param message The SQS message
+     * @return The product domain object
+     */
+    public Product toDomainObject(ProductMessage message) {
         return new Product(
-            data.getId(),
-            data.getName(),
-            data.getCategory(),
-            data.getDescription(),
-            data.getPrice(),
-            data.getCookingTime()
+            message.getProductId(),
+            message.getName(),
+            message.getCategory(),
+            message.getDescription(),
+            message.getPrice(),
+            message.getCookingTime() != null ? message.getCookingTime() : 0
         );
     }
 }

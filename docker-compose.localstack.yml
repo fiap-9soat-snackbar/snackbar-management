@@ -1,0 +1,25 @@
+# Docker compose file for LocalStack (dev) environment
+services:
+  app:
+    environment:
+      # Spring profile
+      - SPRING_PROFILES_ACTIVE=dev
+      
+      # Spring property format (camelCase) - both dev and aws properties needed
+      - SPRING_APPLICATION_JSON={"dev.aws.region":"${DEV_AWS_REGION}","dev.aws.sqs.product.events.queue.url":"${DEV_AWS_SQS_PRODUCT_EVENTS_QUEUE_URL}","dev.aws.endpoint.url":"${DEV_AWS_ENDPOINT_URL}","dev.aws.access.key":"${DEV_AWS_ACCESS_KEY}","dev.aws.secret.key":"${DEV_AWS_SECRET_KEY}","aws.region":"us-east-1","aws.endpoint.url":"","aws.access.key":"","aws.secret.key":""}
+    depends_on:
+      - mongodb
+      - localstack
+
+  # LocalStack service for local development
+  localstack:
+    image: localstack/localstack:latest
+    container_name: localstack
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=sqs
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+    volumes:
+      - ./localstack-init:/docker-entrypoint-initaws.d

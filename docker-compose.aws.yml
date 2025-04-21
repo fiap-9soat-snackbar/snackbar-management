@@ -1,0 +1,24 @@
+# Docker compose file for AWS (aws-local) environment
+services:
+  app:
+    environment:
+      # Spring profile
+      - SPRING_PROFILES_ACTIVE=aws-local
+      
+      # AWS configuration - Environment variables
+      - AWS_REGION=${AWS_REGION}
+      - AWS_SQS_PRODUCT_EVENTS_QUEUE_URL=${AWS_SQS_PRODUCT_EVENTS_QUEUE_URL}
+      - AWS_ENDPOINT_URL=${AWS_ENDPOINT_URL}
+      - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
+      - AWS_SECRET_KEY=${AWS_SECRET_KEY}
+      
+      # Spring property format (camelCase)
+      # Including both aws and dev properties because SQSConfig requires both sets
+      # even though only one profile is active
+      - SPRING_APPLICATION_JSON={"aws.region":"${AWS_REGION}","aws.sqs.product.events.queue.url":"${AWS_SQS_PRODUCT_EVENTS_QUEUE_URL}","aws.endpoint.url":"${AWS_ENDPOINT_URL}","aws.access.key":"${AWS_ACCESS_KEY}","aws.secret.key":"${AWS_SECRET_KEY}","dev.aws.region":"us-east-1","dev.aws.endpoint.url":"http://localhost:4566","dev.aws.access.key":"test","dev.aws.secret.key":"test"}
+    volumes:
+      - .:/app
+      # Mount AWS credentials
+      - ~/.aws:/root/.aws:ro
+    depends_on:
+      - mongodb
