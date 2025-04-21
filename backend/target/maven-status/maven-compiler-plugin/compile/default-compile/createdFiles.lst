@@ -52,6 +52,7 @@ com/snackbar/product/infrastructure/gateways/ProductEntityMapper.class
 com/snackbar/product/infrastructure/controllers/GlobalExceptionHandler.class
 com/snackbar/product/application/ports/in/ListProductInputPort.class
 com/snackbar/product/application/ports/in/GetProductByIdInputPort.class
+com/snackbar/product/infrastructure/messaging/SQSProductMessageProducer.class
 com/snackbar/iam/application/UserService.class
 com/snackbar/product/infrastructure/messaging/ProductMessage.class
 com/snackbar/product/application/usecases/DeleteProductByIdUseCase.class
@@ -61,6 +62,7 @@ com/snackbar/iam/web/dto/LoginUserDto.class
 com/snackbar/product/application/ports/in/GetProductByCategoryInputPort.class
 com/snackbar/product/application/gateways/ProductGateway.class
 com/snackbar/product/application/ports/in/UpdateProductByIdInputPort.class
+com/snackbar/infrastructure/messaging/sqs/model/StandardProductMessage.class
 com/snackbar/infrastructure/messaging/sqs/producer/SQSMessageProducer.class
 com/snackbar/infrastructure/messaging/sqs/consumer/SQSMessageConsumerImpl.class
 com/snackbar/product/infrastructure/controllers/CreateProductResponse.class

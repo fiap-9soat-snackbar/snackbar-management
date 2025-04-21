@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.snackbar.infrastructure.messaging.sqs.model.ProductMessage;
+import com.snackbar.infrastructure.messaging.sqs.model.StandardProductMessage;
 import com.snackbar.product.domain.entity.Product;
 import com.snackbar.product.domain.event.ProductCreatedEvent;
 import com.snackbar.product.domain.event.ProductDeletedEvent;
@@ -29,11 +29,11 @@ class ProductMessageMapperTest {
         ProductCreatedEvent event = new ProductCreatedEvent(product);
         
         // Act
-        ProductMessage message = mapper.toMessage(event);
+        StandardProductMessage message = mapper.toMessage(event);
         
         // Assert
         assertNotNull(message);
-        assertEquals(ProductMessage.EVENT_TYPE_CREATED, message.getEventType());
+        assertEquals(StandardProductMessage.EVENT_TYPE_CREATED, message.getEventType());
         assertNotNull(message.getTimestamp());
         assertEquals("1", message.getProductId());
         assertEquals("Test Product", message.getName());
@@ -50,11 +50,11 @@ class ProductMessageMapperTest {
         ProductUpdatedEvent event = new ProductUpdatedEvent(product);
         
         // Act
-        ProductMessage message = mapper.toMessage(event);
+        StandardProductMessage message = mapper.toMessage(event);
         
         // Assert
         assertNotNull(message);
-        assertEquals(ProductMessage.EVENT_TYPE_UPDATED, message.getEventType());
+        assertEquals(StandardProductMessage.EVENT_TYPE_UPDATED, message.getEventType());
         assertNotNull(message.getTimestamp());
         assertEquals("1", message.getProductId());
         assertEquals("Updated Product", message.getName());
@@ -71,11 +71,11 @@ class ProductMessageMapperTest {
         ProductDeletedEvent event = new ProductDeletedEvent(productId);
         
         // Act
-        ProductMessage message = mapper.toMessage(event);
+        StandardProductMessage message = mapper.toMessage(event);
         
         // Assert
         assertNotNull(message);
-        assertEquals(ProductMessage.EVENT_TYPE_DELETED, message.getEventType());
+        assertEquals(StandardProductMessage.EVENT_TYPE_DELETED, message.getEventType());
         assertNotNull(message.getTimestamp());
         assertEquals("1", message.getProductId());
         assertNull(message.getName());
@@ -105,7 +105,7 @@ class ProductMessageMapperTest {
     @Test
     void shouldMapProductMessageToProduct() {
         // Arrange
-        ProductMessage message = new ProductMessage(ProductMessage.EVENT_TYPE_CREATED);
+        StandardProductMessage message = new StandardProductMessage(StandardProductMessage.EVENT_TYPE_CREATED);
         message.setProductId("1");
         message.setName("Test Product");
         message.setCategory("Lanche");

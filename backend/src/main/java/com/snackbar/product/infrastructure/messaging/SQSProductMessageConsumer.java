@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.snackbar.infrastructure.messaging.sqs.consumer.SQSMessageConsumer;
-import com.snackbar.infrastructure.messaging.sqs.model.ProductMessage;
+import com.snackbar.infrastructure.messaging.sqs.model.StandardProductMessage;
 import com.snackbar.product.application.ports.in.CreateProductInputPort;
 import com.snackbar.product.application.ports.in.DeleteProductByIdInputPort;
 import com.snackbar.product.application.ports.in.UpdateProductByIdInputPort;
@@ -23,7 +23,7 @@ import java.util.List;
  * This class polls the SQS queue for messages and processes them.
  */
 @Component
-@Profile("prod") // Only use this implementation in production profile
+@Profile({"prod", "dev", "aws-local"}) // Use in production, development, and aws-local profiles
 public class SQSProductMessageConsumer {
     
     private static final Logger logger = LoggerFactory.getLogger(SQSProductMessageConsumer.class);
@@ -73,8 +73,8 @@ public class SQSProductMessageConsumer {
             // Process each message
             for (Message message : messages) {
                 try {
-                    // Deserialize the message
-                    ProductMessage productMessage = messageConsumer.deserializeMessage(message, ProductMessage.class);
+                    // Deserialize the message using the standardized format
+                    StandardProductMessage productMessage = messageConsumer.deserializeMessage(message, StandardProductMessage.class);
                     
                     // Process the message
                     processMessage(productMessage);
@@ -84,6 +84,7 @@ public class SQSProductMessageConsumer {
                 } catch (Exception e) {
                     logger.error("Error processing message: {}", message.body(), e);
                     // Message will return to the queue after visibility timeout
+                    // After max retries, it will go to the DLQ
                 }
             }
         } catch (Exception e) {
@@ -96,18 +97,18 @@ public class SQSProductMessageConsumer {
      * 
      * @param message The product message to process
      */
-    private void processMessage(ProductMessage message) {
+    private void processMessage(StandardProductMessage message) {
         logger.debug("Processing message with event type: {}", message.getEventType());
         
         // Process based on event type
         switch (message.getEventType()) {
-            case ProductMessage.EVENT_TYPE_CREATED:
+            case StandardProductMessage.EVENT_TYPE_CREATED:
                 handleProductCreated(message);
                 break;
-            case ProductMessage.EVENT_TYPE_UPDATED:
+            case StandardProductMessage.EVENT_TYPE_UPDATED:
                 handleProductUpdated(message);
                 break;
-            case ProductMessage.EVENT_TYPE_DELETED:
+            case StandardProductMessage.EVENT_TYPE_DELETED:
                 handleProductDeleted(message);
                 break;
             default:
@@ -120,14 +121,20 @@ public class SQSProductMessageConsumer {
      * 
      * @param message The product message
      */
-    private void handleProductCreated(ProductMessage message) {
+    private void handleProductCreated(StandardProductMessage message) {
         logger.info("Handling PRODUCT_CREATED event for product ID: {}", message.getProductId());
         
-        // Convert message to domain object
-        Product product = messageMapper.toDomainObject(message);
-        
-        // Call the use case
-        createProductUseCase.createProduct(product);
+        try {
+            // Convert message to domain object
+            Product product = messageMapper.toDomainObject(message);
+            
+            // Call the use case
+            createProductUseCase.createProduct(product);
+            logger.info("Product created successfully: {}", message.getProductId());
+        } catch (Exception e) {
+            logger.error("Failed to create product from message: {}", message.getProductId(), e);
+            throw e; // Rethrow to trigger retry mechanism
+        }
     }
     
     /**
@@ -135,14 +142,20 @@ public class SQSProductMessageConsumer {
      * 
      * @param message The product message
      */
-    private void handleProductUpdated(ProductMessage message) {
+    private void handleProductUpdated(StandardProductMessage message) {
         logger.info("Handling PRODUCT_UPDATED event for product ID: {}", message.getProductId());
         
-        // Convert message to domain object
-        Product product = messageMapper.toDomainObject(message);
-        
-        // Call the use case
-        updateProductUseCase.updateProductById(message.getProductId(), product);
+        try {
+            // Convert message to domain object
+            Product product = messageMapper.toDomainObject(message);
+            
+            // Call the use case
+            updateProductUseCase.updateProductById(message.getProductId(), product);
+            logger.info("Product updated successfully: {}", message.getProductId());
+        } catch (Exception e) {
+            logger.error("Failed to update product from message: {}", message.getProductId(), e);
+            throw e; // Rethrow to trigger retry mechanism
+        }
     }
     
     /**
@@ -150,10 +163,16 @@ public class SQSProductMessageConsumer {
      * 
      * @param message The product message
      */
-    private void handleProductDeleted(ProductMessage message) {
+    private void handleProductDeleted(StandardProductMessage message) {
         logger.info("Handling PRODUCT_DELETED event for product ID: {}", message.getProductId());
         
-        // Call the use case
-        deleteProductUseCase.deleteProductById(message.getProductId());
+        try {
+            // Call the use case
+            deleteProductUseCase.deleteProductById(message.getProductId());
+            logger.info("Product deleted successfully: {}", message.getProductId());
+        } catch (Exception e) {
+            logger.error("Failed to delete product from message: {}", message.getProductId(), e);
+            throw e; // Rethrow to trigger retry mechanism
+        }
     }
 }

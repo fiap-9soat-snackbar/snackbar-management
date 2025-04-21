@@ -16,6 +16,7 @@ public class ProductDTOMapper {
         if (request == null) {
             throw new IllegalArgumentException("Product request cannot be null");
         }
+        // Pass null as ID to ensure MongoDB generates an ObjectId
         return new Product(null, request.name(), request.category(), request.description(), request.price(), request.cookingTime());
     }
 

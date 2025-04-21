@@ -14,7 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.env.Environment;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.snackbar.infrastructure.messaging.sqs.model.ProductMessage;
+import com.snackbar.infrastructure.messaging.sqs.model.StandardProductMessage;
 import com.snackbar.infrastructure.messaging.sqs.producer.SQSMessageProducer;
 import com.snackbar.product.domain.entity.Product;
 import com.snackbar.product.domain.event.ProductCreatedEvent;
@@ -52,7 +52,7 @@ class SQSDomainEventPublisherTest {
         Product product = new Product("1", "Test Product", "Lanche", "Test description", BigDecimal.valueOf(10.99), 5);
         ProductCreatedEvent event = new ProductCreatedEvent(product);
         
-        ProductMessage message = new ProductMessage(ProductMessage.EVENT_TYPE_CREATED);
+        StandardProductMessage message = new StandardProductMessage(StandardProductMessage.EVENT_TYPE_CREATED);
         message.setProductId("1");
         message.setName("Test Product");
         
@@ -74,7 +74,7 @@ class SQSDomainEventPublisherTest {
         Product product = new Product("1", "Test Product", "Lanche", "Test description", BigDecimal.valueOf(10.99), 5);
         ProductCreatedEvent event = new ProductCreatedEvent(product);
         
-        ProductMessage message = new ProductMessage(ProductMessage.EVENT_TYPE_CREATED);
+        StandardProductMessage message = new StandardProductMessage(StandardProductMessage.EVENT_TYPE_CREATED);
         message.setProductId("1");
         message.setName("Test Product");
         
@@ -99,7 +99,7 @@ class SQSDomainEventPublisherTest {
         Product product = new Product("1", "Test Product", "Lanche", "Test description", BigDecimal.valueOf(10.99), 5);
         ProductCreatedEvent event = new ProductCreatedEvent(product);
         
-        ProductMessage message = new ProductMessage(ProductMessage.EVENT_TYPE_CREATED);
+        StandardProductMessage message = new StandardProductMessage(StandardProductMessage.EVENT_TYPE_CREATED);
         when(messageMapper.toMessage(event)).thenReturn(message);
         
         // Act & Assert

@@ -24,6 +24,7 @@
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/application/SecurityConfiguration.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/infrastructure/controllers/ProductDTOMapper.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/infrastructure/config/SQSConfig.java
+/home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/infrastructure/messaging/sqs/model/StandardProductMessage.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/SnackbarApplication.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/domain/entity/Product.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/domain/event/ProductCreatedEvent.java
@@ -56,6 +57,7 @@
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/application/ports/in/CreateProductInputPort.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/infrastructure/messaging/ProductMessageMapper.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/application/ports/in/GetProductByCategoryInputPort.java
+/home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/infrastructure/messaging/SQSProductMessageProducer.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/infrastructure/gateways/ProductEntityMapper.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/infrastructure/controllers/CreateProductRequest.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/application/ports/in/GetProductByNameInputPort.java

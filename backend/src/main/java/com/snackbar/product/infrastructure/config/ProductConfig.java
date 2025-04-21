@@ -3,6 +3,7 @@ package com.snackbar.product.infrastructure.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.mongodb.core.MongoTemplate;
 
 import com.snackbar.product.application.gateways.ProductGateway;
 import com.snackbar.product.application.ports.out.DomainEventPublisher;
@@ -51,8 +52,8 @@ public class ProductConfig {
     }
 
     @Bean
-    ProductGateway productGateway(ProductRepository productRepository, ProductEntityMapper productEntityMapper) {
-        return new ProductRepositoryGateway(productRepository, productEntityMapper);
+    ProductGateway productGateway(ProductRepository productRepository, ProductEntityMapper productEntityMapper, MongoTemplate mongoTemplate) {
+        return new ProductRepositoryGateway(productRepository, productEntityMapper, mongoTemplate);
     }
 
     @Bean

@@ -8,6 +8,7 @@ services:
       - "8080:8080"
     volumes:
       - .:/app
+      - ${MOUNT_AWS_CREDENTIALS}:/root/.aws:ro
     depends_on:
       - mongodb
     environment:
@@ -22,6 +23,19 @@ services:
       # JWT configuration
       - JWT_SECRET=${JWT_SECRET}
       - JWT_EXPIRES=${JWT_EXPIRES}
+      
+      # AWS configuration
+      - AWS_REGION=${AWS_REGION}
+      - AWS_SQS_PRODUCT_EVENTS_QUEUE_URL=${AWS_SQS_PRODUCT_EVENTS_QUEUE_URL}
+      - AWS_ENDPOINT_URL=${AWS_ENDPOINT_URL}
+      - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
+      - AWS_SECRET_KEY=${AWS_SECRET_KEY}
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+      # Add DEV prefixed variables for Spring property resolution
+      - DEV_AWS_REGION=${AWS_REGION}
+      - DEV_AWS_ENDPOINT_URL=${AWS_ENDPOINT_URL}
+      - DEV_AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
+      - DEV_AWS_SECRET_KEY=${AWS_SECRET_KEY}
 
   mongodb:
     image: mongo:8.0.1
