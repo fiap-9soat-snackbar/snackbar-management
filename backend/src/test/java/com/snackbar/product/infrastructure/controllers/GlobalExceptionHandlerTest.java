@@ -2,7 +2,10 @@ package com.snackbar.product.infrastructure.controllers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+
+import java.util.Objects;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -34,9 +37,13 @@ class GlobalExceptionHandlerTest {
 
         // Then
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertFalse(response.getBody().success());
-        assertEquals("Product not found", response.getBody().message());
-        assertNull(response.getBody().data());
+        assertNotNull(response.getBody(), "Response body should not be null");
+        
+        // Using Objects.requireNonNull to ensure the IDE knows responseBody is not null
+        ResponseDTO responseBody = Objects.requireNonNull(response.getBody());
+        assertFalse(responseBody.success(), "Response should indicate failure");
+        assertEquals("Product not found", responseBody.message(), "Response message should match exception message");
+        assertNull(responseBody.data(), "Response data should be null");
     }
 
     @Test
@@ -50,9 +57,13 @@ class GlobalExceptionHandlerTest {
 
         // Then
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertFalse(response.getBody().success());
-        assertEquals("Invalid product data", response.getBody().message());
-        assertNull(response.getBody().data());
+        assertNotNull(response.getBody(), "Response body should not be null");
+        
+        // Using Objects.requireNonNull to ensure the IDE knows responseBody is not null
+        ResponseDTO responseBody = Objects.requireNonNull(response.getBody());
+        assertFalse(responseBody.success(), "Response should indicate failure");
+        assertEquals("Invalid product data", responseBody.message(), "Response message should match exception message");
+        assertNull(responseBody.data(), "Response data should be null");
     }
 
     @Test
@@ -66,9 +77,13 @@ class GlobalExceptionHandlerTest {
 
         // Then
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertFalse(response.getBody().success());
-        assertEquals("Illegal argument", response.getBody().message());
-        assertNull(response.getBody().data());
+        assertNotNull(response.getBody(), "Response body should not be null");
+        
+        // Using Objects.requireNonNull to ensure the IDE knows responseBody is not null
+        ResponseDTO responseBody = Objects.requireNonNull(response.getBody());
+        assertFalse(responseBody.success(), "Response should indicate failure");
+        assertEquals("Illegal argument", responseBody.message(), "Response message should match exception message");
+        assertNull(responseBody.data(), "Response data should be null");
     }
 
     @Test
@@ -82,8 +97,12 @@ class GlobalExceptionHandlerTest {
 
         // Then
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertFalse(response.getBody().success());
-        assertEquals("An unexpected error occurred", response.getBody().message());
-        assertNull(response.getBody().data());
+        assertNotNull(response.getBody(), "Response body should not be null");
+        
+        // Using Objects.requireNonNull to ensure the IDE knows responseBody is not null
+        ResponseDTO responseBody = Objects.requireNonNull(response.getBody());
+        assertFalse(responseBody.success(), "Response should indicate failure");
+        assertEquals("An unexpected error occurred", responseBody.message(), "Response message should be generic error message");
+        assertNull(responseBody.data(), "Response data should be null");
     }
 }

@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -89,10 +90,13 @@ class ProductControllerTest {
 
         // Then
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertTrue(response.getBody().success());
-        assertEquals("Product created successfully", response.getBody().message());
-        assertEquals(createResponse, response.getBody().data());
+        assertNotNull(response.getBody(), "Response body should not be null");
+        
+        // Using Objects.requireNonNull to ensure the IDE knows responseBody is not null
+        ResponseDTO responseBody = Objects.requireNonNull(response.getBody());
+        assertTrue(responseBody.success(), "Response should indicate success");
+        assertEquals("Product created successfully", responseBody.message(), "Response message should match");
+        assertEquals(createResponse, responseBody.data(), "Response data should match");
     }
 
     @Test
@@ -107,10 +111,13 @@ class ProductControllerTest {
 
         // Then
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertTrue(response.getBody().success());
-        assertEquals("Product retrieved successfully", response.getBody().message());
-        assertEquals(getResponse, response.getBody().data());
+        assertNotNull(response.getBody(), "Response body should not be null");
+        
+        // Using Objects.requireNonNull to ensure the IDE knows responseBody is not null
+        ResponseDTO responseBody = Objects.requireNonNull(response.getBody());
+        assertTrue(responseBody.success(), "Response should indicate success");
+        assertEquals("Product retrieved successfully", responseBody.message(), "Response message should match");
+        assertEquals(getResponse, responseBody.data(), "Response data should match");
     }
 
     @Test
@@ -125,10 +132,13 @@ class ProductControllerTest {
 
         // Then
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertTrue(response.getBody().success());
-        assertEquals("Product retrieved successfully", response.getBody().message());
-        assertEquals(getResponse, response.getBody().data());
+        assertNotNull(response.getBody(), "Response body should not be null");
+        
+        // Using Objects.requireNonNull to ensure the IDE knows responseBody is not null
+        ResponseDTO responseBody = Objects.requireNonNull(response.getBody());
+        assertTrue(responseBody.success(), "Response should indicate success");
+        assertEquals("Product retrieved successfully", responseBody.message(), "Response message should match");
+        assertEquals(getResponse, responseBody.data(), "Response data should match");
     }
 
     @Test
@@ -146,10 +156,13 @@ class ProductControllerTest {
 
         // Then
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertTrue(response.getBody().success());
-        assertEquals("Products retrieved successfully", response.getBody().message());
-        assertEquals(responses, response.getBody().data());
+        assertNotNull(response.getBody(), "Response body should not be null");
+        
+        // Using Objects.requireNonNull to ensure the IDE knows responseBody is not null
+        ResponseDTO responseBody = Objects.requireNonNull(response.getBody());
+        assertTrue(responseBody.success(), "Response should indicate success");
+        assertEquals("Products retrieved successfully", responseBody.message(), "Response message should match");
+        assertEquals(responses, responseBody.data(), "Response data should match");
     }
 
     @Test
@@ -167,10 +180,13 @@ class ProductControllerTest {
 
         // Then
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertTrue(response.getBody().success());
-        assertEquals("Products retrieved successfully", response.getBody().message());
-        assertEquals(responses, response.getBody().data());
+        assertNotNull(response.getBody(), "Response body should not be null");
+        
+        // Using Objects.requireNonNull to ensure the IDE knows responseBody is not null
+        ResponseDTO responseBody = Objects.requireNonNull(response.getBody());
+        assertTrue(responseBody.success(), "Response should indicate success");
+        assertEquals("Products retrieved successfully", responseBody.message(), "Response message should match");
+        assertEquals(responses, responseBody.data(), "Response data should match");
     }
 
     @Test
@@ -190,10 +206,13 @@ class ProductControllerTest {
 
         // Then
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertTrue(response.getBody().success());
-        assertEquals("Product updated successfully", response.getBody().message());
-        assertEquals(updatedResponse, response.getBody().data());
+        assertNotNull(response.getBody(), "Response body should not be null");
+        
+        // Using Objects.requireNonNull to ensure the IDE knows responseBody is not null
+        ResponseDTO responseBody = Objects.requireNonNull(response.getBody());
+        assertTrue(responseBody.success(), "Response should indicate success");
+        assertEquals("Product updated successfully", responseBody.message(), "Response message should match");
+        assertEquals(updatedResponse, responseBody.data(), "Response data should match");
     }
 
     @Test
@@ -207,9 +226,12 @@ class ProductControllerTest {
 
         // Then
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertTrue(response.getBody().success());
-        assertEquals("Product deleted successfully", response.getBody().message());
+        assertNotNull(response.getBody(), "Response body should not be null");
+        
+        // Using Objects.requireNonNull to ensure the IDE knows responseBody is not null
+        ResponseDTO responseBody = Objects.requireNonNull(response.getBody());
+        assertTrue(responseBody.success(), "Response should indicate success");
+        assertEquals("Product deleted successfully", responseBody.message(), "Response message should match");
         verify(deleteProductByIdUseCase, times(1)).deleteProductById("1");
     }
 }
