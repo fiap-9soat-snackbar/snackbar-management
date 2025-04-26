@@ -35,19 +35,6 @@ public class SQSProductMessageConsumer {
     private final UpdateProductByIdInputPort updateProductUseCase;
     private final DeleteProductByIdInputPort deleteProductUseCase;
     
-    // Configuration properties from environment variables
-    @Value("${aws.sqs.polling-enabled}")
-    private boolean pollingEnabled;
-    
-    @Value("${aws.sqs.polling-delay-ms}")
-    private long pollingDelayMs;
-    
-    @Value("${aws.sqs.max-messages}")
-    private int maxMessages;
-    
-    @Value("${aws.sqs.wait-time-seconds}")
-    private int waitTimeSeconds;
-    
     public SQSProductMessageConsumer(
             SQSMessageConsumer messageConsumer,
             ProductMessageMapper messageMapper,
@@ -63,26 +50,19 @@ public class SQSProductMessageConsumer {
         this.queueUrl = queueUrl;
         
         logger.info("SQSProductMessageConsumer initialized with queue URL: {}", queueUrl);
-        logger.info("SQS polling configuration: enabled={}, delayMs={}, maxMessages={}, waitTimeSeconds={}",
-                pollingEnabled, pollingDelayMs, maxMessages, waitTimeSeconds);
     }
     
     /**
      * Polls the SQS queue for messages at a fixed rate.
-     * The polling rate is configurable via environment variables.
+     * This method is scheduled to run every 10 seconds.
      */
-    @Scheduled(fixedRateString = "${aws.sqs.polling-delay-ms}")
+    @Scheduled(fixedRate = 10000) // Poll every 10 seconds
     public void pollMessages() {
-        if (!pollingEnabled) {
-            logger.debug("SQS polling is disabled");
-            return;
-        }
-        
         logger.debug("Polling for messages from SQS queue: {}", queueUrl);
         
         try {
-            // Receive messages from the queue using configurable parameters
-            List<Message> messages = messageConsumer.receiveMessages(queueUrl, maxMessages, waitTimeSeconds);
+            // Receive messages from the queue
+            List<Message> messages = messageConsumer.receiveMessages(queueUrl, 10, 5);
             
             if (messages.isEmpty()) {
                 return;
