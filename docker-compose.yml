@@ -1,4 +1,4 @@
-# Base docker-compose file with common services
+# Consolidated docker-compose file with environment variable configuration
 services:
   app:
     build: backend
@@ -20,6 +20,7 @@ services:
       - MONGODB_USER=${MONGODB_USER}
       - MONGODB_PASSWORD=${MONGODB_PASSWORD}
       - MONGODB_OPTIONS=${MONGODB_OPTIONS}
+      - MONGODB_URI=${MONGODB_URI}
       
       # JWT configuration
       - JWT_SECRET=${JWT_SECRET}
@@ -31,16 +32,15 @@ services:
       - AWS_ENDPOINT_URL=${AWS_ENDPOINT_URL}
       - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
       - AWS_SECRET_KEY=${AWS_SECRET_KEY}
+      - AWS_SQS_POLLING_ENABLED=${AWS_SQS_POLLING_ENABLED}
+      - AWS_SQS_POLLING_DELAY_MS=${AWS_SQS_POLLING_DELAY_MS}
+      - AWS_SQS_MAX_MESSAGES=${AWS_SQS_MAX_MESSAGES}
+      
       # Logging configuration
       - LOG_LEVEL_ROOT=${LOG_LEVEL_ROOT}
       - LOG_LEVEL_APP=${LOG_LEVEL_APP}
       - LOG_LEVEL_WEB=${LOG_LEVEL_WEB}
       - LOG_LEVEL_MONGODB=${LOG_LEVEL_MONGODB}
-      # Add DEV prefixed variables for Spring property resolution
-      - DEV_AWS_REGION=${AWS_REGION}
-      - DEV_AWS_ENDPOINT_URL=${AWS_ENDPOINT_URL}
-      - DEV_AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
-      - DEV_AWS_SECRET_KEY=${AWS_SECRET_KEY}
 
   mongodb:
     image: mongo:8.0.1
