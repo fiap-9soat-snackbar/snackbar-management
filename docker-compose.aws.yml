@@ -2,8 +2,8 @@
 services:
   app:
     environment:
-      # Spring profile
-      - SPRING_PROFILES_ACTIVE=aws-local
+      # No Spring profiles - using environment variables for all configuration
+      # - SPRING_PROFILES_ACTIVE=aws-local
       
       # AWS configuration - Environment variables
       - AWS_REGION=${AWS_REGION}

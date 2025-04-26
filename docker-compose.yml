@@ -31,7 +31,11 @@ services:
       - AWS_ENDPOINT_URL=${AWS_ENDPOINT_URL}
       - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
       - AWS_SECRET_KEY=${AWS_SECRET_KEY}
-      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+      # Logging configuration
+      - LOG_LEVEL_ROOT=${LOG_LEVEL_ROOT}
+      - LOG_LEVEL_APP=${LOG_LEVEL_APP}
+      - LOG_LEVEL_WEB=${LOG_LEVEL_WEB}
+      - LOG_LEVEL_MONGODB=${LOG_LEVEL_MONGODB}
       # Add DEV prefixed variables for Spring property resolution
       - DEV_AWS_REGION=${AWS_REGION}
       - DEV_AWS_ENDPOINT_URL=${AWS_ENDPOINT_URL}
