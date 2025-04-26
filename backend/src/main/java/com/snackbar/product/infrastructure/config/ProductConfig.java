@@ -2,7 +2,7 @@ package com.snackbar.product.infrastructure.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import com.snackbar.product.application.gateways.ProductGateway;
@@ -66,10 +66,13 @@ public class ProductConfig {
         return new ProductDTOMapper();
     }
     
+    /**
+     * Fallback implementation of DomainEventPublisher that does nothing.
+     * This will be used if the SQSDomainEventPublisher fails to initialize.
+     */
     @Bean
-    @Profile("!prod && !aws-local && !dev") // Only use in test profile
-    DomainEventPublisher domainEventPublisher() {
-        // No-op implementation for development and testing
+    @Primary
+    DomainEventPublisher noOpDomainEventPublisher() {
         return new NoOpDomainEventPublisher();
     }
 }

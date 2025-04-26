@@ -149,10 +149,10 @@ class ProductConfigTest {
     }
     
     @Test
-    @DisplayName("Should create DomainEventPublisher bean")
-    void domainEventPublisher_ShouldCreateBean() {
+    @DisplayName("Should create NoOpDomainEventPublisher bean")
+    void noOpDomainEventPublisher_ShouldCreateBean() {
         // When
-        DomainEventPublisher publisher = productConfig.domainEventPublisher();
+        DomainEventPublisher publisher = productConfig.noOpDomainEventPublisher();
 
         // Then
         assertNotNull(publisher);

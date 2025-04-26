@@ -3,7 +3,6 @@ package com.snackbar.product.infrastructure.messaging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +16,6 @@ import com.snackbar.product.domain.event.ProductUpdatedEvent;
  * Produces SQS messages for product events.
  */
 @Component
-@Profile({"prod", "dev", "aws-local"}) // Use in production, development, and aws-local profiles
 public class SQSProductMessageProducer {
     
     private static final Logger logger = LoggerFactory.getLogger(SQSProductMessageProducer.class);
@@ -29,7 +27,7 @@ public class SQSProductMessageProducer {
     public SQSProductMessageProducer(
             SQSMessageProducer messageProducer,
             ProductMessageMapper messageMapper,
-            @Value("${aws.sqs.product-events-queue-url}") String queueUrl) {
+            @Value("${aws.sqs.product.events.queue.url}") String queueUrl) {
         this.messageProducer = messageProducer;
         this.messageMapper = messageMapper;
         this.queueUrl = queueUrl;

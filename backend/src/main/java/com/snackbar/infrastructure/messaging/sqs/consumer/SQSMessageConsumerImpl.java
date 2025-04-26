@@ -78,6 +78,7 @@ public class SQSMessageConsumerImpl implements SQSMessageConsumer {
     }
     
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T deserializeMessage(Message message, Class<T> messageType) {
         try {
             // For StandardProductMessage, handle different formats

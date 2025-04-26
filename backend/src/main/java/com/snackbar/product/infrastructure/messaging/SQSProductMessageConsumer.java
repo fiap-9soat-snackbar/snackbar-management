@@ -3,7 +3,6 @@ package com.snackbar.product.infrastructure.messaging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +22,6 @@ import java.util.List;
  * This class polls the SQS queue for messages and processes them.
  */
 @Component
-@Profile({"prod", "dev", "aws-local"}) // Use in production, development, and aws-local profiles
 public class SQSProductMessageConsumer {
     
     private static final Logger logger = LoggerFactory.getLogger(SQSProductMessageConsumer.class);
@@ -43,7 +41,7 @@ public class SQSProductMessageConsumer {
             CreateProductInputPort createProductUseCase,
             UpdateProductByIdInputPort updateProductUseCase,
             DeleteProductByIdInputPort deleteProductUseCase,
-            @Value("${aws.sqs.product-events-queue-url}") String queueUrl) {
+            @Value("${aws.sqs.product.events.queue.url}") String queueUrl) {
         this.messageConsumer = messageConsumer;
         this.messageMapper = messageMapper;
         this.createProductUseCase = createProductUseCase;

@@ -21,4 +21,7 @@ ARG JAR_FILE=target/*.jar
 COPY ${JAR_FILE} app.jar
 
 # Run command for application in exec form
-CMD ["java", "-jar", "app.jar"]
+# CMD ["java", "-jar", "app.jar"]
+
+# Run command for application in exec form with debug options
+CMD ["java", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005", "-jar", "app.jar"]

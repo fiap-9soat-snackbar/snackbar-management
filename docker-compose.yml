@@ -2,10 +2,11 @@
 services:
   app:
     build: backend
-    restart: always
+    restart: no
     container_name: snackbar-app-container
     ports:
       - "8080:8080"
+      - "5005:5005"  # Debug port
     volumes:
       - .:/app
       - ${MOUNT_AWS_CREDENTIALS}:/root/.aws:ro
@@ -39,7 +40,7 @@ services:
 
   mongodb:
     image: mongo:8.0.1
-    restart: always
+    restart: no
     container_name: mongodb-container
     ports:
       - "27017:27017"

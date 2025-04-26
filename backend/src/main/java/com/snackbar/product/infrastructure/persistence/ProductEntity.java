@@ -75,4 +75,16 @@ public class ProductEntity {
     public void setCookingTime(Integer cookingTime) {
         this.cookingTime = cookingTime;
     }
+    
+    @Override
+    public String toString() {
+        return "ProductEntity{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", category='" + category + '\'' +
+                ", description='" + description + '\'' +
+                ", price=" + price +
+                ", cookingTime=" + cookingTime +
+                '}';
+    }
 }
