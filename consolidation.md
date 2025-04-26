@@ -150,6 +150,36 @@ LOG_LEVEL_APP
 - **Remove unused dependencies** if any exist
 - **Address Maven warnings** about duplicate declarations
 
+#### Dependency Analysis Results
+
+After analyzing the codebase, we've identified several unused dependencies that can be removed:
+
+| Dependency | Status | Notes |
+|------------|--------|-------|
+| mybatis-spring | **Unused** | No imports found in codebase |
+| spring-boot-starter-webflux | **Unused** | No reactive programming imports found |
+| spring-boot-starter-actuator | **Unused** | No actuator endpoints configured |
+| javax.validation:validation-api | **Redundant** | Spring Boot 3.x uses Jakarta EE validation |
+| javax.servlet:javax.servlet-api | **Redundant** | Spring Boot 3.x uses Jakarta EE servlet API |
+| gson | **Unused** | Explicitly excluded from spring-boot-starter-web but added separately |
+
+The following dependencies are actively used and should be kept:
+
+| Dependency | Usage in Codebase |
+|------------|------------------|
+| spring-boot-starter-data-mongodb | MongoDB repositories and entities |
+| spring-boot-starter-web | REST controllers and web infrastructure |
+| spring-boot-starter-security | Authentication and authorization |
+| spring-boot-starter-validation | Bean validation |
+| lombok | Reduces boilerplate code in entities and DTOs |
+| jjwt-api, jjwt-impl, jjwt-jackson | JWT token handling |
+| spring-security-oauth2-jose | JWT token validation |
+| spring-cloud-starter-openfeign | REST client |
+| springdoc-openapi-starter-webmvc-ui | API documentation |
+| aws-sdk-sqs | SQS messaging |
+| aws-sdk-apache-client | HTTP client for AWS |
+| jackson-datatype-jsr310 | JSON serialization of Java 8 date/time |
+
 ### 6. Documentation Updates
 
 - **Update README.md** with setup instructions
