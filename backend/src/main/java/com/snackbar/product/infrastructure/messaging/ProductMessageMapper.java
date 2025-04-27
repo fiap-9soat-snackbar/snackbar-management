@@ -4,7 +4,7 @@ import java.time.ZoneOffset;
 
 import org.springframework.stereotype.Component;
 
-import com.snackbar.infrastructure.messaging.sqs.model.StandardProductMessage;
+import com.snackbar.product.infrastructure.messaging.sqs.model.StandardProductMessage;
 import com.snackbar.product.domain.entity.Product;
 import com.snackbar.product.domain.event.DomainEvent;
 import com.snackbar.product.domain.event.ProductCreatedEvent;

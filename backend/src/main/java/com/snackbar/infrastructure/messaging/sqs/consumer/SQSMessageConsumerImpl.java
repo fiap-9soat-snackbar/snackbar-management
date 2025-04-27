@@ -17,7 +17,7 @@ import software.amazon.awssdk.services.sqs.model.ReceiveMessageResponse;
 import java.util.Collections;
 import java.util.List;
 
-import com.snackbar.infrastructure.messaging.sqs.model.StandardProductMessage;
+import com.snackbar.product.infrastructure.messaging.sqs.model.StandardProductMessage;
 
 /**
  * Implementation of SQSMessageConsumer that uses the AWS SDK.

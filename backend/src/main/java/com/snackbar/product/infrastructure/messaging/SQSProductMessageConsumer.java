@@ -7,7 +7,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.snackbar.infrastructure.messaging.sqs.consumer.SQSMessageConsumer;
-import com.snackbar.infrastructure.messaging.sqs.model.StandardProductMessage;
+import com.snackbar.product.infrastructure.messaging.sqs.model.StandardProductMessage;
 import com.snackbar.product.application.ports.in.CreateProductInputPort;
 import com.snackbar.product.application.ports.in.DeleteProductByIdInputPort;
 import com.snackbar.product.application.ports.in.UpdateProductByIdInputPort;

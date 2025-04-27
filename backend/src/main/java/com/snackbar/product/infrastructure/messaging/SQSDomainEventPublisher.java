@@ -5,10 +5,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.snackbar.infrastructure.messaging.sqs.model.SQSMessage;
 import com.snackbar.infrastructure.messaging.sqs.producer.SQSMessageProducer;
 import com.snackbar.product.application.ports.out.DomainEventPublisher;
 import com.snackbar.product.domain.event.DomainEvent;
+import com.snackbar.infrastructure.messaging.sqs.model.SQSMessage;
 
 /**
  * Implementation of DomainEventPublisher that publishes events to AWS SQS.

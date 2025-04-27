@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.snackbar.infrastructure.messaging.sqs.model.StandardProductMessage;
+import com.snackbar.product.infrastructure.messaging.sqs.model.StandardProductMessage;
 import com.snackbar.product.domain.entity.Product;
 import com.snackbar.product.domain.event.ProductCreatedEvent;
 import com.snackbar.product.domain.event.ProductDeletedEvent;

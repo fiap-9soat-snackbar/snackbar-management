@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import com.snackbar.infrastructure.messaging.sqs.model.StandardProductMessage;
 import com.snackbar.infrastructure.messaging.sqs.producer.SQSMessageProducer;
+import com.snackbar.product.infrastructure.messaging.sqs.model.StandardProductMessage;
 import com.snackbar.product.domain.event.ProductCreatedEvent;
 import com.snackbar.product.domain.event.ProductDeletedEvent;
 import com.snackbar.product.domain.event.ProductUpdatedEvent;

@@ -1,13 +1,17 @@
-package com.snackbar.infrastructure.messaging.sqs.model;
+package com.snackbar.product.infrastructure.messaging.sqs.model;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.snackbar.infrastructure.messaging.sqs.model.SQSMessage;
+
 /**
- * Message class for product events.
- * This class represents a message that will be sent to SQS.
+ * Standardized message format for product events.
+ * This class represents the unified format for all product messages.
  */
-public class ProductMessage extends SQSMessage {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class StandardProductMessage extends SQSMessage {
     
     public static final String EVENT_TYPE_CREATED = "PRODUCT_CREATED";
     public static final String EVENT_TYPE_UPDATED = "PRODUCT_UPDATED";
@@ -23,7 +27,7 @@ public class ProductMessage extends SQSMessage {
     /**
      * Default constructor for deserialization.
      */
-    public ProductMessage() {
+    public StandardProductMessage() {
         super();
     }
     
@@ -32,7 +36,7 @@ public class ProductMessage extends SQSMessage {
      * 
      * @param eventType The event type
      */
-    public ProductMessage(String eventType) {
+    public StandardProductMessage(String eventType) {
         super(eventType);
     }
     
@@ -49,7 +53,7 @@ public class ProductMessage extends SQSMessage {
      * @param price The product price
      * @param cookingTime The product cooking time
      */
-    public ProductMessage(String messageId, String eventType, Instant timestamp, 
+    public StandardProductMessage(String messageId, String eventType, Instant timestamp, 
             String productId, String name, String category, String description, 
             BigDecimal price, Integer cookingTime) {
         super(messageId, eventType, timestamp);

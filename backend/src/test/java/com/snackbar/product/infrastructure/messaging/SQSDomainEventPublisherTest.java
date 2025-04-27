@@ -14,8 +14,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.snackbar.infrastructure.messaging.sqs.model.SQSMessage;
-import com.snackbar.infrastructure.messaging.sqs.model.StandardProductMessage;
 import com.snackbar.infrastructure.messaging.sqs.producer.SQSMessageProducer;
+import com.snackbar.product.infrastructure.messaging.sqs.model.StandardProductMessage;
 import com.snackbar.product.domain.entity.Product;
 import com.snackbar.product.domain.event.ProductCreatedEvent;
 
