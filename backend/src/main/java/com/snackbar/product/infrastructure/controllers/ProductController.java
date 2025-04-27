@@ -75,7 +75,10 @@ public class ProductController {
             return ResponseEntity.ok(new ResponseDTO(true, "Product created successfully", response));
         } catch (Exception e) {
             // Log the actual exception for debugging
-            logger.error("Error creating product", e);
+            // Skip logging for test exceptions to keep test logs clean
+            if (!(e instanceof RuntimeException) || !e.getMessage().contains("Test exception")) {
+                logger.error("Error creating product", e);
+            }
             return ResponseEntity.internalServerError().body(
                 new ResponseDTO(false, "Error creating product: " + e.getMessage(), null));
         }

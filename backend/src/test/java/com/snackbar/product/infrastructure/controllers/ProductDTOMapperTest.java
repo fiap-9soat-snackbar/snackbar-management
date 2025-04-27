@@ -2,9 +2,12 @@ package com.snackbar.product.infrastructure.controllers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -40,6 +43,16 @@ class ProductDTOMapperTest {
         assertEquals(product.price(), response.price());
         assertEquals(product.cookingTime(), response.cookingTime());
     }
+    
+    @Test
+    @DisplayName("Should return null when converting null Product to CreateProductResponse")
+    void createToResponse_ShouldReturnNullWhenProductIsNull() {
+        // When
+        CreateProductResponse response = mapper.createToResponse(null);
+
+        // Then
+        assertNull(response);
+    }
 
     @Test
     @DisplayName("Should convert CreateProductRequest to Product")
@@ -55,6 +68,17 @@ class ProductDTOMapperTest {
         assertEquals(request.price(), result.price());
         assertEquals(request.cookingTime(), result.cookingTime());
     }
+    
+    @Test
+    @DisplayName("Should throw exception when converting null CreateProductRequest to Product")
+    void createRequestToDomain_ShouldThrowExceptionWhenRequestIsNull() {
+        // When & Then
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            mapper.createRequestToDomain(null);
+        });
+        
+        assertEquals("Product request cannot be null", exception.getMessage());
+    }
 
     @Test
     @DisplayName("Should convert Product to GetProductResponse")
@@ -69,6 +93,16 @@ class ProductDTOMapperTest {
         assertEquals(product.description(), response.description());
         assertEquals(product.price(), response.price());
         assertEquals(product.cookingTime(), response.cookingTime());
+    }
+    
+    @Test
+    @DisplayName("Should return null when converting null Product to GetProductResponse")
+    void getToResponse_ShouldReturnNullWhenProductIsNull() {
+        // When
+        GetProductResponse response = mapper.getToResponse(null);
+
+        // Then
+        assertNull(response);
     }
 
     @Test
@@ -97,5 +131,40 @@ class ProductDTOMapperTest {
         assertEquals(product2.description(), responses.get(1).description());
         assertEquals(product2.price(), responses.get(1).price());
         assertEquals(product2.cookingTime(), responses.get(1).cookingTime());
+    }
+    
+    @Test
+    @DisplayName("Should return empty list when converting null List of Products")
+    void listToResponse_ShouldReturnEmptyListWhenProductListIsNull() {
+        // When
+        List<GetProductResponse> responses = mapper.listToResponse(null);
+
+        // Then
+        assertTrue(responses.isEmpty());
+    }
+    
+    @Test
+    @DisplayName("Should filter out null responses when converting List of Products")
+    void listToResponse_ShouldFilterOutNullResponses() {
+        // Given
+        Product nullProduct = null;
+        List<Product> products = Arrays.asList(product, nullProduct);
+
+        // When
+        List<GetProductResponse> responses = mapper.listToResponse(products);
+
+        // Then
+        assertEquals(1, responses.size());
+        assertEquals(product.id(), responses.get(0).id());
+    }
+    
+    @Test
+    @DisplayName("Should return empty list when converting empty List of Products")
+    void listToResponse_ShouldReturnEmptyListWhenProductListIsEmpty() {
+        // When
+        List<GetProductResponse> responses = mapper.listToResponse(Collections.emptyList());
+
+        // Then
+        assertTrue(responses.isEmpty());
     }
 }

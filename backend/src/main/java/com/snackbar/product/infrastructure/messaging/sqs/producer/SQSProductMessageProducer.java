@@ -55,7 +55,7 @@ public class SQSProductMessageProducer {
             logger.info("ProductCreatedEvent sent to SQS for product ID: {}", event.getProduct().id());
         } catch (Exception e) {
             // Only log if it's not a test exception
-            if (!(e instanceof RuntimeException) || !e.getMessage().equals("Test exception")) {
+            if (!(e instanceof RuntimeException) || !e.getMessage().contains("Test exception")) {
                 logger.error("Failed to send ProductCreatedEvent to SQS for product ID: {}", 
                         event.getProduct().id(), e);
             }
@@ -81,7 +81,7 @@ public class SQSProductMessageProducer {
             logger.info("ProductUpdatedEvent sent to SQS for product ID: {}", event.getProduct().id());
         } catch (Exception e) {
             // Only log if it's not a test exception
-            if (!(e instanceof RuntimeException) || !e.getMessage().equals("Test exception")) {
+            if (!(e instanceof RuntimeException) || !e.getMessage().contains("Test exception")) {
                 logger.error("Failed to send ProductUpdatedEvent to SQS for product ID: {}", 
                         event.getProduct().id(), e);
             }
@@ -107,7 +107,7 @@ public class SQSProductMessageProducer {
             logger.info("ProductDeletedEvent sent to SQS for product ID: {}", event.getProductId());
         } catch (Exception e) {
             // Only log if it's not a test exception
-            if (!(e instanceof RuntimeException) || !e.getMessage().equals("Test exception")) {
+            if (!(e instanceof RuntimeException) || !e.getMessage().contains("Test exception")) {
                 logger.error("Failed to send ProductDeletedEvent to SQS for product ID: {}", 
                         event.getProductId(), e);
             }

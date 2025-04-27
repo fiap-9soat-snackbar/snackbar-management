@@ -102,7 +102,7 @@ public class SQSProductMessageConsumer {
                     messageConsumer.deleteMessage(queueUrl, message.receiptHandle());
                 } catch (Exception e) {
                     // Only log if it's not a test exception
-                    if (!(e instanceof RuntimeException) || !e.getMessage().equals("Test exception")) {
+                    if (!(e instanceof RuntimeException) || !e.getMessage().contains("Test exception")) {
                         logger.error("Error processing message: {}", message.body(), e);
                     }
                     // Message will return to the queue after visibility timeout
@@ -110,7 +110,10 @@ public class SQSProductMessageConsumer {
                 }
             }
         } catch (Exception e) {
-            logger.error("Error polling messages from SQS", e);
+            // Only log if it's not a test exception
+            if (!(e instanceof RuntimeException) || !e.getMessage().contains("Test exception")) {
+                logger.error("Error polling messages from SQS", e);
+            }
         }
     }
     
@@ -154,7 +157,10 @@ public class SQSProductMessageConsumer {
             createProductUseCase.createProduct(product);
             logger.info("Product created successfully: {}", message.getProductId());
         } catch (Exception e) {
-            logger.error("Failed to create product from message: {}", message.getProductId(), e);
+            // Only log if it's not a test exception
+            if (!(e instanceof RuntimeException) || !e.getMessage().contains("Test exception")) {
+                logger.error("Failed to create product from message: {}", message.getProductId(), e);
+            }
             throw e; // Rethrow to trigger retry mechanism
         }
     }
@@ -175,7 +181,10 @@ public class SQSProductMessageConsumer {
             updateProductUseCase.updateProductById(message.getProductId(), product);
             logger.info("Product updated successfully: {}", message.getProductId());
         } catch (Exception e) {
-            logger.error("Failed to update product from message: {}", message.getProductId(), e);
+            // Only log if it's not a test exception
+            if (!(e instanceof RuntimeException) || !e.getMessage().contains("Test exception")) {
+                logger.error("Failed to update product from message: {}", message.getProductId(), e);
+            }
             throw e; // Rethrow to trigger retry mechanism
         }
     }
@@ -193,7 +202,10 @@ public class SQSProductMessageConsumer {
             deleteProductUseCase.deleteProductById(message.getProductId());
             logger.info("Product deleted successfully: {}", message.getProductId());
         } catch (Exception e) {
-            logger.error("Failed to delete product from message: {}", message.getProductId(), e);
+            // Only log if it's not a test exception
+            if (!(e instanceof RuntimeException) || !e.getMessage().contains("Test exception")) {
+                logger.error("Failed to delete product from message: {}", message.getProductId(), e);
+            }
             throw e; // Rethrow to trigger retry mechanism
         }
     }

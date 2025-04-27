@@ -12,8 +12,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.sqs.SqsClient;
-import software.amazon.awssdk.services.sqs.SqsClientBuilder;
-import java.net.URI;
 
 /**
  * Configuration for AWS SQS.
@@ -25,9 +23,6 @@ public class SQSConfig {
     
     @Value("${aws.region}")
     private String region;
-    
-    @Value("${aws.endpoint.url:#{null}}")
-    private String endpointUrl;
     
     /**
      * Creates an ObjectMapper bean with JavaTimeModule registered.
@@ -52,18 +47,12 @@ public class SQSConfig {
         try {
             logger.info("Creating SQS client for AWS region: {}", region);
             
-            SqsClientBuilder builder = SqsClient.builder()
+            SqsClient client = SqsClient.builder()
                 .region(Region.of(region))
-                .credentialsProvider(DefaultCredentialsProvider.create());
-            
-            // Configure endpoint URL if provided (useful for local development with LocalStack)
-            if (endpointUrl != null && !endpointUrl.isEmpty()) {
-                logger.info("Using custom endpoint URL: {}", endpointUrl);
-                builder.endpointOverride(URI.create(endpointUrl));
-            }
-            
-            SqsClient client = builder.build();
-            logger.info("SQS client created successfully: {}", client);
+                .credentialsProvider(DefaultCredentialsProvider.create())
+                .build();
+                
+            logger.info("SQS client created successfully");
             return client;
         } catch (Exception e) {
             logger.error("Error creating SQS client", e);

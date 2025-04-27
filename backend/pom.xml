@@ -21,6 +21,7 @@
         <springdoc.version>2.6.0</springdoc.version>
         <spring.cloud.version>4.2.0</spring.cloud.version>
         <spring.security.version>5.8.4</spring.security.version>
+        <mockito.version>5.11.0</mockito.version>
     </properties>
     <dependencies>
         <!-- Spring Boot Core Dependencies -->
@@ -110,6 +111,16 @@
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
+        
+        <!-- Testing Dependencies -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- Removed mockito-inline dependency as it's causing issues -->
+        
     </dependencies> 
 
     <build>
