@@ -1,6 +1,10 @@
 package com.snackbar.product.infrastructure.gateways;
 
 import java.util.List;
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.snackbar.product.application.gateways.ProductGateway;
 import com.snackbar.product.domain.entity.Product;
@@ -9,6 +13,8 @@ import com.snackbar.product.infrastructure.persistence.ProductEntity;
 import com.snackbar.product.infrastructure.persistence.ProductRepository;
 
 public class ProductRepositoryGateway implements ProductGateway {
+
+    private static final Logger logger = LoggerFactory.getLogger(ProductRepositoryGateway.class);
 
     private final ProductRepository productRepository;
     private final ProductEntityMapper productEntityMapper;
@@ -20,10 +26,24 @@ public class ProductRepositoryGateway implements ProductGateway {
 
     @Override
     public Product createProduct(Product productDomainObj) {
-        ProductEntity productEntity = productEntityMapper.toEntity(productDomainObj);
-        ProductEntity savedObj = productRepository.save(productEntity);
-        Product createdProduct = productEntityMapper.toDomainObj(savedObj);
-        return createdProduct;
+        try {
+            logger.debug("Converting domain object to entity: {}", productDomainObj);
+            // Convert domain object to entity - the mapper will handle ID standardization
+            ProductEntity productEntity = productEntityMapper.toEntity(productDomainObj);
+            logger.debug("Converted to entity: {}", productEntity);
+            
+            // Let MongoDB generate an ObjectId if id is null
+            logger.debug("Saving product entity to MongoDB");
+            ProductEntity savedObj = productRepository.save(productEntity);
+            logger.debug("Saved entity: {}", savedObj);
+            
+            Product createdProduct = productEntityMapper.toDomainObj(savedObj);
+            logger.debug("Converted saved entity back to domain object: {}", createdProduct);
+            return createdProduct;
+        } catch (Exception e) {
+            logger.error("Error creating product in repository", e);
+            throw e;
+        }
     }
     
     @Override
@@ -72,8 +92,12 @@ public class ProductRepositoryGateway implements ProductGateway {
 
     @Override
     public void deleteProductById(String id) {
-        ProductEntity retrievedObj = productRepository.findById(id)
-            .orElseThrow(() -> ProductNotFoundException.withId(id));
-        productRepository.delete(retrievedObj);
+        // Modified to match the test expectations
+        Optional<ProductEntity> productOpt = productRepository.findById(id);
+        if (productOpt.isPresent()) {
+            productRepository.delete(productOpt.get());
+        } else {
+            throw ProductNotFoundException.withId(id);
+        }
     }
 }

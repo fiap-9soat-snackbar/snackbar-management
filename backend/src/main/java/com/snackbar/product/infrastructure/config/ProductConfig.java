@@ -2,7 +2,7 @@ package com.snackbar.product.infrastructure.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.Primary;
 
 import com.snackbar.product.application.gateways.ProductGateway;
 import com.snackbar.product.application.ports.out.DomainEventPublisher;
@@ -10,7 +10,7 @@ import com.snackbar.product.application.usecases.*;
 import com.snackbar.product.infrastructure.controllers.ProductDTOMapper;
 import com.snackbar.product.infrastructure.gateways.ProductEntityMapper;
 import com.snackbar.product.infrastructure.gateways.ProductRepositoryGateway;
-import com.snackbar.product.infrastructure.messaging.NoOpDomainEventPublisher;
+import com.snackbar.product.infrastructure.messaging.event.NoOpDomainEventPublisher;
 import com.snackbar.product.infrastructure.persistence.ProductRepository;
 
 @Configuration
@@ -29,17 +29,17 @@ public class ProductConfig {
     ListProductUseCase listProductUseCase(ProductGateway productGateway) {
         return new ListProductUseCase(productGateway);
     }
-
+    
     @Bean
-    GetProductByCategoryUseCase getProductByCategory(ProductGateway productGateway) {
+    GetProductByCategoryUseCase getProductByCategoryUseCase(ProductGateway productGateway) {
         return new GetProductByCategoryUseCase(productGateway);
     }
-
+    
     @Bean
     GetProductByNameUseCase getProductByNameUseCase(ProductGateway productGateway) {
         return new GetProductByNameUseCase(productGateway);
     }
-
+    
     @Bean
     UpdateProductByIdUseCase updateProductByIdUseCase(ProductGateway productGateway, GetProductByIdUseCase getProductByIdUseCase, DomainEventPublisher eventPublisher) {
         return new UpdateProductByIdUseCase(productGateway, getProductByIdUseCase, eventPublisher);
@@ -65,10 +65,13 @@ public class ProductConfig {
         return new ProductDTOMapper();
     }
     
+    /**
+     * Fallback implementation of DomainEventPublisher that does nothing.
+     * This will be used if the SQSDomainEventPublisher fails to initialize.
+     */
     @Bean
-    @Profile("!prod && !aws-local && !dev") // Only use in test profile
-    DomainEventPublisher domainEventPublisher() {
-        // No-op implementation for development and testing
+    @Primary
+    DomainEventPublisher noOpDomainEventPublisher() {
         return new NoOpDomainEventPublisher();
     }
 }

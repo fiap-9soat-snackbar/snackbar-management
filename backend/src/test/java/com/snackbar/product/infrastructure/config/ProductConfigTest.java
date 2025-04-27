@@ -70,9 +70,9 @@ class ProductConfigTest {
 
     @Test
     @DisplayName("Should create GetProductByCategoryUseCase bean")
-    void getProductByCategory_ShouldCreateBean() {
+    void getProductByCategoryUseCase_ShouldCreateBean() {
         // When
-        GetProductByCategoryUseCase useCase = productConfig.getProductByCategory(productGateway);
+        GetProductByCategoryUseCase useCase = productConfig.getProductByCategoryUseCase(productGateway);
 
         // Then
         assertNotNull(useCase);
@@ -145,10 +145,10 @@ class ProductConfigTest {
     }
     
     @Test
-    @DisplayName("Should create DomainEventPublisher bean")
-    void domainEventPublisher_ShouldCreateBean() {
+    @DisplayName("Should create NoOpDomainEventPublisher bean")
+    void noOpDomainEventPublisher_ShouldCreateBean() {
         // When
-        DomainEventPublisher publisher = productConfig.domainEventPublisher();
+        DomainEventPublisher publisher = productConfig.noOpDomainEventPublisher();
 
         // Then
         assertNotNull(publisher);

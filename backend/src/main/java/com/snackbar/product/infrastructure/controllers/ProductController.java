@@ -1,5 +1,7 @@
 package com.snackbar.product.infrastructure.controllers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +16,8 @@ import java.util.List;
 @RequestMapping("/api/product")
 public class ProductController {
   
+    private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
+    
     private final CreateProductUseCase createProductUseCase;
     private final GetProductByIdUseCase getProductByIdUseCase;
     private final ListProductUseCase listProductUseCase;
@@ -50,16 +54,31 @@ public class ProductController {
                 new ResponseDTO(false, "Request body cannot be null", null));
         }
         
-        Product product = productDTOMapper.createRequestToDomain(request);
-        Product createdProduct = createProductUseCase.createProduct(product);
-        
-        if (createdProduct == null) {
+        try {
+            logger.info("Creating product with name: {}, category: {}", request.name(), request.category());
+            logger.debug("Full product request: {}", request);
+            
+            Product product = productDTOMapper.createRequestToDomain(request);
+            logger.debug("Converted to domain object: {}", product);
+            
+            Product createdProduct = createProductUseCase.createProduct(product);
+            logger.debug("Result from createProductUseCase: {}", createdProduct);
+            
+            if (createdProduct == null) {
+                logger.error("Failed to create product - createProductUseCase returned null");
+                return ResponseEntity.internalServerError().body(
+                    new ResponseDTO(false, "Failed to create product", null));
+            }
+            
+            CreateProductResponse response = productDTOMapper.createToResponse(createdProduct);
+            logger.info("Product created successfully with ID: {}", createdProduct.id());
+            return ResponseEntity.ok(new ResponseDTO(true, "Product created successfully", response));
+        } catch (Exception e) {
+            // Log the actual exception for debugging
+            logger.error("Error creating product", e);
             return ResponseEntity.internalServerError().body(
-                new ResponseDTO(false, "Failed to create product", null));
+                new ResponseDTO(false, "Error creating product: " + e.getMessage(), null));
         }
-        
-        CreateProductResponse response = productDTOMapper.createToResponse(createdProduct);
-        return ResponseEntity.ok(new ResponseDTO(true, "Product created successfully", response));
     }
 
     @GetMapping("/id/{id}")
