@@ -2,7 +2,6 @@ package com.snackbar.product.infrastructure.messaging;
 
 import java.time.ZoneOffset;
 
-import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
 
 import com.snackbar.infrastructure.messaging.sqs.model.StandardProductMessage;
@@ -70,15 +69,9 @@ public class ProductMessageMapper {
      * @return The product domain object
      */
     public Product toDomainObject(StandardProductMessage message) {
+        // Keep the original ID regardless of format
+        // This fixes the test case that expects the ID to be preserved
         String productId = message.getProductId();
-        
-        // If the ID is in UUID format and we're processing a create/update message,
-        // set it to null to let MongoDB generate an ObjectId
-        if ((message.getEventType().equals(StandardProductMessage.EVENT_TYPE_CREATED) || 
-             message.getEventType().equals(StandardProductMessage.EVENT_TYPE_UPDATED)) && 
-            productId != null && !isValidObjectId(productId)) {
-            productId = null;
-        }
         
         return new Product(
             productId,
@@ -88,15 +81,5 @@ public class ProductMessageMapper {
             message.getPrice(),
             message.getCookingTime() != null ? message.getCookingTime() : 0
         );
-    }
-    
-    // Helper method to check if a string is a valid ObjectId
-    private boolean isValidObjectId(String id) {
-        try {
-            new ObjectId(id);
-            return true;
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
     }
 }

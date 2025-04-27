@@ -9,7 +9,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.mongodb.core.MongoTemplate;
 
 import com.snackbar.product.application.gateways.ProductGateway;
 import com.snackbar.product.application.ports.out.DomainEventPublisher;
@@ -38,9 +37,6 @@ class ProductConfigTest {
     
     @Mock
     private DomainEventPublisher eventPublisher;
-    
-    @Mock
-    private MongoTemplate mongoTemplate;
 
     @Test
     @DisplayName("Should create CreateProductUseCase bean")
@@ -74,9 +70,9 @@ class ProductConfigTest {
 
     @Test
     @DisplayName("Should create GetProductByCategoryUseCase bean")
-    void getProductByCategory_ShouldCreateBean() {
+    void getProductByCategoryUseCase_ShouldCreateBean() {
         // When
-        GetProductByCategoryUseCase useCase = productConfig.getProductByCategory(productGateway);
+        GetProductByCategoryUseCase useCase = productConfig.getProductByCategoryUseCase(productGateway);
 
         // Then
         assertNotNull(useCase);
@@ -122,7 +118,7 @@ class ProductConfigTest {
         ProductEntityMapper productEntityMapper = mock(ProductEntityMapper.class);
 
         // When
-        ProductGateway gateway = productConfig.productGateway(productRepository, productEntityMapper, mongoTemplate);
+        ProductGateway gateway = productConfig.productGateway(productRepository, productEntityMapper);
 
         // Then
         assertNotNull(gateway);

@@ -3,7 +3,6 @@ package com.snackbar.product.infrastructure.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.data.mongodb.core.MongoTemplate;
 
 import com.snackbar.product.application.gateways.ProductGateway;
 import com.snackbar.product.application.ports.out.DomainEventPublisher;
@@ -30,17 +29,17 @@ public class ProductConfig {
     ListProductUseCase listProductUseCase(ProductGateway productGateway) {
         return new ListProductUseCase(productGateway);
     }
-
+    
     @Bean
-    GetProductByCategoryUseCase getProductByCategory(ProductGateway productGateway) {
+    GetProductByCategoryUseCase getProductByCategoryUseCase(ProductGateway productGateway) {
         return new GetProductByCategoryUseCase(productGateway);
     }
-
+    
     @Bean
     GetProductByNameUseCase getProductByNameUseCase(ProductGateway productGateway) {
         return new GetProductByNameUseCase(productGateway);
     }
-
+    
     @Bean
     UpdateProductByIdUseCase updateProductByIdUseCase(ProductGateway productGateway, GetProductByIdUseCase getProductByIdUseCase, DomainEventPublisher eventPublisher) {
         return new UpdateProductByIdUseCase(productGateway, getProductByIdUseCase, eventPublisher);
@@ -52,8 +51,8 @@ public class ProductConfig {
     }
 
     @Bean
-    ProductGateway productGateway(ProductRepository productRepository, ProductEntityMapper productEntityMapper, MongoTemplate mongoTemplate) {
-        return new ProductRepositoryGateway(productRepository, productEntityMapper, mongoTemplate);
+    ProductGateway productGateway(ProductRepository productRepository, ProductEntityMapper productEntityMapper) {
+        return new ProductRepositoryGateway(productRepository, productEntityMapper);
     }
 
     @Bean

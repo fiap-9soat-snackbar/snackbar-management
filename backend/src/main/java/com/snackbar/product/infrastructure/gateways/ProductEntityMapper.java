@@ -1,7 +1,6 @@
 package com.snackbar.product.infrastructure.gateways;
 
 import java.util.List;
-import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,13 +21,8 @@ public class ProductEntityMapper {
         
         logger.debug("Converting domain object to entity. Original ID: {}", id);
         
-        // If ID is null or empty, it will be generated as ObjectId by MongoDB
-        // If ID is already in ObjectId format, keep it as is
-        // If ID is in UUID format, we'll let it be null so MongoDB generates a new ObjectId
-        if (id != null && !id.isEmpty() && !isValidObjectId(id)) {
-            logger.debug("ID is not a valid ObjectId, setting to null to generate new ID");
-            id = null; // Force MongoDB to generate a new ObjectId
-        }
+        // Keep the original ID regardless of format
+        // This fixes the test case that expects the ID to be preserved
         
         ProductEntity entity = new ProductEntity(
             id, 
@@ -75,17 +69,5 @@ public class ProductEntityMapper {
         return productEntityList.stream()
             .map(this::toDomainObj)
             .toList();
-    }
-    
-    // Helper method to check if a string is a valid ObjectId
-    private boolean isValidObjectId(String id) {
-        try {
-            // This will throw IllegalArgumentException if the string is not a valid ObjectId
-            new ObjectId(id);
-            return true;
-        } catch (IllegalArgumentException e) {
-            logger.debug("ID {} is not a valid ObjectId: {}", id, e.getMessage());
-            return false;
-        }
     }
 }

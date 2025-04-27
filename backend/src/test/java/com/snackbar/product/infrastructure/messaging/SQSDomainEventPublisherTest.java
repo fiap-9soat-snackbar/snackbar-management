@@ -1,7 +1,7 @@
 package com.snackbar.product.infrastructure.messaging;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.math.BigDecimal;
@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.snackbar.infrastructure.messaging.sqs.model.SQSMessage;
 import com.snackbar.infrastructure.messaging.sqs.model.StandardProductMessage;
 import com.snackbar.infrastructure.messaging.sqs.producer.SQSMessageProducer;
 import com.snackbar.product.domain.entity.Product;
@@ -71,10 +72,13 @@ class SQSDomainEventPublisherTest {
         when(messageMapper.toMessage(event)).thenReturn(message);
         
         // Act & Assert
-        Exception exception = assertThrows(IllegalStateException.class, () -> {
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
             publisher.publish(event);
         });
         
         assertEquals("SQS queue URL is not configured", exception.getMessage());
+        
+        // Verify messageProducer was never called
+        verify(messageProducer, never()).sendMessage(anyString(), any(SQSMessage.class));
     }
 }
