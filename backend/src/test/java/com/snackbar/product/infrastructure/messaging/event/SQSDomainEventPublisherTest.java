@@ -1,4 +1,4 @@
-package com.snackbar.product.infrastructure.messaging;
+package com.snackbar.product.infrastructure.messaging.event;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -18,6 +18,7 @@ import com.snackbar.infrastructure.messaging.sqs.producer.SQSMessageProducer;
 import com.snackbar.product.infrastructure.messaging.sqs.model.StandardProductMessage;
 import com.snackbar.product.domain.entity.Product;
 import com.snackbar.product.domain.event.ProductCreatedEvent;
+import com.snackbar.product.infrastructure.messaging.mapper.ProductMessageMapper;
 
 @ExtendWith(MockitoExtension.class)
 class SQSDomainEventPublisherTest {

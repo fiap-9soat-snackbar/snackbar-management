@@ -1,4 +1,4 @@
-package com.snackbar.product.infrastructure.messaging;
+package com.snackbar.product.infrastructure.messaging.event;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +9,7 @@ import com.snackbar.infrastructure.messaging.sqs.producer.SQSMessageProducer;
 import com.snackbar.product.application.ports.out.DomainEventPublisher;
 import com.snackbar.product.domain.event.DomainEvent;
 import com.snackbar.infrastructure.messaging.sqs.model.SQSMessage;
+import com.snackbar.product.infrastructure.messaging.mapper.ProductMessageMapper;
 
 /**
  * Implementation of DomainEventPublisher that publishes events to AWS SQS.

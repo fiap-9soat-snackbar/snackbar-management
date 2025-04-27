@@ -1,4 +1,4 @@
-package com.snackbar.product.infrastructure.messaging;
+package com.snackbar.product.infrastructure.messaging.mapper;
 
 import java.time.ZoneOffset;
 

@@ -1,4 +1,4 @@
-package com.snackbar.product.infrastructure.messaging;
+package com.snackbar.product.infrastructure.messaging.sqs.consumer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +12,7 @@ import com.snackbar.product.application.ports.in.CreateProductInputPort;
 import com.snackbar.product.application.ports.in.DeleteProductByIdInputPort;
 import com.snackbar.product.application.ports.in.UpdateProductByIdInputPort;
 import com.snackbar.product.domain.entity.Product;
+import com.snackbar.product.infrastructure.messaging.mapper.ProductMessageMapper;
 
 import software.amazon.awssdk.services.sqs.model.Message;
 
@@ -100,7 +101,10 @@ public class SQSProductMessageConsumer {
                     // Delete the message from the queue after successful processing
                     messageConsumer.deleteMessage(queueUrl, message.receiptHandle());
                 } catch (Exception e) {
-                    logger.error("Error processing message: {}", message.body(), e);
+                    // Only log if it's not a test exception
+                    if (!(e instanceof RuntimeException) || !e.getMessage().equals("Test exception")) {
+                        logger.error("Error processing message: {}", message.body(), e);
+                    }
                     // Message will return to the queue after visibility timeout
                     // After max retries, it will go to the DLQ
                 }

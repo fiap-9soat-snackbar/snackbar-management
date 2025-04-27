@@ -1,4 +1,4 @@
-package com.snackbar.product.infrastructure.messaging;
+package com.snackbar.product.infrastructure.messaging.event;
 
 import com.snackbar.product.application.ports.out.DomainEventPublisher;
 import com.snackbar.product.domain.event.DomainEvent;

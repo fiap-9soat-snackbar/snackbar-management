@@ -10,7 +10,7 @@ import com.snackbar.product.application.usecases.*;
 import com.snackbar.product.infrastructure.controllers.ProductDTOMapper;
 import com.snackbar.product.infrastructure.gateways.ProductEntityMapper;
 import com.snackbar.product.infrastructure.gateways.ProductRepositoryGateway;
-import com.snackbar.product.infrastructure.messaging.NoOpDomainEventPublisher;
+import com.snackbar.product.infrastructure.messaging.event.NoOpDomainEventPublisher;
 import com.snackbar.product.infrastructure.persistence.ProductRepository;
 
 @Configuration

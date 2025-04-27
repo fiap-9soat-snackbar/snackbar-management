@@ -1,4 +1,4 @@
-package com.snackbar.product.infrastructure.messaging;
+package com.snackbar.product.infrastructure.messaging.event;
 
 import static org.junit.jupiter.api.Assertions.*;
 
