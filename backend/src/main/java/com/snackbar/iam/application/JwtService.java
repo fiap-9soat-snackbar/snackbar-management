@@ -3,7 +3,6 @@ package com.snackbar.iam.application;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
 import java.nio.charset.StandardCharsets;
@@ -13,12 +12,25 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-@Service
+/**
+ * Legacy JWT service that delegates to the new JwtService in the infrastructure layer.
+ * This class is kept for backward compatibility during refactoring.
+ * 
+ * @deprecated Will be removed once all dependencies are migrated to use
+ *             {@link com.snackbar.iam.infrastructure.security.JwtService} directly.
+ */
+@Service("legacyJwtService")
+@Deprecated
 public class JwtService {
+
+    @Autowired
+    private com.snackbar.iam.infrastructure.security.JwtService newJwtService;
 
     @Value("${security.jwt.secret-key}")
     private String secretKey;
@@ -27,47 +39,30 @@ public class JwtService {
     private long jwtExpiration;
 
     public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+        return newJwtService.extractUsername(token);
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
+        return newJwtService.extractClaim(token, claimsResolver);
     }
 
     public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+        return newJwtService.generateToken(userDetails);
     }
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        return buildToken(extraClaims, userDetails, jwtExpiration);
+        return newJwtService.generateToken(extraClaims, userDetails);
     }
 
     public long getExpirationTime() {
-        return jwtExpiration;
-    }
-
-    private String buildToken(
-            Map<String, Object> extraClaims,
-            UserDetails userDetails,
-            long expiration
-    ) {
-
-        return Jwts
-                .builder()
-                    .setClaims(extraClaims)
-                    .setSubject(userDetails.getUsername())
-                    .setIssuedAt(new Date(System.currentTimeMillis()))
-                    .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                    .signWith(getSignInKey(), SignatureAlgorithm.HS256)
-                .compact();
+        return newJwtService.getExpirationTime();
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+        return newJwtService.isTokenValid(token, userDetails);
     }
 
+    // Keep these private methods for backward compatibility in case any subclass uses them
     private boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
@@ -89,5 +84,4 @@ public class JwtService {
         byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
     }
-
 }

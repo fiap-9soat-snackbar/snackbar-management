@@ -17,6 +17,15 @@ public class User {
     private IamRole role;
     private String password;
 
+    /**
+     * Default constructor for special cases like anonymous users.
+     * Note: This constructor should be used with caution and only in specific scenarios
+     * where validation needs to be bypassed.
+     */
+    public User() {
+        // Empty constructor for special cases
+    }
+
     // Constructor with validation
     public User(String id, String name, String email, String cpf, IamRole role, String password) {
         validateUser(name, email, cpf, role, password);

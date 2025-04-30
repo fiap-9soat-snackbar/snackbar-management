@@ -16,5 +16,12 @@ public interface AuthenticateUserInputPort {
      * @throws com.snackbar.iam.domain.exceptions.UserNotFoundException if no user with the given CPF exists
      * @throws com.snackbar.iam.domain.exceptions.InvalidCredentialsException if the password is incorrect
      */
-    User authenticateUser(String cpf, String password);
+    User authenticate(String cpf, String password);
+    
+    /**
+     * Creates an anonymous user for guest access.
+     *
+     * @return An anonymous user entity
+     */
+    User authenticateAnonymous();
 }

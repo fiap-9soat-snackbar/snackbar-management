@@ -2,7 +2,7 @@ package com.snackbar.iam.application.usecases;
 
 import com.snackbar.iam.application.gateways.UserGateway;
 import com.snackbar.iam.application.ports.in.DeleteUserInputPort;
-import com.snackbar.iam.application.ports.out.DomainEventPublisher;
+import com.snackbar.iam.application.ports.out.IamDomainEventPublisher;
 import com.snackbar.iam.domain.entity.User;
 import com.snackbar.iam.domain.event.UserDeletedEvent;
 import com.snackbar.iam.domain.exceptions.UserNotFoundException;
@@ -12,9 +12,9 @@ import com.snackbar.iam.domain.exceptions.UserNotFoundException;
  */
 public class DeleteUserUseCase implements DeleteUserInputPort {
     private final UserGateway userGateway;
-    private final DomainEventPublisher eventPublisher;
+    private final IamDomainEventPublisher eventPublisher;
 
-    public DeleteUserUseCase(UserGateway userGateway, DomainEventPublisher eventPublisher) {
+    public DeleteUserUseCase(UserGateway userGateway, IamDomainEventPublisher eventPublisher) {
         this.userGateway = userGateway;
         this.eventPublisher = eventPublisher;
     }

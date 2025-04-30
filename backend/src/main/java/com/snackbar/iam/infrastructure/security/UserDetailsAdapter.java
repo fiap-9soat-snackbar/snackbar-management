@@ -6,22 +6,31 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
- * Adapter class that adapts the domain User entity to Spring Security's UserDetails interface.
- * This keeps the domain layer clean and framework-agnostic while allowing integration with Spring Security.
+ * Adapter that bridges between our domain User entity and Spring Security's UserDetails.
+ * This is part of the infrastructure layer in the clean architecture.
+ * 
+ * This adapter follows the adapter pattern to allow our domain User entity to be used
+ * with Spring Security without polluting the domain model with framework-specific concerns.
  */
 public class UserDetailsAdapter implements UserDetails {
+
     private final User user;
+    private final List<GrantedAuthority> authorities;
 
     public UserDetailsAdapter(User user) {
         this.user = user;
+        this.authorities = Collections.singletonList(
+            new SimpleGrantedAuthority("ROLE_" + user.getRole().name())
+        );
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
+        return authorities;
     }
 
     @Override
@@ -31,6 +40,7 @@ public class UserDetailsAdapter implements UserDetails {
 
     @Override
     public String getUsername() {
+        // Using CPF as the username for Spring Security
         return user.getCpf();
     }
 
@@ -55,8 +65,9 @@ public class UserDetailsAdapter implements UserDetails {
     }
 
     /**
-     * Returns the underlying User domain entity.
-     * This allows access to the domain entity when needed.
+     * Gets the underlying domain User entity.
+     *
+     * @return The domain User entity
      */
     public User getUser() {
         return user;

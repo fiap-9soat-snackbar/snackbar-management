@@ -2,6 +2,36 @@
 
 This document consolidates the analysis, implementation status, and improvement plan for the IAM module in the Snackbar Management application, incorporating clean architecture principles based on the product module implementation.
 
+## Progress Summary (Updated: April 29, 2025)
+
+- **Domain Layer**: 70% Complete
+  - User entity ✅
+  - Domain exceptions ✅
+  - Domain events ⚠️ (Partially implemented)
+
+- **Application Layer**: 60% Complete
+  - Input ports ✅
+  - Use cases ✅
+  - Gateways ✅
+  - Event publishers ⚠️ (Partially implemented)
+
+- **Infrastructure Layer**: 50% Complete
+  - Controllers ✅
+  - DTOs ✅
+  - Repositories ✅
+  - Error handling ✅
+  - Security integration ⚠️ (Needs work)
+
+## Hybrid Implementation Approach
+
+To balance clean architecture principles with maintaining functionality, we've adopted a hybrid approach:
+
+1. **Core Clean Architecture Components**: Implementing the full clean architecture structure as the target state
+2. **Temporary Adapter Components**: Creating clearly marked adapters to bridge between new and legacy components
+3. **Migration Plan**: Establishing a clear path to gradually remove legacy components
+
+This approach allows us to maintain the clean architecture vision while ensuring the system remains functional during the transition.
+
 ## Current Status Assessment
 
 ### API Endpoints ✅
@@ -13,29 +43,25 @@ All endpoints have been implemented:
 - DELETE /api/user/{id} ✅
 
 ### Error Handling ⚠️
-- **Current Coverage**: ~50%
-  - Missing proper exception handling for authentication failures
-  - Missing domain-specific exceptions
-- **Expected Coverage**: 100%
-  - Need to create domain-specific exceptions:
-    - `UserNotFoundException`
-    - `InvalidCredentialsException`
-    - `DuplicateUserException`
-    - `InvalidUserDataException`
-  - Need to implement proper error responses with appropriate HTTP status codes
+- **Current Coverage**: ~80%
+  - Domain-specific exceptions implemented ✅
+  - Global exception handler implemented ✅
+  - Proper HTTP status codes ✅
+  - Consistent error response format ✅
+  - Missing proper exception handling for authentication failures ⚠️
+- **Remaining Work**:
+  - Integration with security exceptions ⚠️
 
 ### Field Validation ⚠️
-- **Current Coverage**: ~30%
-  - Basic validation exists but is inconsistent
-  - Missing validation for:
-    - CPF format validation
-    - Email format validation
-    - Password strength requirements
-    - Role validation
-- **Expected Coverage**: 100%
-  - Implement comprehensive validation for all user fields
-  - Add validation annotations to DTOs
-  - Implement validation logic in domain entities
+- **Current Coverage**: ~80%
+  - CPF format validation ✅
+  - Email format validation ✅
+  - Password strength requirements ✅
+  - Role validation ✅
+- **Remaining Work**:
+  - Additional business rules validation ⚠️
+  - Comprehensive validation for all user fields ⚠️
+  - Add validation annotations to DTOs ⚠️
 
 ## Clean Architecture Analysis
 
@@ -43,191 +69,302 @@ The current IAM module has several architectural issues when compared to the pro
 
 ### Domain Layer Issues ⚠️
 
-#### Entity Duplication and Inconsistency ❌
+#### Entity Duplication and Inconsistency ✅
 - **Issue**: Two nearly identical entities (`UserEntity` and `UserDetailsEntity`) represent the same domain concept.
-- **Status**: Not implemented
-- **Solution**: Consolidate into a single entity that implements `UserDetails` interface.
+- **Status**: Implemented
+- **Solution**: Consolidated into a single `User` domain entity.
+- **Date**: April 29, 2025
 
-```java
-// Example structure
-package com.snackbar.iam.domain.entity;
-
-public class User {
-    private String id;
-    private String name;
-    private String email;
-    private String cpf;
-    private IamRole role;
-    private String password;
-    
-    // Constructor with validation
-    public User(String id, String name, String email, String cpf, IamRole role, String password) {
-        validateUser(name, email, cpf, role, password);
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.cpf = cpf;
-        this.role = role;
-        this.password = password;
-    }
-    
-    // Business rules for user validation
-    private static void validateUser(String name, String email, String cpf, IamRole role, String password) {
-        // Validation logic here
-    }
-}
-```
-
-#### Field Name Inconsistency ❌
+#### Field Name Inconsistency ✅
 - **Issue**: In `UserEntity`, the field is named `name` but in the API documentation and DTOs it's referred to as `fullName`.
-- **Status**: Not implemented
-- **Solution**: Standardize naming across all layers.
+- **Status**: Implemented
+- **Solution**: Standardized naming across all layers.
+- **Date**: April 29, 2025
 
-#### Missing Domain Events ❌
+#### Missing Domain Events ⚠️
 - **Issue**: No domain events for important state changes
-- **Status**: Not implemented
-- **Solution**: Create domain events for user lifecycle:
-  - `UserCreatedEvent`
-  - `UserUpdatedEvent`
-  - `UserDeletedEvent`
+- **Status**: Partially implemented
+- **Solution**: Created domain events for user lifecycle:
+  - `UserCreatedEvent` ✅
+  - `UserUpdatedEvent` ❌
+  - `UserDeletedEvent` ✅
+- **Remaining Work**: Complete event handling
 
 ### Application Layer Issues ⚠️
 
-#### Missing Use Case Interfaces ❌
+#### Missing Use Case Interfaces ✅
 - **Issue**: No clear separation between use case definition and implementation
-- **Status**: Not implemented
-- **Solution**: Create input ports (interfaces) for all use cases:
-  - `RegisterUserInputPort`
-  - `AuthenticateUserInputPort`
-  - `GetUserByCpfInputPort`
-  - `GetAllUsersInputPort`
-  - `DeleteUserInputPort`
+- **Status**: Implemented
+- **Solution**: Created input ports (interfaces) for all use cases:
+  - `RegisterUserInputPort` ✅
+  - `AuthenticateUserInputPort` ✅
+  - `GetUserByCpfInputPort` ✅
+  - `GetAllUsersInputPort` ✅
+  - `DeleteUserInputPort` ✅
+- **Date**: April 29, 2025
 
-```java
-// Example input port
-package com.snackbar.iam.application.ports.in;
-
-import com.snackbar.iam.domain.entity.User;
-
-public interface RegisterUserInputPort {
-    User registerUser(User user);
-}
-```
-
-#### Repository Type Mismatch ❌
+#### Repository Type Mismatch ✅
 - **Issue**: `IamRepository` is defined for `UserEntity` but returns `UserDetailsEntity`.
-- **Status**: Not implemented
-- **Solution**: Create a proper gateway interface and implementation:
+- **Status**: Implemented
+- **Solution**: Created a proper gateway interface and implementation.
+- **Date**: April 29, 2025
 
-```java
-// Example gateway interface
-package com.snackbar.iam.application.gateways;
-
-import com.snackbar.iam.domain.entity.User;
-import java.util.List;
-import java.util.Optional;
-
-public interface UserGateway {
-    User createUser(User user);
-    Optional<User> findByCpf(String cpf);
-    Optional<User> findByEmail(String email);
-    List<User> findAll();
-    void deleteById(String id);
-}
-```
-
-#### Redundant Repositories ❌
+#### Redundant Repositories ✅
 - **Issue**: Both `IamRepository` and `UserRepository` serve identical purposes.
-- **Status**: Not implemented
-- **Solution**: Consolidate into a single repository interface.
+- **Status**: Implemented
+- **Solution**: Consolidated into a single repository interface with proper naming.
+- **Date**: April 29, 2025
 
-#### Inconsistent Return Types ❌
+#### Inconsistent Return Types ✅
 - **Issue**: `AuthenticationService.authenticate()` returns `UserDetailsEntity` but `signup()` returns `UserEntity`.
-- **Status**: Not implemented
-- **Solution**: Standardize return types across service methods.
+- **Status**: Implemented
+- **Solution**: Standardized return types across service methods.
+- **Date**: April 29, 2025
 
-#### Missing Error Handling ❌
+#### Missing Error Handling ✅
 - **Issue**: `UserService.getUserByCpf()` uses `orElseThrow()` without specifying an exception.
-- **Status**: Not implemented
-- **Solution**: Provide a specific exception:
-
-```java
-.orElseThrow(() -> new UserNotFoundException("User not found with CPF: " + cpf));
-```
+- **Status**: Implemented
+- **Solution**: Provided specific exceptions.
+- **Date**: April 29, 2025
 
 #### Dependency on External Service ❌
 - **Issue**: `AuthenticationController` depends on `OrderService` which is outside the IAM module.
 - **Status**: Not implemented
 - **Solution**: Remove this dependency or use an interface/port to maintain loose coupling.
 
-#### Redundant Service Implementations ❌
+#### Redundant Service Implementations ✅
 - **Issue**: `IamService` and `IamServiceImpl` exist but are barely used, while most functionality is in `AuthenticationService`.
-- **Status**: Not implemented
-- **Solution**: Consolidate service functionality or clearly define responsibilities.
+- **Status**: Implemented
+- **Solution**: Consolidated service functionality with clear responsibilities.
+- **Date**: April 29, 2025
 
 ### Infrastructure Layer Issues ⚠️
 
-#### Controller Layer Issues ❌
+#### Controller Layer Issues ✅
 - **Issue**: Controllers directly use domain entities and lack proper DTO mapping
-- **Status**: Not implemented
+- **Status**: Implemented
 - **Solution**: 
-  - Create proper DTOs and mappers
-  - Implement standardized response format
-  - Add validation annotations to DTOs
+  - Created proper DTOs and mappers ✅
+  - Implemented standardized response format ✅
+  - Added validation annotations to DTOs ✅
+- **Date**: April 29, 2025
 
-#### Anonymous Login Implementation ❌
+#### Anonymous Login Implementation ✅
 - **Issue**: Anonymous login creates an empty `UserDetailsEntity` without proper initialization.
-- **Status**: Not implemented
-- **Solution**: Properly initialize the anonymous user:
+- **Status**: Implemented
+- **Solution**: Properly initialized the anonymous user.
+- **Date**: April 29, 2025
 
-```java
-authenticatedUser = UserDetailsEntity.builder()
-    .cpf("anonymous")
-    .role(IamRole.CONSUMER)
-    .build();
-```
-
-#### Inconsistent Response DTOs ❌
+#### Inconsistent Response DTOs ✅
 - **Issue**: The API documentation shows different response structures than what the code actually returns.
-- **Status**: Not implemented
-- **Solution**: Align response DTOs with API documentation or update the documentation.
+- **Status**: Implemented
+- **Solution**: Aligned response DTOs with API documentation.
+- **Date**: April 29, 2025
 
-#### Missing Input Validation ❌
+#### Missing Input Validation ✅
 - **Issue**: No validation for input DTOs like `RegisterUserDto` and `LoginUserDto`.
-- **Status**: Not implemented
-- **Solution**: Add validation annotations and implement validation logic.
+- **Status**: Implemented
+- **Solution**: Added validation annotations and implemented validation logic.
+- **Date**: April 29, 2025
 
 ### Security Configuration Issues ⚠️
 
 #### JWT Authentication Filter Username Extraction ❌
 - **Issue**: The filter extracts `userEmail` but uses it as a username.
 - **Status**: Not implemented
-- **Solution**: Rename the variable or adjust the extraction logic:
-
-```java
-final String userCpf = jwtService.extractUsername(jwt);
-// Then use userCpf consistently
-```
+- **Solution**: Rename the variable or adjust the extraction logic.
 
 #### Security Configuration Permits All Requests ❌
 - **Issue**: The security configuration has `.anyRequest().permitAll()` which effectively bypasses security.
 - **Status**: Not implemented
-- **Solution**: Implement proper authorization rules:
-
-```java
-.anyRequest().authenticated()
-```
+- **Solution**: Implement proper authorization rules.
 
 #### Missing Authority Implementation ❌
 - **Issue**: `UserDetailsEntity.getAuthorities()` returns an empty list.
 - **Status**: Not implemented
-- **Solution**: Implement proper authorities:
+- **Solution**: Implement proper authorities.
 
-```java
-@Override
-public Collection<? extends GrantedAuthority> getAuthorities() {
-    return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
-}
+## Integration Issues
+
+The following integration issues have been identified:
+
+1. **JWT Token Validation**:
+   - Error: JWT signature does not match locally computed signature
+   - Root cause: Different secret keys or token formats between generation and validation
+   - Status: To be fixed ❌
+
+2. **Spring Security Integration**:
+   - Error: UsernameNotFoundException for valid CPFs
+   - Root cause: Disconnect between domain User entity and Spring Security's UserDetailsService
+   - Status: To be fixed ❌
+
+## Revised Implementation Priority
+
+Based on our hybrid approach, the following implementation priority is recommended:
+
+### Phase 1: Complete Core Clean Architecture Components (Current Focus)
+
+**1.1. Fix Integration Issues**
+- Create UserDetailsService adapter to bridge domain and Spring Security
+- Ensure consistent JWT handling
+- Fix token validation issues
+
+**1.2. Complete Domain Events**
+- Implement remaining domain events
+- Ensure proper event publishing
+
+**1.3. Enhance Validation and Error Handling**
+- Implement comprehensive input validation
+  - Add validation annotations to DTOs
+  - Implement custom validators for complex rules
+  - Add validation for business rules
+- Standardize error responses
+  - Create consistent error response format
+  - Map exceptions to appropriate HTTP status codes
+  - Add error codes for client-side handling
+- Implement global exception handling
+  - Create centralized exception handler
+  - Add logging for all exceptions
+  - Provide user-friendly error messages
+
+**1.4. Implement Security Improvements**
+- Fix JWT Authentication Filter username extraction
+- Configure proper security rules
+- Implement proper authorities
+  - Map user roles to Spring Security authorities
+  - Implement role-based access control
+  - Add method-level security annotations
+
+### Phase 2: Create Temporary Adapter Components
+
+**2.1. Create Clearly Marked Adapter Classes**
+- Implement adapters between new and legacy components
+- Document temporary nature of adapters
+
+**2.2. Implement Proper Authorities**
+- Create role-based authority mapping
+- Implement proper `getAuthorities()` method
+- Add authority checks to secured endpoints
+
+**2.3. Configure Security Rules**
+- Replace `.anyRequest().permitAll()` with proper rules
+- Implement endpoint-specific security rules
+- Add CSRF protection
+- Configure proper CORS settings
+
+**2.4. Externalize Configuration**
+- Identify hardcoded values
+  - Review all classes for hardcoded configuration
+  - Document all configuration parameters
+  - Create a configuration inventory
+- Create configuration classes
+  - Implement proper configuration properties classes
+  - Add validation for configuration values
+  - Provide sensible defaults
+- Use environment variables
+  - Map configuration to environment variables
+  - Document required environment variables
+  - Implement configuration validation on startup
+
+**2.5. Ensure Backward Compatibility**
+- Verify all existing functionality works
+- Add tests for compatibility
+
+### Phase 3: Migration Plan for Legacy Components
+
+**3.1. Document Dependencies**
+- Map which legacy components are used where
+- Identify all integration points
+
+**3.2. Define Removal Criteria**
+- Set conditions for when each legacy component can be removed
+- Create tests to verify requirements
+
+**3.3. Establish Timeline**
+- Set target dates for completing each phase
+- Plan incremental migrations
+
+**3.4. Add Comprehensive Tests**
+- Unit tests
+  - Test domain entities and validation
+  - Test use cases in isolation
+  - Test mappers and converters
+- Integration tests
+  - Test repository implementations
+  - Test controller endpoints
+  - Test security configuration
+- End-to-end tests
+  - Test complete user flows
+  - Test error scenarios
+  - Test performance under load
+- Security tests
+  - Test authentication flows
+  - Test authorization rules
+  - Test for common security vulnerabilities
+
+## Package Structure
+
+The IAM module should follow this package structure to align with clean architecture principles:
+
+```
+com.snackbar.iam
+├── domain
+│   ├── entity
+│   │   └── User.java
+│   ├── exceptions
+│   │   ├── UserNotFoundException.java
+│   │   ├── InvalidCredentialsException.java
+│   │   ├── DuplicateUserException.java
+│   │   └── InvalidUserDataException.java
+│   └── event
+│       ├── UserCreatedEvent.java
+│       ├── UserUpdatedEvent.java
+│       └── UserDeletedEvent.java
+├── application
+│   ├── ports
+│   │   ├── in
+│   │   │   ├── RegisterUserInputPort.java
+│   │   │   ├── AuthenticateUserInputPort.java
+│   │   │   ├── GetUserByCpfInputPort.java
+│   │   │   ├── GetAllUsersInputPort.java
+│   │   │   └── DeleteUserInputPort.java
+│   │   └── out
+│   │       └── IamDomainEventPublisher.java
+│   ├── gateways
+│   │   └── UserGateway.java
+│   └── usecases
+│       ├── RegisterUserUseCase.java
+│       ├── AuthenticateUserUseCase.java
+│       ├── GetUserByCpfUseCase.java
+│       ├── GetAllUsersUseCase.java
+│       └── DeleteUserUseCase.java
+└── infrastructure
+    ├── controllers
+    │   ├── UserAuthController.java
+    │   ├── UserMgmtController.java
+    │   ├── IamGlobalExceptionHandler.java
+    │   ├── UserDTOMapper.java
+    │   └── dto
+    │       ├── RegisterUserRequestDTO.java
+    │       ├── LoginRequestDTO.java
+    │       ├── UserResponseDTO.java
+    │       └── IamErrorResponseDTO.java
+    ├── persistence
+    │   ├── UserEntity.java
+    │   └── UserRepository.java
+    ├── gateways
+    │   ├── UserRepositoryGateway.java
+    │   └── UserEntityMapper.java
+    ├── security
+    │   ├── JwtService.java
+    │   ├── UserDetailsAdapter.java
+    │   └── JwtAuthenticationFilter.java
+    ├── adapter
+    │   └── UserDetailsServiceAdapter.java
+    └── config
+        ├── IamConfig.java
+        ├── SecurityConfig.java
+        └── OpenApiConfig.java
 ```
 
 ## Configuration Improvements
@@ -339,185 +476,7 @@ OPENAPI_APP_DESCRIPTION=Snackbar Management API  # OpenAPI documentation descrip
 OPENAPI_APP_VERSION=1.0               # OpenAPI documentation version
 ```
 
-## Revised Implementation Priority
-
-Based on the analysis of the product module's clean architecture implementation and the current state of the IAM module, the following revised implementation priority is recommended:
-
-### 1. Establish Clean Architecture Foundation
-
-**1.1. Create Domain Layer**
-- Create domain exceptions package
-  - `UserNotFoundException`
-  - `InvalidCredentialsException`
-  - `DuplicateUserException`
-  - `InvalidUserDataException`
-- Create consolidated domain entity with validation
-  - Merge `UserEntity` and `UserDetailsEntity` into a single `User` class
-  - Implement validation in the constructor
-  - Implement `UserDetails` interface
-- Create domain events
-  - `UserCreatedEvent`
-  - `UserUpdatedEvent`
-  - `UserDeletedEvent`
-
-**1.2. Create Application Layer**
-- Define input ports (use case interfaces)
-  - `RegisterUserInputPort`
-  - `AuthenticateUserInputPort`
-  - `GetUserByCpfInputPort`
-  - `GetAllUsersInputPort`
-  - `DeleteUserInputPort`
-- Define output ports
-  - `DomainEventPublisher`
-- Define gateway interfaces
-  - `UserGateway`
-- Implement use cases
-  - `RegisterUserUseCase`
-  - `AuthenticateUserUseCase`
-  - `GetUserByCpfUseCase`
-  - `GetAllUsersUseCase`
-  - `DeleteUserUseCase`
-
-**1.3. Restructure Infrastructure Layer**
-- Create persistence package
-  - `UserEntity` (persistence entity)
-  - `UserRepository` (Spring Data repository)
-- Create gateway implementations
-  - `UserRepositoryGateway`
-  - `UserEntityMapper`
-- Create controllers package
-  - Refactor existing controllers
-  - Create DTOs and mappers
-- Create configuration package
-  - Move security configuration
-  - Create dependency injection configuration
-
-### 2. Implement Security Improvements
-
-**2.1. Fix JWT Authentication**
-- Refactor `JwtService` to use proper naming
-- Ensure consistent use of CPF as username
-- Implement proper token validation
-
-**2.2. Implement Proper Authorities**
-- Ensure `User` entity returns proper authorities
-- Configure role-based access control
-
-**2.3. Configure Security Rules**
-- Replace `.anyRequest().permitAll()` with proper authorization rules
-- Implement endpoint security based on roles
-
-### 3. Enhance Validation and Error Handling
-
-**3.1. Implement Comprehensive Validation**
-- Add validation for CPF format
-- Add validation for email format
-- Add password strength requirements
-- Add role validation
-
-**3.2. Standardize Error Responses**
-- Create global exception handler
-- Implement standardized response format
-- Map exceptions to appropriate HTTP status codes
-
-### 4. Externalize Configuration
-
-**4.1. Identify Hardcoded Values**
-- Security settings
-- Validation rules
-- Application properties
-
-**4.2. Create Configuration Classes**
-- Security configuration
-- Validation configuration
-- Application configuration
-
-**4.3. Use Environment Variables**
-- JWT settings
-- Password policy
-- CORS settings
-
-### 5. Add Comprehensive Tests
-
-**5.1. Unit Tests**
-- Domain entity tests
-- Use case tests
-- Service tests
-
-**5.2. Integration Tests**
-- Controller tests
-- Repository tests
-- Security tests
-
-**5.3. End-to-End Tests**
-- API tests
-- Authentication flow tests
-
-## Implementation Strategy
-
-### Package Structure
-
-The IAM module should follow this package structure to align with clean architecture principles:
-
-```
-com.snackbar.iam
-├── domain
-│   ├── entity
-│   │   └── User.java
-│   ├── exceptions
-│   │   ├── UserNotFoundException.java
-│   │   ├── InvalidCredentialsException.java
-│   │   ├── DuplicateUserException.java
-│   │   └── InvalidUserDataException.java
-│   └── event
-│       ├── UserCreatedEvent.java
-│       ├── UserUpdatedEvent.java
-│       └── UserDeletedEvent.java
-├── application
-│   ├── ports
-│   │   ├── in
-│   │   │   ├── RegisterUserInputPort.java
-│   │   │   ├── AuthenticateUserInputPort.java
-│   │   │   ├── GetUserByCpfInputPort.java
-│   │   │   ├── GetAllUsersInputPort.java
-│   │   │   └── DeleteUserInputPort.java
-│   │   └── out
-│   │       └── DomainEventPublisher.java
-│   ├── gateways
-│   │   └── UserGateway.java
-│   └── usecases
-│       ├── RegisterUserUseCase.java
-│       ├── AuthenticateUserUseCase.java
-│       ├── GetUserByCpfUseCase.java
-│       ├── GetAllUsersUseCase.java
-│       └── DeleteUserUseCase.java
-└── infrastructure
-    ├── controllers
-    │   ├── AuthenticationController.java
-    │   ├── UserController.java
-    │   ├── GlobalExceptionHandler.java
-    │   ├── UserDTOMapper.java
-    │   └── dto
-    │       ├── RegisterUserRequestDTO.java
-    │       ├── LoginRequestDTO.java
-    │       ├── UserResponseDTO.java
-    │       └── ResponseDTO.java
-    ├── persistence
-    │   ├── UserEntity.java
-    │   └── UserRepository.java
-    ├── gateways
-    │   ├── UserRepositoryGateway.java
-    │   └── UserEntityMapper.java
-    ├── security
-    │   ├── JwtService.java
-    │   └── JwtAuthenticationFilter.java
-    └── config
-        ├── IamConfig.java
-        ├── SecurityConfig.java
-        └── OpenApiConfig.java
-```
-
-### Implementation Approach
+## Implementation Approach
 
 1. **Incremental Implementation**:
    - Start with the domain layer
