@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -64,26 +65,32 @@ public class IamJwtAuthenticationFilter extends OncePerRequestFilter {
 
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-            if (userCpf != null && authentication == null) {
-                UserDetails userDetails = this.userDetailsService.loadUserByUsername(userCpf);
-                
-                logger.debug("Loaded user details for CPF: {}", userCpf);
-
-                if (jwtService.isTokenValid(jwt, userDetails)) {
-                    logger.debug("Token is valid for user: {}", userCpf);
+            if (userCpf != null && (authentication == null || !authentication.isAuthenticated())) {
+                try {
+                    UserDetails userDetails = this.userDetailsService.loadUserByUsername(userCpf);
                     
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                            userDetails,
-                            null,
-                            userDetails.getAuthorities()
-                    );
+                    logger.debug("Loaded user details for CPF: {}", userCpf);
 
-                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
-                    
-                    logger.debug("Authentication set in SecurityContextHolder");
-                } else {
-                    logger.warn("Token validation failed for user: {}", userCpf);
+                    if (jwtService.isTokenValid(jwt, userDetails)) {
+                        logger.debug("Token is valid for user: {}", userCpf);
+                        
+                        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                                userDetails,
+                                null,
+                                userDetails.getAuthorities()
+                        );
+
+                        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        SecurityContextHolder.getContext().setAuthentication(authToken);
+                        
+                        logger.debug("Authentication set in SecurityContextHolder");
+                    } else {
+                        logger.warn("Token validation failed for user: {}", userCpf);
+                    }
+                } catch (UsernameNotFoundException e) {
+                    // User no longer exists in the database, but token might still be valid
+                    logger.warn("User from token no longer exists: {}", userCpf);
+                    // Continue without setting authentication
                 }
             }
 

@@ -1,5 +1,6 @@
 package com.snackbar.iam.infrastructure.config;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -31,7 +32,7 @@ public class IamAuthenticationConfig {
     private final PasswordEncoder passwordEncoder;
 
     public IamAuthenticationConfig(
-            UserDetailsService userDetailsService,
+            @Qualifier("userDetailsServiceAdapter") UserDetailsService userDetailsService,
             PasswordEncoder passwordEncoder) {
         this.userDetailsService = userDetailsService;
         this.passwordEncoder = passwordEncoder;

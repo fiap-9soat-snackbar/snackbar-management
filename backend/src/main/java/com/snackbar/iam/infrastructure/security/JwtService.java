@@ -165,11 +165,15 @@ public class JwtService {
      * @return All claims from the token
      */
     private Claims extractAllClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSignInKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(getSignInKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to parse JWT token: " + e.getMessage(), e);
+        }
     }
 
     /**
@@ -178,6 +182,9 @@ public class JwtService {
      * @return The signing key
      */
     private Key getSignInKey() {
+        if (secretKey == null || secretKey.trim().isEmpty()) {
+            throw new IllegalStateException("JWT secret key is not configured properly. Check your environment variables and application properties.");
+        }
         byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
     }
