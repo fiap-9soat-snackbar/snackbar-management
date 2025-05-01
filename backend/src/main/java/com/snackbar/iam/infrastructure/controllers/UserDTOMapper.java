@@ -1,7 +1,9 @@
 package com.snackbar.iam.infrastructure.controllers;
 
+import com.snackbar.iam.domain.IamRole;
 import com.snackbar.iam.domain.entity.User;
 import com.snackbar.iam.infrastructure.controllers.dto.RegisterUserRequestDTO;
+import com.snackbar.iam.infrastructure.controllers.dto.UpdateUserRequestDTO;
 import com.snackbar.iam.infrastructure.controllers.dto.UserResponseDTO;
 
 /**
@@ -23,6 +25,24 @@ public class UserDTOMapper {
                 dto.cpf(),
                 dto.role(),
                 dto.password()
+        );
+    }
+    
+    /**
+     * Maps an UpdateUserRequestDTO to a domain User.
+     * Following PUT semantics, all fields from the DTO are mapped to the domain entity.
+     *
+     * @param dto The DTO to map
+     * @return The mapped domain User
+     */
+    public static User toUser(UpdateUserRequestDTO dto) {
+        return new User(
+                null, // ID will be set by the use case
+                dto.getName(),
+                dto.getEmail(),
+                dto.getCpf(),
+                IamRole.valueOf(dto.getRole()), // Convert String to IamRole enum
+                dto.getPassword()
         );
     }
     

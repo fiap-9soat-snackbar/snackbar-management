@@ -90,6 +90,22 @@ public class IamConfig {
     }
 
     /**
+     * Creates the update user use case.
+     *
+     * @param userGateway The user gateway
+     * @param passwordEncoder The password encoder
+     * @param eventPublisher The domain event publisher
+     * @return The update user use case
+     */
+    @Bean
+    public UpdateUserInputPort updateUserUseCase(
+            UserGateway userGateway,
+            PasswordEncoder passwordEncoder,
+            IamDomainEventPublisher eventPublisher) {
+        return new UpdateUserUseCase(userGateway, passwordEncoder, eventPublisher);
+    }
+
+    /**
      * Creates the delete user use case.
      *
      * @param userGateway The user gateway

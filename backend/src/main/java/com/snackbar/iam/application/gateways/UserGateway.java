@@ -19,6 +19,14 @@ public interface UserGateway {
     User createUser(User user);
 
     /**
+     * Updates an existing user in the persistence store.
+     *
+     * @param user The user to update
+     * @return The updated user
+     */
+    User updateUser(User user);
+
+    /**
      * Finds a user by their CPF.
      *
      * @param cpf The CPF to search for

@@ -33,6 +33,20 @@ public class UserRepositoryGateway implements UserGateway {
     }
     
     @Override
+    public User updateUser(User user) {
+        // Find the existing entity to ensure it exists
+        Optional<UserEntity> existingEntity = userRepository.findById(user.getId());
+        if (existingEntity.isEmpty()) {
+            throw new IllegalArgumentException("User not found with ID: " + user.getId());
+        }
+        
+        // Update the entity
+        UserEntity entityToUpdate = UserEntityMapper.toEntity(user);
+        UserEntity savedEntity = userRepository.save(entityToUpdate);
+        return UserEntityMapper.toDomain(savedEntity);
+    }
+    
+    @Override
     public Optional<User> findByCpf(String cpf) {
         return userRepository.findByCpf(cpf)
                 .map(UserEntityMapper::toDomain);

@@ -2,7 +2,6 @@ package com.snackbar.iam.infrastructure.adapter;
 
 import com.snackbar.iam.application.gateways.UserGateway;
 import com.snackbar.iam.infrastructure.security.UserDetailsAdapter;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
