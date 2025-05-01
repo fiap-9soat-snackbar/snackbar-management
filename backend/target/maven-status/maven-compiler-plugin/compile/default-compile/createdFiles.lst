@@ -4,6 +4,7 @@ com/snackbar/iam/application/usecases/DeleteUserUseCase.class
 com/snackbar/iam/application/usecases/UpdateUserUseCase.class
 com/snackbar/iam/application/JwtService.class
 com/snackbar/product/domain/event/ProductCreatedEvent.class
+com/snackbar/iam/application/SecurityConfigurationAdapter.class
 com/snackbar/iam/domain/UserDetailsEntity.class
 com/snackbar/iam/application/usecases/AuthenticateUserUseCase.class
 com/snackbar/infrastructure/messaging/sqs/mapper/MessageMapper.class
@@ -46,6 +47,7 @@ com/snackbar/infrastructure/messaging/sqs/consumer/SQSMessageConsumer.class
 com/snackbar/iam/infrastructure/controllers/UserDTOMapper.class
 com/snackbar/product/infrastructure/controllers/CreateProductRequest.class
 com/snackbar/iam/application/usecases/RegisterUserUseCase.class
+com/snackbar/iam/domain/adapter/UserEntityAdapter.class
 com/snackbar/product/application/usecases/GetProductByCategoryUseCase.class
 com/snackbar/product/application/usecases/GetProductByNameUseCase.class
 com/snackbar/infrastructure/messaging/sqs/producer/SQSMessageProducerImpl.class

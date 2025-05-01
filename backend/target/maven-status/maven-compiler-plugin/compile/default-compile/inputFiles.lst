@@ -40,6 +40,7 @@
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/infrastructure/controllers/CreateProductRequest.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/application/ports/in/GetProductByNameInputPort.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/application/usecases/DeleteProductByIdUseCase.java
+/home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/domain/adapter/UserEntityAdapter.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/domain/event/UserUpdatedEvent.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/domain/event/DomainEvent.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/infrastructure/controllers/dto/UserResponseDTO.java
@@ -108,6 +109,7 @@
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/application/usecases/UpdateUserUseCase.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/application/gateways/ProductGateway.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/infrastructure/controllers/UserAuthController.java
+/home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/application/SecurityConfigurationAdapter.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/infrastructure/security/UserDetailsAdapter.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/infrastructure/controllers/UserDTOMapper.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/infrastructure/event/SimpleIamDomainEventPublisher.java

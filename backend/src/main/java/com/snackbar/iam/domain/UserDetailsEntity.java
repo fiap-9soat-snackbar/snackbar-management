@@ -11,12 +11,19 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Legacy user entity that implements Spring Security's UserDetails interface.
+ * 
+ * @deprecated Use {@link com.snackbar.iam.domain.entity.User} instead.
+ * This class is maintained for backward compatibility and will be removed in future versions.
+ */
 @Document(collection = "user")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Deprecated
 public class UserDetailsEntity implements UserDetails {
     @Id
     private String id;
