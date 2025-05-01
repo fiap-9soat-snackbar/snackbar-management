@@ -11,6 +11,7 @@ com/snackbar/infrastructure/messaging/sqs/mapper/MessageMapper.class
 com/snackbar/iam/web/dto/UserResponse.class
 com/snackbar/product/infrastructure/controllers/ProductController.class
 com/snackbar/product/application/usecases/UpdateProductByIdUseCase.class
+com/snackbar/iam/infrastructure/adapter/PersistenceEntityAdapter.class
 com/snackbar/iam/infrastructure/security/JwtService.class
 com/snackbar/iam/infrastructure/controllers/dto/UserResponseDTO.class
 com/snackbar/iam/domain/entity/User.class
@@ -23,17 +24,21 @@ com/snackbar/iam/application/usecases/GetUserByCpfUseCase.class
 com/snackbar/iam/application/usecases/GetAllUsersUseCase.class
 com/snackbar/product/application/usecases/CreateProductUseCase.class
 com/snackbar/iam/domain/event/UserDeletedEvent.class
+com/snackbar/iam/infrastructure/adapter/IamRepositoryAdapter.class
 com/snackbar/product/application/ports/out/DomainEventPublisher.class
 com/snackbar/iam/domain/exceptions/InvalidCredentialsException.class
 com/snackbar/product/application/usecases/GetProductByIdUseCase.class
 com/snackbar/iam/domain/event/UserUpdatedEvent.class
 com/snackbar/iam/infrastructure/controllers/UserMgmtController.class
 com/snackbar/iam/infrastructure/gateways/UserEntityMapper.class
+com/snackbar/iam/infrastructure/adapter/UserRepositoryAdapter.class
 com/snackbar/iam/application/ports/in/GetUserByCpfInputPort.class
 com/snackbar/infrastructure/messaging/sqs/producer/SQSMessageProducer.class
 com/snackbar/iam/infrastructure/gateways/UserRepositoryGateway.class
+com/snackbar/iam/infrastructure/security/IamJwtAuthenticationFilter$1.class
 com/snackbar/product/infrastructure/controllers/CreateProductResponse.class
 com/snackbar/iam/application/SecurityConfiguration.class
+com/snackbar/iam/application/adapter/AuthenticationServiceAdapter.class
 com/snackbar/product/application/ports/in/GetProductByNameInputPort.class
 com/snackbar/product/domain/entity/Product.class
 com/snackbar/iam/domain/UserDetailsEntity$UserDetailsEntityBuilder.class
@@ -54,9 +59,11 @@ com/snackbar/infrastructure/messaging/sqs/producer/SQSMessageProducerImpl.class
 com/snackbar/iam/domain/exceptions/UserNotFoundException.class
 com/snackbar/iam/application/ports/in/RegisterUserInputPort.class
 com/snackbar/product/infrastructure/controllers/dto/ResponseDTO.class
+com/snackbar/iam/infrastructure/security/exception/JwtAuthenticationException$JwtErrorType.class
 com/snackbar/product/infrastructure/persistence/ProductRepository.class
 com/snackbar/iam/infrastructure/persistence/UserEntity.class
 com/snackbar/iam/infrastructure/adapter/UserDetailsServiceAdapter.class
+com/snackbar/iam/infrastructure/controllers/IamGlobalExceptionHandler$1.class
 com/snackbar/iam/application/ports/in/GetAllUsersInputPort.class
 com/snackbar/iam/web/UserController.class
 com/snackbar/product/infrastructure/config/ProductConfig.class
@@ -78,6 +85,7 @@ com/snackbar/product/infrastructure/messaging/sqs/consumer/SQSProductMessageCons
 com/snackbar/iam/web/AuthenticationController.class
 com/snackbar/iam/infrastructure/persistence/UserEntity$Builder.class
 com/snackbar/iam/infrastructure/UserRepository.class
+com/snackbar/iam/infrastructure/security/exception/JwtAuthenticationException.class
 com/snackbar/iam/web/dto/UserResponse$UserResponseBuilder.class
 com/snackbar/iam/infrastructure/controllers/UserAuthController.class
 com/snackbar/product/domain/event/ProductDeletedEvent.class
@@ -110,6 +118,7 @@ com/snackbar/product/application/gateways/ProductGateway.class
 com/snackbar/product/application/ports/in/UpdateProductByIdInputPort.class
 com/snackbar/iam/infrastructure/event/SimpleIamDomainEventPublisher.class
 com/snackbar/infrastructure/messaging/sqs/consumer/SQSMessageConsumerImpl.class
+com/snackbar/iam/application/adapter/UserServiceAdapter.class
 com/snackbar/iam/infrastructure/controllers/dto/UpdateUserRequestDTO.class
 com/snackbar/infrastructure/messaging/sqs/model/SQSMessage.class
 com/snackbar/SnackbarApplication.class

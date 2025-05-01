@@ -2,6 +2,7 @@
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/application/ports/in/DeleteProductByIdInputPort.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/infrastructure/security/JwtService.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/infrastructure/messaging/mapper/ProductMessageMapper.java
+/home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/infrastructure/adapter/UserRepositoryAdapter.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/infrastructure/controllers/IamGlobalExceptionHandler.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/application/usecases/CreateProductUseCase.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/application/gateways/UserGateway.java
@@ -54,10 +55,12 @@
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/domain/exceptions/InvalidCredentialsException.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/domain/UserDetailsEntity.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/domain/event/UserDeletedEvent.java
+/home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/infrastructure/security/exception/JwtAuthenticationException.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/application/usecases/GetUserByCpfUseCase.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/application/ports/in/UpdateProductByIdInputPort.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/application/AuthenticationService.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/domain/exceptions/UserNotFoundException.java
+/home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/infrastructure/adapter/IamRepositoryAdapter.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/infrastructure/gateways/UserRepositoryGateway.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/infrastructure/controllers/ProductController.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/config/FeignClientConfig.java
@@ -72,6 +75,7 @@
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/web/dto/LoginResponse.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/infrastructure/gateways/ProductRepositoryGateway.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/application/SecurityConfiguration.java
+/home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/application/adapter/AuthenticationServiceAdapter.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/SnackbarApplication.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/infrastructure/messaging/event/SQSDomainEventPublisher.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/web/UserController.java
@@ -100,10 +104,12 @@
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/application/ports/in/UpdateUserInputPort.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/infrastructure/gateways/ProductEntityMapper.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/infrastructure/messaging/sqs/consumer/SQSMessageConsumer.java
+/home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/infrastructure/adapter/PersistenceEntityAdapter.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/infrastructure/controllers/UserMgmtController.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/domain/exceptions/ProductNotFoundException.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/infrastructure/messaging/sqs/producer/SQSMessageProducer.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/infrastructure/adapter/UserDetailsServiceAdapter.java
+/home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/application/adapter/UserServiceAdapter.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/application/ports/in/AuthenticateUserInputPort.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/application/ports/in/ListProductInputPort.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/application/usecases/UpdateUserUseCase.java

@@ -3,6 +3,7 @@ package com.snackbar.iam.application;
 import com.snackbar.iam.domain.UserDetailsEntity;
 import com.snackbar.iam.domain.UserEntity;
 import com.snackbar.iam.infrastructure.IamRepository;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,16 +15,22 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+/**
+ * Legacy application configuration class.
+ * 
+ * @deprecated This class is maintained for backward compatibility and will be removed in future versions.
+ */
 @Configuration
 @EnableWebSecurity
+@Deprecated
 public class ApplicationConfiguration {
     private final IamRepository userRepository;
 
-    public ApplicationConfiguration(IamRepository userRepository) {
+    public ApplicationConfiguration(@Qualifier("iamRepositoryAdapter") IamRepository userRepository) {
         this.userRepository = userRepository;
     }
 
-    @Bean
+    @Bean("legacyUserDetailsService")
     UserDetailsService userDetailsService() {
         return cpf -> {
             UserEntity user = userRepository.findByCpf(cpf)
@@ -41,17 +48,17 @@ public class ApplicationConfiguration {
         };
     }
 
-    @Bean
+    @Bean("legacyPasswordEncoder")
     BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
+    @Bean("legacyAuthenticationManager")
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
-    @Bean
+    @Bean("legacyAuthenticationProvider")
     AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
 

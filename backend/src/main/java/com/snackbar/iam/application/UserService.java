@@ -5,17 +5,26 @@ import com.snackbar.iam.domain.UserEntity;
 import com.snackbar.iam.infrastructure.IamRepository;
 import com.snackbar.iam.infrastructure.UserRepository;
 import com.snackbar.iam.web.dto.UserResponse;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Legacy user service.
+ * 
+ * @deprecated This class is maintained for backward compatibility and will be removed in future versions.
+ */
 @Service
+@Deprecated
 public class UserService {
-    private final IamRepository iamRepository;
-    private final UserRepository userRepository;
+    protected final IamRepository iamRepository;
+    protected final UserRepository userRepository;
 
-    public UserService(IamRepository iamRepository, UserRepository userRepository) {
+    public UserService(
+            @Qualifier("iamRepositoryAdapter") IamRepository iamRepository, 
+            @Qualifier("userRepositoryAdapter") UserRepository userRepository) {
         this.iamRepository = iamRepository;
         this.userRepository = userRepository;
     }

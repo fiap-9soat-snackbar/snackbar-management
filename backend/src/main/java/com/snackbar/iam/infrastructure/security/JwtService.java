@@ -163,23 +163,21 @@ public class JwtService {
      *
      * @param token The JWT token
      * @return All claims from the token
+     * @throws io.jsonwebtoken.JwtException if the token cannot be parsed
      */
     private Claims extractAllClaims(String token) {
-        try {
-            return Jwts.parserBuilder()
-                    .setSigningKey(getSignInKey())
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to parse JWT token: " + e.getMessage(), e);
-        }
+        return Jwts.parserBuilder()
+                .setSigningKey(getSignInKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     /**
      * Gets the signing key for JWT token generation and validation.
      *
      * @return The signing key
+     * @throws IllegalStateException if the JWT secret key is not configured properly
      */
     private Key getSignInKey() {
         if (secretKey == null || secretKey.trim().isEmpty()) {

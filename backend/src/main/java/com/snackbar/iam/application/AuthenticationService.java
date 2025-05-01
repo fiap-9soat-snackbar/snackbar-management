@@ -7,19 +7,26 @@ import com.snackbar.iam.domain.UserEntity;
 import com.snackbar.iam.infrastructure.IamRepository;
 import com.snackbar.iam.web.dto.LoginUserDto;
 import com.snackbar.iam.web.dto.RegisterUserDto;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+/**
+ * Legacy authentication service.
+ * 
+ * @deprecated This class is maintained for backward compatibility and will be removed in future versions.
+ */
 @Service
+@Deprecated
 public class AuthenticationService {
-    private final IamRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
+    protected final IamRepository userRepository;
+    protected final PasswordEncoder passwordEncoder;
+    protected final AuthenticationManager authenticationManager;
 
     public AuthenticationService(
-            IamRepository userRepository,
+            @Qualifier("iamRepositoryAdapter") IamRepository userRepository,
             AuthenticationManager authenticationManager,
             PasswordEncoder passwordEncoder
     ) {
