@@ -1,4 +1,3 @@
-com/snackbar/iam/application/IamServiceImpl.class
 com/snackbar/iam/infrastructure/controllers/dto/AuthenticationResponseDTO.class
 com/snackbar/config/FeignClientConfig.class
 com/snackbar/iam/application/usecases/DeleteUserUseCase.class
@@ -55,7 +54,6 @@ com/snackbar/iam/application/ports/in/RegisterUserInputPort.class
 com/snackbar/product/infrastructure/controllers/dto/ResponseDTO.class
 com/snackbar/product/infrastructure/persistence/ProductRepository.class
 com/snackbar/iam/infrastructure/persistence/UserEntity.class
-com/snackbar/iam/application/IamService.class
 com/snackbar/iam/infrastructure/adapter/UserDetailsServiceAdapter.class
 com/snackbar/iam/application/ports/in/GetAllUsersInputPort.class
 com/snackbar/iam/web/UserController.class
@@ -65,7 +63,6 @@ com/snackbar/product/application/usecases/ListProductUseCase.class
 com/snackbar/iam/domain/IamRole.class
 com/snackbar/product/domain/exceptions/ProductNotFoundException.class
 com/snackbar/iam/application/ApplicationConfiguration.class
-com/snackbar/iam/application/OpenApiConfig.class
 com/snackbar/iam/infrastructure/controllers/dto/LoginRequestDTO.class
 com/snackbar/product/domain/exceptions/InvalidProductDataException.class
 com/snackbar/iam/web/dto/RegisterUserDto.class

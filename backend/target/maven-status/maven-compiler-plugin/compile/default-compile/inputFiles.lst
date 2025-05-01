@@ -70,14 +70,12 @@
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/infrastructure/controllers/dto/LoginRequestDTO.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/web/dto/LoginResponse.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/infrastructure/gateways/ProductRepositoryGateway.java
-/home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/application/IamService.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/application/SecurityConfiguration.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/SnackbarApplication.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/infrastructure/messaging/event/SQSDomainEventPublisher.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/web/UserController.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/infrastructure/controllers/CreateProductResponse.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/application/usecases/AuthenticateUserUseCase.java
-/home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/application/OpenApiConfig.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/infrastructure/persistence/ProductRepository.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/infrastructure/messaging/sqs/producer/SQSProductMessageProducer.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/infrastructure/messaging/sqs/consumer/SQSProductMessageConsumer.java
@@ -92,7 +90,6 @@
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/application/usecases/DeleteUserUseCase.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/application/usecases/UpdateProductByIdUseCase.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/infrastructure/messaging/sqs/consumer/SQSMessageConsumerImpl.java
-/home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/application/IamServiceImpl.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/application/usecases/ListProductUseCase.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/infrastructure/security/IamJwtAuthenticationFilter.java
 /home/saulo/workspace/fiap-alura/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/application/JwtService.java
