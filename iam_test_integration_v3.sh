@@ -345,9 +345,53 @@ else
 fi
 
 # ===================================================
-# SECTION 6: User Deletion Testing
+# SECTION 6: JWT Token Validation
 # ===================================================
-print_section "6" "User Deletion Testing"
+print_section "6" "JWT Token Validation"
+
+if [ -n "$TOKEN" ]; then
+  echo -e "${GREEN}Testing JWT token validation...${NC}"
+  
+  # Test with valid token
+  VALID_TOKEN_RESPONSE=$(curl -s -X GET http://localhost:8080/api/v2/user/ \
+    -H "Authorization: Bearer $TOKEN" -w "%{http_code}" -o /dev/null)
+  
+  echo "Valid Token Response Code: $VALID_TOKEN_RESPONSE"
+  
+  # Test with invalid token
+  INVALID_TOKEN_RESPONSE=$(curl -s -X GET http://localhost:8080/api/v2/user/ \
+    -H "Authorization: Bearer ${TOKEN}invalid" -w "%{http_code}" -o /dev/null)
+  
+  echo "Invalid Token Response Code: $INVALID_TOKEN_RESPONSE"
+  
+  # Check if responses match expected HTTP status codes
+  # We expect 401 Unauthorized for invalid tokens according to HTTP standards
+  if [ "$VALID_TOKEN_RESPONSE" = "200" ] && [ "$INVALID_TOKEN_RESPONSE" = "401" ]; then
+    echo -e "${GREEN}JWT token validation is working correctly (401 for invalid token)${NC}"
+  else
+    echo -e "${RED}JWT token validation might not be working correctly - Expected 200 for valid token and 401 for invalid token, got $VALID_TOKEN_RESPONSE and $INVALID_TOKEN_RESPONSE${NC}"
+  fi
+  
+  # Analyze JWT token structure
+  echo -e "${GREEN}Analyzing JWT token structure...${NC}"
+  
+  # Split the JWT token into header, payload, and signature
+  IFS='.' read -r HEADER PAYLOAD SIGNATURE <<< "$TOKEN"
+  
+  # Decode the header and payload
+  DECODED_HEADER=$(echo $HEADER | base64 -d 2>/dev/null || echo "Failed to decode header")
+  DECODED_PAYLOAD=$(echo $PAYLOAD | base64 -d 2>/dev/null || echo "Failed to decode payload")
+  
+  echo "JWT Header: $DECODED_HEADER"
+  echo "JWT Payload: $DECODED_PAYLOAD"
+else
+  echo -e "${YELLOW}Skipping JWT token validation as no token was obtained${NC}"
+fi
+
+# ===================================================
+# SECTION 7: User Deletion Testing
+# ===================================================
+print_section "7" "User Deletion Testing"
 
 # Use the user ID from registration or retrieval
 DELETE_USER_ID=${USER_ID:-$USER_ID_FROM_CPF}
@@ -383,9 +427,9 @@ else
 fi
 
 # ===================================================
-# SECTION 7: Error Handling Testing
+# SECTION 8: Error Handling Testing
 # ===================================================
-print_section "7" "Error Handling Testing"
+print_section "8" "Error Handling Testing"
 
 # Test registration with invalid data
 echo -e "${GREEN}Testing registration with invalid data...${NC}"
@@ -429,49 +473,6 @@ else
 fi
 
 # ===================================================
-# SECTION 8: JWT Token Validation
-# ===================================================
-print_section "8" "JWT Token Validation"
-
-if [ -n "$TOKEN" ]; then
-  echo -e "${GREEN}Testing JWT token validation...${NC}"
-  
-  # Test with valid token
-  VALID_TOKEN_RESPONSE=$(curl -s -X GET http://localhost:8080/api/v2/user/ \
-    -H "Authorization: Bearer $TOKEN" -w "%{http_code}" -o /dev/null)
-  
-  echo "Valid Token Response Code: $VALID_TOKEN_RESPONSE"
-  
-  # Test with invalid token
-  INVALID_TOKEN_RESPONSE=$(curl -s -X GET http://localhost:8080/api/v2/user/ \
-    -H "Authorization: Bearer ${TOKEN}invalid" -w "%{http_code}" -o /dev/null)
-  
-  echo "Invalid Token Response Code: $INVALID_TOKEN_RESPONSE"
-  
-  # Check if responses differ
-  if [ "$VALID_TOKEN_RESPONSE" != "$INVALID_TOKEN_RESPONSE" ]; then
-    echo -e "${GREEN}JWT token validation is working correctly${NC}"
-  else
-    echo -e "${RED}JWT token validation might not be working correctly${NC}"
-  fi
-  
-  # Analyze JWT token structure
-  echo -e "${GREEN}Analyzing JWT token structure...${NC}"
-  
-  # Split the JWT token into header, payload, and signature
-  IFS='.' read -r HEADER PAYLOAD SIGNATURE <<< "$TOKEN"
-  
-  # Decode the header and payload
-  DECODED_HEADER=$(echo $HEADER | base64 -d 2>/dev/null || echo "Failed to decode header")
-  DECODED_PAYLOAD=$(echo $PAYLOAD | base64 -d 2>/dev/null || echo "Failed to decode payload")
-  
-  echo "JWT Header: $DECODED_HEADER"
-  echo "JWT Payload: $DECODED_PAYLOAD"
-else
-  echo -e "${YELLOW}Skipping JWT token validation as no token was obtained${NC}"
-fi
-
-# ===================================================
 # SECTION 9: Event Publishing Testing
 # ===================================================
 print_section "9" "Event Publishing Testing"
@@ -486,6 +487,14 @@ echo -e "${GREEN}Checking for specific event types...${NC}"
 USER_CREATED_EVENTS=$(docker compose logs app | grep -i "UserCreatedEvent" | wc -l)
 USER_UPDATED_EVENTS=$(docker compose logs app | grep -i "UserUpdatedEvent" | wc -l)
 USER_DELETED_EVENTS=$(docker compose logs app | grep -i "UserDeletedEvent" | wc -l)
+
+echo -e "${GREEN}Event counts:${NC}"
+echo -e "${GREEN}- UserCreatedEvent: $USER_CREATED_EVENTS${NC}"
+echo -e "${GREEN}- UserUpdatedEvent: $USER_UPDATED_EVENTS${NC}"
+echo -e "${GREEN}- UserDeletedEvent: $USER_DELETED_EVENTS${NC}"
+
+# ===================================================
+# SECTION 10: Application Logs Analysis
 
 echo -e "${GREEN}Event counts:${NC}"
 echo -e "${GREEN}- UserCreatedEvent: $USER_CREATED_EVENTS${NC}"
