@@ -9,7 +9,7 @@ import com.snackbar.iam.domain.adapter.UserEntityAdapter;
 import com.snackbar.iam.domain.entity.User;
 import com.snackbar.iam.infrastructure.IamRepository;
 import com.snackbar.iam.infrastructure.UserRepository;
-import com.snackbar.iam.web.dto.UserResponse;
+import com.snackbar.iam.infrastructure.controllers.dto.UserResponseDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -61,20 +61,20 @@ public class UserServiceAdapter extends UserService {
     }
 
     @Override
-    public UserResponse getUserByCpf(String cpf) {
+    public UserResponseDTO getUserByCpf(String cpf) {
         logger.debug("Getting user by CPF: {}", cpf);
         
         // Get the user using the use case
         User user = getUserByCpfUseCase.getUserByCpf(cpf);
         
         // Convert the domain entity to a response DTO
-        return UserResponse.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .cpf(user.getCpf())
-                .email(user.getEmail())
-                .role(user.getRole())
-                .build();
+        return new UserResponseDTO(
+                user.getId(),
+                user.getName(),
+                user.getEmail(),
+                user.getCpf(),
+                user.getRole()
+        );
     }
 
     @Override

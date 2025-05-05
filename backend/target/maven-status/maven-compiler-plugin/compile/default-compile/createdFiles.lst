@@ -10,13 +10,11 @@ com/snackbar/iam/application/usecases/AuthenticateUserUseCase.class
 com/snackbar/infrastructure/messaging/sqs/mapper/MessageMapper.class
 com/snackbar/product/infrastructure/controllers/ProductController.class
 com/snackbar/product/application/usecases/UpdateProductByIdUseCase.class
-com/snackbar/iam/web/dto/UserResponse.class
 com/snackbar/iam/infrastructure/adapter/PersistenceEntityAdapter.class
 com/snackbar/iam/infrastructure/security/JwtService.class
 com/snackbar/iam/infrastructure/controllers/dto/UserResponseDTO.class
 com/snackbar/iam/domain/entity/User.class
 com/snackbar/product/infrastructure/controllers/GetProductResponse.class
-com/snackbar/iam/web/dto/LoginResponse.class
 com/snackbar/product/infrastructure/gateways/ProductRepositoryGateway.class
 com/snackbar/iam/application/ports/out/IamDomainEventPublisher.class
 com/snackbar/iam/infrastructure/config/IamSecurityConfig.class
@@ -74,9 +72,7 @@ com/snackbar/iam/application/ApplicationConfiguration.class
 com/snackbar/product/domain/exceptions/InvalidProductDataException.class
 com/snackbar/iam/infrastructure/controllers/dto/LoginRequestDTO.class
 com/snackbar/product/infrastructure/config/SQSConfig.class
-com/snackbar/iam/web/dto/RegisterUserDto.class
 com/snackbar/iam/application/ports/in/DeleteUserInputPort.class
-com/snackbar/iam/web/dto/RefreshTokenRequest.class
 com/snackbar/iam/application/AuthenticationService.class
 com/snackbar/iam/infrastructure/config/IamConfig.class
 com/snackbar/product/infrastructure/messaging/sqs/consumer/SQSProductMessageConsumer.class
@@ -86,7 +82,6 @@ com/snackbar/iam/infrastructure/UserRepository.class
 com/snackbar/iam/infrastructure/security/exception/JwtAuthenticationException.class
 com/snackbar/product/domain/event/ProductDeletedEvent.class
 com/snackbar/product/infrastructure/messaging/sqs/model/ProductMessage.class
-com/snackbar/iam/web/dto/UserResponse$UserResponseBuilder.class
 com/snackbar/iam/infrastructure/controllers/UserAuthController.class
 com/snackbar/product/domain/event/DomainEvent.class
 com/snackbar/iam/infrastructure/controllers/IamGlobalExceptionHandler.class
@@ -110,7 +105,6 @@ com/snackbar/product/infrastructure/controllers/ProductDTOMapper.class
 com/snackbar/product/domain/event/ProductUpdatedEvent.class
 com/snackbar/iam/infrastructure/controllers/dto/RegisterUserRequestDTO.class
 com/snackbar/product/application/ports/in/GetProductByCategoryInputPort.class
-com/snackbar/iam/web/dto/LoginUserDto.class
 com/snackbar/iam/application/ports/in/AuthenticateUserInputPort.class
 com/snackbar/product/application/gateways/ProductGateway.class
 com/snackbar/product/application/ports/in/UpdateProductByIdInputPort.class

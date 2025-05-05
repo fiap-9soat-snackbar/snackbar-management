@@ -148,26 +148,34 @@ After each step, we will run `iam_test_integration_v3.sh` to verify that everyth
 
 ### Phase 2: Remove Infrastructure Layer Legacy Components
 
-#### Step 1: Remove Legacy Repositories
+#### Revised Approach for Phase 2
 
-1. **Verify Replacement Repositories**
-   - Ensure `UserRepository.java` in `infrastructure.persistence` covers all functionality of the root version
-   - Run `iam_test_integration_v3.sh` to verify functionality
+After our initial attempt to remove the legacy repositories directly, we encountered compilation errors in several dependent components. This indicates that we need to take a more gradual approach to Phase 2 of the migration:
 
-2. **Remove Legacy Repository**
-   - Remove `UserRepository.java` from infrastructure root
-   - Run `iam_test_integration_v3.sh` to verify functionality
+1. **Step 1: Update Adapter Classes** ✅
+   - Modify `AuthenticationServiceAdapter` and `UserServiceAdapter` to use the new DTOs
+   - Update method signatures to match the new DTOs
+   - Ensure all functionality is preserved
+   - Run integration tests to verify
 
-#### Step 2: Remove IamRepository
+2. **Step 2: Update Service Classes** ✅
+   - Modify `AuthenticationService` and `UserService` to use the new DTOs
+   - Update method signatures to match the new DTOs
+   - Run integration tests to verify
 
-1. **Verify Replacement Gateway**
-   - Ensure `UserRepositoryGateway.java` covers all functionality of `IamRepository.java`
-   - Ensure `IamRepositoryAdapter.java` is properly bridging between legacy and clean architecture
-   - Run `iam_test_integration_v3.sh` to verify functionality
+3. **Step 3: Prepare Repository Adapters**
+   - Ensure `IamRepositoryAdapter` and `UserRepositoryAdapter` properly delegate to the new repositories
+   - Update any references to use the adapters instead of direct repository references
+   - Run integration tests to verify
 
-2. **Remove IamRepository**
-   - Remove `IamRepository.java`
-   - Run `iam_test_integration_v3.sh` to verify functionality
+4. **Step 4: Create Interface Bridges**
+   - Create interface bridges that extend both old and new repository interfaces
+   - Update adapters to implement these bridge interfaces
+   - Run integration tests to verify
+
+5. **Step 5: Remove Legacy Repositories**
+   - Remove legacy repositories
+   - Run integration tests to verify
 
 ### Phase 3: Remove Application Layer Legacy Components
 
@@ -437,6 +445,13 @@ In case of issues during migration:
 - ✅ Removed entire web package
 - ✅ Updated test script to use new endpoint paths
 - ✅ Verified functionality with integration tests
+- ✅ Updated adapter classes to use new DTOs from `infrastructure.controllers.dto`
+- ✅ Updated service classes to use new DTOs
+- ✅ Verified functionality with integration tests after DTO migration
+
+### Current Work
+- Preparing repository adapters to properly delegate to the new repositories
+- Creating interface bridges to support gradual migration
 
 ### Next Steps
 - Remove legacy repositories in infrastructure root

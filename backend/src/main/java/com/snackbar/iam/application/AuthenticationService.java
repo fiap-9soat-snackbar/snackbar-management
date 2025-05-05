@@ -5,8 +5,8 @@ import com.snackbar.iam.domain.IamRole;
 import com.snackbar.iam.domain.UserDetailsEntity;
 import com.snackbar.iam.domain.UserEntity;
 import com.snackbar.iam.infrastructure.IamRepository;
-import com.snackbar.iam.web.dto.LoginUserDto;
-import com.snackbar.iam.web.dto.RegisterUserDto;
+import com.snackbar.iam.infrastructure.controllers.dto.LoginRequestDTO;
+import com.snackbar.iam.infrastructure.controllers.dto.RegisterUserRequestDTO;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -35,27 +35,27 @@ public class AuthenticationService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public UserEntity signup(RegisterUserDto input) {
+    public UserEntity signup(RegisterUserRequestDTO input) {
         UserEntity user = UserEntity.builder()
-                .name(input.getFullName())
-                .email(input.getEmail())
-                .role(IamRole.valueOf(input.getRole()))
-                .cpf(input.getCpf())
-                .password(passwordEncoder.encode(input.getPassword()))
+                .name(input.fullName())
+                .email(input.email())
+                .role(input.role())
+                .cpf(input.cpf())
+                .password(passwordEncoder.encode(input.password()))
                 .build();
 
         return userRepository.save(user);
     }
 
-    public UserDetailsEntity authenticate(LoginUserDto input) {
+    public UserDetailsEntity authenticate(LoginRequestDTO input) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        input.getCpf(),
-                        input.getPassword()
+                        input.cpf(),
+                        input.password()
                 )
         );
 
-        return findByCpf(input.getCpf());
+        return findByCpf(input.cpf());
     }
 
     public UserDetailsEntity findByCpf(String cpf) {

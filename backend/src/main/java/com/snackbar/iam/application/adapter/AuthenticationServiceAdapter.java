@@ -9,8 +9,8 @@ import com.snackbar.iam.domain.UserEntity;
 import com.snackbar.iam.domain.adapter.UserEntityAdapter;
 import com.snackbar.iam.domain.entity.User;
 import com.snackbar.iam.infrastructure.IamRepository;
-import com.snackbar.iam.web.dto.LoginUserDto;
-import com.snackbar.iam.web.dto.RegisterUserDto;
+import com.snackbar.iam.infrastructure.controllers.dto.LoginRequestDTO;
+import com.snackbar.iam.infrastructure.controllers.dto.RegisterUserRequestDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,17 +51,17 @@ public class AuthenticationServiceAdapter extends AuthenticationService {
     }
 
     @Override
-    public UserEntity signup(RegisterUserDto input) {
-        logger.debug("Signing up user with email: {}", input.getEmail());
+    public UserEntity signup(RegisterUserRequestDTO input) {
+        logger.debug("Signing up user with email: {}", input.email());
         
         // Create a User domain entity from the DTO
         User user = new User(
                 null, // ID will be generated
-                input.getFullName(),
-                input.getEmail(),
-                input.getCpf(),
-                IamRole.valueOf(input.getRole()),
-                input.getPassword()
+                input.fullName(),
+                input.email(),
+                input.cpf(),
+                input.role(),
+                input.password()
         );
         
         // Register the user using the use case
@@ -72,19 +72,19 @@ public class AuthenticationServiceAdapter extends AuthenticationService {
     }
 
     @Override
-    public UserDetailsEntity authenticate(LoginUserDto input) {
-        logger.debug("Authenticating user with CPF: {}", input.getCpf());
+    public UserDetailsEntity authenticate(LoginRequestDTO input) {
+        logger.debug("Authenticating user with CPF: {}", input.cpf());
         
         // Authenticate using Spring Security (required for session management)
         authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        input.getCpf(),
-                        input.getPassword()
+                        input.cpf(),
+                        input.password()
                 )
         );
         
         // Authenticate using the use case
-        User authenticatedUser = authenticateUserUseCase.authenticate(input.getCpf(), input.getPassword());
+        User authenticatedUser = authenticateUserUseCase.authenticate(input.cpf(), input.password());
         
         // Convert the domain entity to a legacy entity
         return userEntityAdapter.toUserDetailsEntity(authenticatedUser);

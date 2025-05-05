@@ -4,7 +4,7 @@ import com.snackbar.iam.domain.UserDetailsEntity;
 import com.snackbar.iam.domain.UserEntity;
 import com.snackbar.iam.infrastructure.IamRepository;
 import com.snackbar.iam.infrastructure.UserRepository;
-import com.snackbar.iam.web.dto.UserResponse;
+import com.snackbar.iam.infrastructure.controllers.dto.UserResponseDTO;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
@@ -37,15 +37,15 @@ public class UserService {
         return users;
     }
 
-    public UserResponse getUserByCpf(String cpf) {
+    public UserResponseDTO getUserByCpf(String cpf) {
         return userRepository.findByCpf(cpf).map(user ->
-                UserResponse.builder()
-                        .id(user.getId())
-                        .name(user.getName())
-                        .cpf(user.getCpf())
-                        .email(user.getEmail())
-                        .role(user.getRole())
-                    .build()
+                new UserResponseDTO(
+                        user.getId(),
+                        user.getName(),
+                        user.getEmail(),
+                        user.getCpf(),
+                        user.getRole()
+                )
         ).orElseThrow();
     }
 
