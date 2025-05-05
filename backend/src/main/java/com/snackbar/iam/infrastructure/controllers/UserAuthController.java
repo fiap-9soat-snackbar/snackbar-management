@@ -19,12 +19,9 @@ import jakarta.validation.Valid;
 /**
  * Controller for user authentication operations.
  * Handles user registration and login.
- * 
- * Note: Using a temporary URL path during refactoring to avoid conflicts with existing controllers.
- * Will be changed back to /api/user/auth/* once refactoring is complete.
  */
 @RestController
-@RequestMapping("/api/v2/user/auth")
+@RequestMapping("/api/user/auth")
 public class UserAuthController {
 
     private final RegisterUserInputPort registerUserUseCase;

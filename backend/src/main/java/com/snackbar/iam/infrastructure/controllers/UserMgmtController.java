@@ -19,12 +19,9 @@ import java.util.stream.Collectors;
 /**
  * Controller for user management operations.
  * Handles user retrieval, update, and deletion.
- * 
- * Note: Using a temporary URL path during refactoring to avoid conflicts with existing controllers.
- * Will be changed back to /api/user/* once refactoring is complete.
  */
 @RestController
-@RequestMapping("/api/v2/user")
+@RequestMapping("/api/user")
 public class UserMgmtController {
 
     private final GetAllUsersInputPort getAllUsersUseCase;

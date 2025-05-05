@@ -32,7 +32,7 @@ print_section "1" "Environment Setup and Cleanup"
 
 # Clean up any existing environment
 echo -e "${GREEN}Cleaning up environment...${NC}"
-cd /home/saulo/workspace/fiap-alura/fase04/snackbar-management
+cd /home/saulo/workspace/fiap/fase04/snackbar-management
 docker compose down -v --rmi all
 rm -rf backend/target
 
@@ -73,7 +73,7 @@ print_section "2" "User Registration Testing"
 
 # Test user registration via API with valid role (CONSUMER or ADMIN)
 echo -e "${GREEN}Testing user registration with valid role (CONSUMER)...${NC}"
-REGISTER_RESPONSE=$(curl -s -X POST http://localhost:8080/api/v2/user/auth/signup \
+REGISTER_RESPONSE=$(curl -s -X POST http://localhost:8080/api/user/auth/signup \
   -H "Content-Type: application/json" \
   -d '{
     "email": "test@example.com",
@@ -93,7 +93,7 @@ if [ -z "$USER_ID" ]; then
   
   # Try with ADMIN role
   echo -e "${YELLOW}Trying with ADMIN role...${NC}"
-  REGISTER_RESPONSE=$(curl -s -X POST http://localhost:8080/api/v2/user/auth/signup \
+  REGISTER_RESPONSE=$(curl -s -X POST http://localhost:8080/api/user/auth/signup \
     -H "Content-Type: application/json" \
     -d '{
       "email": "admin@example.com",
@@ -117,7 +117,7 @@ if [ -z "$USER_ID" ]; then
     
     # Try with a different CPF
     echo -e "${YELLOW}Trying with a different CPF...${NC}"
-    REGISTER_RESPONSE=$(curl -s -X POST http://localhost:8080/api/v2/user/auth/signup \
+    REGISTER_RESPONSE=$(curl -s -X POST http://localhost:8080/api/user/auth/signup \
       -H "Content-Type: application/json" \
       -d '{
         "email": "user2@example.com",
@@ -151,7 +151,7 @@ print_section "3" "User Login Testing"
 
 # Test user login via API
 echo -e "${GREEN}Testing user login via API...${NC}"
-LOGIN_RESPONSE=$(curl -s -X POST http://localhost:8080/api/v2/user/auth/login \
+LOGIN_RESPONSE=$(curl -s -X POST http://localhost:8080/api/user/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "cpf": "52998224725",
@@ -167,7 +167,7 @@ if [ -z "$TOKEN" ]; then
   echo -e "${YELLOW}Failed to login with first user, trying with second user...${NC}"
   
   # Try with second user
-  LOGIN_RESPONSE=$(curl -s -X POST http://localhost:8080/api/v2/user/auth/login \
+  LOGIN_RESPONSE=$(curl -s -X POST http://localhost:8080/api/user/auth/login \
     -H "Content-Type: application/json" \
     -d '{
       "cpf": "98765432100",
@@ -183,7 +183,7 @@ if [ -z "$TOKEN" ]; then
     echo -e "${YELLOW}Failed to login with second user, trying with third user...${NC}"
     
     # Try with third user
-    LOGIN_RESPONSE=$(curl -s -X POST http://localhost:8080/api/v2/user/auth/login \
+    LOGIN_RESPONSE=$(curl -s -X POST http://localhost:8080/api/user/auth/login \
       -H "Content-Type: application/json" \
       -d '{
         "cpf": "45474881622",
@@ -214,7 +214,7 @@ print_section "4" "User Retrieval Testing"
 
 # Test retrieval of all users
 echo -e "${GREEN}Testing retrieval of all users...${NC}"
-ALL_USERS_RESPONSE=$(curl -s -X GET http://localhost:8080/api/v2/user/ \
+ALL_USERS_RESPONSE=$(curl -s -X GET http://localhost:8080/api/user/ \
   -H "Authorization: Bearer $TOKEN")
 
 echo "API Get All Users Response: $ALL_USERS_RESPONSE"
@@ -232,7 +232,7 @@ fi
 
 # Test retrieval of user by CPF
 echo -e "${GREEN}Testing retrieval of user by CPF...${NC}"
-USER_BY_CPF_RESPONSE=$(curl -s -X GET http://localhost:8080/api/v2/user/cpf/52998224725 \
+USER_BY_CPF_RESPONSE=$(curl -s -X GET http://localhost:8080/api/user/cpf/52998224725 \
   -H "Authorization: Bearer $TOKEN")
 
 echo "API Get User by CPF Response: $USER_BY_CPF_RESPONSE"
@@ -251,7 +251,7 @@ else
   echo -e "${YELLOW}Failed to retrieve user with first CPF, trying second CPF...${NC}"
   
   # Try with second CPF
-  USER_BY_CPF_RESPONSE=$(curl -s -X GET http://localhost:8080/api/v2/user/cpf/98765432100 \
+  USER_BY_CPF_RESPONSE=$(curl -s -X GET http://localhost:8080/api/user/cpf/98765432100 \
     -H "Authorization: Bearer $TOKEN")
   
   echo "API Get User by Second CPF Response: $USER_BY_CPF_RESPONSE"
@@ -283,7 +283,7 @@ if [ -n "$UPDATE_USER_ID" ]; then
   echo -e "${GREEN}Testing user update...${NC}"
   
   # Update user information
-  UPDATE_RESPONSE=$(curl -s -X PUT http://localhost:8080/api/v2/user/$UPDATE_USER_ID \
+  UPDATE_RESPONSE=$(curl -s -X PUT http://localhost:8080/api/user/$UPDATE_USER_ID \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $TOKEN" \
     -d '{
@@ -308,7 +308,7 @@ if [ -n "$UPDATE_USER_ID" ]; then
     
     # Verify update by retrieving user again
     echo -e "${GREEN}Verifying update by retrieving user by CPF...${NC}"
-    VERIFY_UPDATE_RESPONSE=$(curl -s -X GET http://localhost:8080/api/v2/user/cpf/52998224725 \
+    VERIFY_UPDATE_RESPONSE=$(curl -s -X GET http://localhost:8080/api/user/cpf/52998224725 \
       -H "Authorization: Bearer $TOKEN")
     
     echo "API Get Updated User Response: $VERIFY_UPDATE_RESPONSE"
@@ -322,7 +322,7 @@ if [ -n "$UPDATE_USER_ID" ]; then
     
     # Test login with updated credentials
     echo -e "${GREEN}Testing login with updated credentials...${NC}"
-    UPDATED_LOGIN_RESPONSE=$(curl -s -X POST http://localhost:8080/api/v2/user/auth/login \
+    UPDATED_LOGIN_RESPONSE=$(curl -s -X POST http://localhost:8080/api/user/auth/login \
       -H "Content-Type: application/json" \
       -d '{
         "cpf": "52998224725",
@@ -353,13 +353,13 @@ if [ -n "$TOKEN" ]; then
   echo -e "${GREEN}Testing JWT token validation...${NC}"
   
   # Test with valid token
-  VALID_TOKEN_RESPONSE=$(curl -s -X GET http://localhost:8080/api/v2/user/ \
+  VALID_TOKEN_RESPONSE=$(curl -s -X GET http://localhost:8080/api/user/ \
     -H "Authorization: Bearer $TOKEN" -w "%{http_code}" -o /dev/null)
   
   echo "Valid Token Response Code: $VALID_TOKEN_RESPONSE"
   
   # Test with invalid token
-  INVALID_TOKEN_RESPONSE=$(curl -s -X GET http://localhost:8080/api/v2/user/ \
+  INVALID_TOKEN_RESPONSE=$(curl -s -X GET http://localhost:8080/api/user/ \
     -H "Authorization: Bearer ${TOKEN}invalid" -w "%{http_code}" -o /dev/null)
   
   echo "Invalid Token Response Code: $INVALID_TOKEN_RESPONSE"
@@ -398,7 +398,7 @@ DELETE_USER_ID=${USER_ID:-$USER_ID_FROM_CPF}
 
 if [ -n "$DELETE_USER_ID" ]; then
   echo -e "${GREEN}Testing user deletion...${NC}"
-  DELETE_RESPONSE=$(curl -s -X DELETE http://localhost:8080/api/v2/user/$DELETE_USER_ID \
+  DELETE_RESPONSE=$(curl -s -X DELETE http://localhost:8080/api/user/$DELETE_USER_ID \
     -H "Authorization: Bearer $TOKEN" -w "%{http_code}" -o /dev/null)
   
   echo "API Delete User Response Code: $DELETE_RESPONSE"
@@ -409,7 +409,7 @@ if [ -n "$DELETE_USER_ID" ]; then
     
     # Verify deletion by trying to retrieve the deleted user
     echo -e "${GREEN}Verifying deletion by trying to retrieve deleted user...${NC}"
-    VERIFY_DELETE_RESPONSE=$(curl -s -X GET http://localhost:8080/api/v2/user/cpf/52998224725 -w "%{http_code}" -o /dev/null)
+    VERIFY_DELETE_RESPONSE=$(curl -s -X GET http://localhost:8080/api/user/cpf/52998224725 -w "%{http_code}" -o /dev/null)
     
     echo "API Get Deleted User Response Code: $VERIFY_DELETE_RESPONSE"
     
@@ -433,7 +433,7 @@ print_section "8" "Error Handling Testing"
 
 # Test registration with invalid data
 echo -e "${GREEN}Testing registration with invalid data...${NC}"
-INVALID_REG_RESPONSE=$(curl -s -X POST http://localhost:8080/api/v2/user/auth/signup \
+INVALID_REG_RESPONSE=$(curl -s -X POST http://localhost:8080/api/user/auth/signup \
   -H "Content-Type: application/json" \
   -d '{
     "email": "invalid-email",
@@ -447,7 +447,7 @@ echo "Invalid Registration Response: $INVALID_REG_RESPONSE"
 
 # Test login with invalid credentials
 echo -e "${GREEN}Testing login with invalid credentials...${NC}"
-INVALID_LOGIN_RESPONSE=$(curl -s -X POST http://localhost:8080/api/v2/user/auth/login \
+INVALID_LOGIN_RESPONSE=$(curl -s -X POST http://localhost:8080/api/user/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "cpf": "nonexistent",
@@ -459,7 +459,7 @@ echo "Invalid Login Response: $INVALID_LOGIN_RESPONSE"
 # Test update with invalid data
 echo -e "${GREEN}Testing update with invalid data...${NC}"
 if [ -n "$UPDATE_USER_ID" ]; then
-  INVALID_UPDATE_RESPONSE=$(curl -s -X PUT http://localhost:8080/api/v2/user/$UPDATE_USER_ID \
+  INVALID_UPDATE_RESPONSE=$(curl -s -X PUT http://localhost:8080/api/user/$UPDATE_USER_ID \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $TOKEN" \
     -d '{

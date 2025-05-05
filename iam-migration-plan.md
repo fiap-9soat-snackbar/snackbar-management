@@ -20,9 +20,10 @@ The IAM module is currently in a hybrid state with:
      - Persistence (`UserEntity.java`, `UserRepository.java` in infrastructure.persistence)
 
 2. **Legacy Components** (to be removed):
+   - ✅ `web` package with controllers (REMOVED)
+   - ✅ `web` package with DTOs (REMOVED)
    - `UserEntity.java` in domain layer
    - `UserDetailsEntity.java` in domain layer
-   - `web` package with controllers
    - `AuthenticationService.java` and `UserService.java` in application layer
    - `SecurityConfiguration.java` and `SecurityConfigurationAdapter.java` in application layer
    - `JwtAuthenticationFilter.java` in application layer
@@ -105,7 +106,7 @@ com.snackbar.iam
 
 The migration will follow the natural dependency direction (from outer layers to inner layers) while leveraging the adapter pattern to maintain functionality throughout the process:
 
-1. **Start with Web Layer**: Remove legacy controllers and DTOs
+1. **Start with Web Layer**: ✅ Remove legacy controllers and DTOs (COMPLETED)
 2. **Infrastructure Layer**: Remove legacy repositories and infrastructure components
 3. **Application Layer**: Remove legacy services and security components
 4. **Domain Layer**: Remove legacy domain entities
@@ -117,31 +118,31 @@ After each step, we will run `iam_test_integration_v3.sh` to verify that everyth
 
 ### Phase 1: Remove Web Layer Legacy Components
 
-#### Step 1: Remove Legacy Web Controllers
+#### Step 1: Remove Legacy Web Controllers ✅
 
-1. **Verify Replacement Controllers**
+1. **Verify Replacement Controllers** ✅
    - Ensure `UserAuthController.java` covers all functionality of `AuthenticationController.java`
    - Ensure `UserMgmtController.java` covers all functionality of `UserController.java`
    - Run `iam_test_integration_v3.sh` to verify functionality
 
-2. **Remove Legacy Controllers**
+2. **Remove Legacy Controllers** ✅
    - Remove `AuthenticationController.java`
    - Remove `UserController.java`
    - Run `iam_test_integration_v3.sh` to verify functionality
 
-#### Step 2: Remove Legacy DTOs
+#### Step 2: Remove Legacy DTOs ✅
 
-1. **Verify Replacement DTOs**
+1. **Verify Replacement DTOs** ✅
    - Ensure all DTOs in `web.dto` package have equivalents in `infrastructure.controllers.dto`
    - Run `iam_test_integration_v3.sh` to verify functionality
 
-2. **Remove Legacy DTOs**
+2. **Remove Legacy DTOs** ✅
    - Remove all DTOs in `web.dto` package
    - Run `iam_test_integration_v3.sh` to verify functionality
 
-#### Step 3: Remove Web Package
+#### Step 3: Remove Web Package ✅
 
-1. **Remove Web Package**
+1. **Remove Web Package** ✅
    - After all controllers and DTOs are removed, remove the entire `web` package
    - Run `iam_test_integration_v3.sh` to verify functionality
 
@@ -256,7 +257,7 @@ After all legacy components are removed, the adapter components can be removed:
 
 ### Web Layer Components
 
-#### `AuthenticationController.java`
+#### `AuthenticationController.java` ✅
 - **Dependencies**: 
   - `AuthenticationService.java`
   - Web DTOs
@@ -266,7 +267,7 @@ After all legacy components are removed, the adapter components can be removed:
   2. Ensure all functionality is preserved
   3. Run `iam_test_integration_v3.sh` to verify
 
-#### `UserController.java`
+#### `UserController.java` ✅
 - **Dependencies**:
   - `UserService.java`
   - Web DTOs
@@ -401,7 +402,7 @@ In case of issues during migration:
 
 ## Timeline and Prioritization
 
-1. **Week 1: Web Layer Migration**
+1. **Week 1: Web Layer Migration** ✅
    - Remove legacy controllers and DTOs
    - Remove web package
 
@@ -426,6 +427,20 @@ In case of issues during migration:
    - Comprehensive testing
    - Update documentation
    - Final code review
+
+## Progress Tracking
+
+### Completed Steps
+- ✅ Updated controller mappings from `/api/v2/user/*` to `/api/user/*`
+- ✅ Removed legacy web controllers (`AuthenticationController.java`, `UserController.java`)
+- ✅ Removed legacy DTOs in web.dto package
+- ✅ Removed entire web package
+- ✅ Updated test script to use new endpoint paths
+- ✅ Verified functionality with integration tests
+
+### Next Steps
+- Remove legacy repositories in infrastructure root
+- Verify replacement repositories in infrastructure.persistence
 
 ## Conclusion
 
