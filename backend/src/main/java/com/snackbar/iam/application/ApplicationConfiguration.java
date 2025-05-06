@@ -1,8 +1,9 @@
 package com.snackbar.iam.application;
 
-import com.snackbar.iam.domain.UserDetailsEntity;
 import com.snackbar.iam.domain.UserEntity;
+import com.snackbar.iam.domain.entity.User;
 import com.snackbar.iam.infrastructure.adapter.IamRepositoryAdapter;
+import com.snackbar.iam.infrastructure.security.UserDetailsAdapter;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,18 +34,21 @@ public class ApplicationConfiguration {
     @Bean("legacyUserDetailsService")
     UserDetailsService userDetailsService() {
         return cpf -> {
-            UserEntity user = userRepository.findByCpf(cpf)
+            UserEntity userEntity = userRepository.findByCpf(cpf)
                     .orElseThrow(() -> new UsernameNotFoundException("User not found with CPF: " + cpf));
             
-            // Convert UserEntity to UserDetailsEntity
-            return UserDetailsEntity.builder()
-                    .id(user.getId())
-                    .name(user.getName())
-                    .email(user.getEmail())
-                    .cpf(user.getCpf())
-                    .role(user.getRole())
-                    .password(user.getPassword())
-                    .build();
+            // Convert UserEntity to User domain entity
+            User user = new User(
+                userEntity.getId(),
+                userEntity.getName(),
+                userEntity.getEmail(),
+                userEntity.getCpf(),
+                userEntity.getRole(),
+                userEntity.getPassword()
+            );
+            
+            // Use UserDetailsAdapter instead of UserDetailsEntity
+            return new UserDetailsAdapter(user);
         };
     }
 

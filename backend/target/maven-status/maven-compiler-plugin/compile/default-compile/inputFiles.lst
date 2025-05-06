@@ -15,7 +15,6 @@
 /home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/domain/exceptions/DuplicateUserException.java
 /home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/domain/IamRole.java
 /home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/infrastructure/config/IamConfig.java
-/home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/domain/UserDetailsEntity.java
 /home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/infrastructure/config/IamAuthenticationConfig.java
 /home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/SnackbarApplication.java
 /home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/domain/exceptions/InvalidProductDataException.java

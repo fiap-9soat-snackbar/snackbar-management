@@ -2,21 +2,20 @@ package com.snackbar.iam.application.adapter;
 
 import com.snackbar.iam.application.ports.in.AuthenticateUserInputPort;
 import com.snackbar.iam.application.ports.in.RegisterUserInputPort;
-import com.snackbar.iam.domain.IamRole;
-import com.snackbar.iam.domain.UserDetailsEntity;
 import com.snackbar.iam.domain.UserEntity;
 import com.snackbar.iam.domain.adapter.UserEntityAdapter;
 import com.snackbar.iam.domain.entity.User;
-import com.snackbar.iam.domain.exceptions.UserNotFoundException;
 import com.snackbar.iam.infrastructure.adapter.IamRepositoryAdapter;
 import com.snackbar.iam.infrastructure.controllers.dto.LoginRequestDTO;
 import com.snackbar.iam.infrastructure.controllers.dto.RegisterUserRequestDTO;
+import com.snackbar.iam.infrastructure.security.UserDetailsAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -75,7 +74,7 @@ public class AuthenticationServiceAdapter {
         return userEntityAdapter.toUserEntity(registeredUser);
     }
 
-    public UserDetailsEntity authenticate(LoginRequestDTO input) {
+    public UserDetails authenticate(LoginRequestDTO input) {
         logger.debug("Authenticating user with CPF: {}", input.cpf());
         
         // Authenticate using Spring Security (required for session management)
@@ -89,17 +88,17 @@ public class AuthenticationServiceAdapter {
         // Authenticate using the use case
         User authenticatedUser = authenticateUserUseCase.authenticate(input.cpf(), input.password());
         
-        // Convert the domain entity to a legacy entity
-        return userEntityAdapter.toUserDetailsEntity(authenticatedUser);
+        // Return UserDetailsAdapter instead of UserDetailsEntity
+        return new UserDetailsAdapter(authenticatedUser);
     }
 
-    public UserDetailsEntity findByCpf(String cpf) {
+    public UserDetails findByCpf(String cpf) {
         logger.debug("Finding user by CPF: {}", cpf);
         
         // Use the authenticate use case to find the user
         User user = authenticateUserUseCase.authenticate(cpf, null);
         
-        // Convert the domain entity to a legacy entity
-        return userEntityAdapter.toUserDetailsEntity(user);
+        // Return UserDetailsAdapter instead of UserDetailsEntity
+        return new UserDetailsAdapter(user);
     }
 }
