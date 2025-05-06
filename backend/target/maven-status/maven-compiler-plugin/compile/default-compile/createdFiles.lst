@@ -2,7 +2,6 @@ com/snackbar/iam/infrastructure/controllers/dto/AuthenticationResponseDTO.class
 com/snackbar/config/FeignClientConfig.class
 com/snackbar/iam/application/usecases/DeleteUserUseCase.class
 com/snackbar/iam/application/usecases/UpdateUserUseCase.class
-com/snackbar/iam/application/JwtService.class
 com/snackbar/product/domain/event/ProductCreatedEvent.class
 com/snackbar/iam/application/SecurityConfigurationAdapter.class
 com/snackbar/iam/domain/UserDetailsEntity.class

@@ -1,6 +1,7 @@
 package com.snackbar.iam.application;
 
 import com.snackbar.iam.infrastructure.security.IamJwtAuthenticationFilter;
+import com.snackbar.iam.infrastructure.security.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,7 +37,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      * Constructor that accepts the legacy dependencies but delegates to the new implementation.
      */
     public JwtAuthenticationFilter(
-            @Qualifier("legacyJwtService") JwtService jwtService,
+            @Qualifier("jwtService") JwtService jwtService,
             @Qualifier("legacyUserDetailsService") UserDetailsService userDetailsService,
             HandlerExceptionResolver handlerExceptionResolver,
             IamJwtAuthenticationFilter delegate

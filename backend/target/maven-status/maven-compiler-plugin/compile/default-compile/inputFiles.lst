@@ -86,7 +86,6 @@
 /home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/infrastructure/gateways/ProductEntityMapper.java
 /home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/infrastructure/messaging/sqs/producer/SQSProductMessageProducer.java
 /home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/domain/exceptions/InvalidUserDataException.java
-/home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/application/JwtService.java
 /home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/infrastructure/adapter/PersistenceEntityAdapter.java
 /home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/infrastructure/persistence/UserRepository.java
 /home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/application/ports/in/AuthenticateUserInputPort.java
