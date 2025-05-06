@@ -3,6 +3,7 @@ package com.snackbar.iam.application;
 import com.snackbar.iam.infrastructure.config.IamSecurityConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -27,7 +28,7 @@ import java.util.List;
  * 
  * @deprecated Use {@link com.snackbar.iam.infrastructure.config.IamSecurityConfig} instead
  */
-@Configuration
+@Configuration("securityConfigurationAdapter")
 @EnableWebSecurity
 public class SecurityConfigurationAdapter {
     private static final Logger logger = LoggerFactory.getLogger(SecurityConfigurationAdapter.class);
@@ -37,8 +38,8 @@ public class SecurityConfigurationAdapter {
     private final AuthenticationProvider authenticationProvider;
 
     public SecurityConfigurationAdapter(
-            JwtAuthenticationFilter jwtAuthenticationFilter,
-            AuthenticationProvider authenticationProvider,
+            @Qualifier("legacyJwtAuthenticationFilter") JwtAuthenticationFilter jwtAuthenticationFilter,
+            @Qualifier("legacyAuthenticationProvider") AuthenticationProvider authenticationProvider,
             IamSecurityConfig iamSecurityConfig
     ) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;

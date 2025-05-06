@@ -22,7 +22,7 @@ import java.io.IOException;
  * 
  * @deprecated Use {@link com.snackbar.iam.infrastructure.security.IamJwtAuthenticationFilter} instead
  */
-@Component
+@Component("legacyJwtAuthenticationFilter")
 @Deprecated
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
@@ -37,7 +37,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      */
     public JwtAuthenticationFilter(
             @Qualifier("legacyJwtService") JwtService jwtService,
-            UserDetailsService userDetailsService,
+            @Qualifier("legacyUserDetailsService") UserDetailsService userDetailsService,
             HandlerExceptionResolver handlerExceptionResolver,
             IamJwtAuthenticationFilter delegate
     ) {

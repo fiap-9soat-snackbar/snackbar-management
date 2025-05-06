@@ -1,5 +1,6 @@
 package com.snackbar.iam.application;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -22,7 +23,7 @@ import java.util.List;
  * @deprecated Use {@link com.snackbar.iam.infrastructure.config.IamSecurityConfig} instead.
  * This class is maintained for backward compatibility and will be removed in future versions.
  */
-@Configuration
+@Configuration("legacySecurityConfiguration")
 @EnableWebSecurity
 @Deprecated
 public class SecurityConfiguration {
@@ -30,8 +31,8 @@ public class SecurityConfiguration {
     protected final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     public SecurityConfiguration(
-            JwtAuthenticationFilter jwtAuthenticationFilter,
-            AuthenticationProvider authenticationProvider
+            @Qualifier("legacyJwtAuthenticationFilter") JwtAuthenticationFilter jwtAuthenticationFilter,
+            @Qualifier("legacyAuthenticationProvider") AuthenticationProvider authenticationProvider
     ) {
         this.authenticationProvider = authenticationProvider;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
