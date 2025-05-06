@@ -72,7 +72,6 @@ com/snackbar/product/domain/exceptions/InvalidProductDataException.class
 com/snackbar/iam/infrastructure/controllers/dto/LoginRequestDTO.class
 com/snackbar/product/infrastructure/config/SQSConfig.class
 com/snackbar/iam/application/ports/in/DeleteUserInputPort.class
-com/snackbar/iam/application/AuthenticationService.class
 com/snackbar/iam/infrastructure/config/IamConfig.class
 com/snackbar/product/infrastructure/messaging/sqs/consumer/SQSProductMessageConsumer.class
 com/snackbar/iam/application/JwtAuthenticationFilter.class

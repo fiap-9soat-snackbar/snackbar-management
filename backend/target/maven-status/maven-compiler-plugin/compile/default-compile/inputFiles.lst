@@ -62,7 +62,6 @@
 /home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/infrastructure/controllers/dto/RegisterUserRequestDTO.java
 /home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/infrastructure/controllers/ProductDTOMapper.java
 /home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/domain/event/ProductCreatedEvent.java
-/home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/application/AuthenticationService.java
 /home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/application/ports/in/GetAllUsersInputPort.java
 /home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/application/ports/in/GetProductByCategoryInputPort.java
 /home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/infrastructure/event/IamEventListener.java

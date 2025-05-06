@@ -1,6 +1,5 @@
 package com.snackbar.iam.application.adapter;
 
-import com.snackbar.iam.application.AuthenticationService;
 import com.snackbar.iam.application.ports.in.AuthenticateUserInputPort;
 import com.snackbar.iam.application.ports.in.RegisterUserInputPort;
 import com.snackbar.iam.domain.IamRole;
@@ -8,6 +7,7 @@ import com.snackbar.iam.domain.UserDetailsEntity;
 import com.snackbar.iam.domain.UserEntity;
 import com.snackbar.iam.domain.adapter.UserEntityAdapter;
 import com.snackbar.iam.domain.entity.User;
+import com.snackbar.iam.domain.exceptions.UserNotFoundException;
 import com.snackbar.iam.infrastructure.IamRepository;
 import com.snackbar.iam.infrastructure.controllers.dto.LoginRequestDTO;
 import com.snackbar.iam.infrastructure.controllers.dto.RegisterUserRequestDTO;
@@ -21,13 +21,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 /**
- * Adapter for AuthenticationService that delegates to the new use cases.
- * This adapter maintains backward compatibility while using the new clean architecture components.
+ * Adapter that implements the legacy AuthenticationService functionality
+ * while using the new clean architecture components.
  */
 @Component("authenticationServiceAdapter")
-public class AuthenticationServiceAdapter extends AuthenticationService {
+public class AuthenticationServiceAdapter {
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationServiceAdapter.class);
 
+    protected final IamRepository userRepository;
+    protected final PasswordEncoder passwordEncoder;
+    protected final AuthenticationManager authenticationManager;
     private final RegisterUserInputPort registerUserUseCase;
     private final AuthenticateUserInputPort authenticateUserUseCase;
     private final UserEntityAdapter userEntityAdapter;
@@ -43,14 +46,15 @@ public class AuthenticationServiceAdapter extends AuthenticationService {
             AuthenticateUserInputPort authenticateUserUseCase,
             UserEntityAdapter userEntityAdapter
     ) {
-        super(userRepository, authenticationManager, passwordEncoder);
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
         this.registerUserUseCase = registerUserUseCase;
         this.authenticateUserUseCase = authenticateUserUseCase;
         this.userEntityAdapter = userEntityAdapter;
         logger.info("AuthenticationServiceAdapter initialized");
     }
 
-    @Override
     public UserEntity signup(RegisterUserRequestDTO input) {
         logger.debug("Signing up user with email: {}", input.email());
         
@@ -71,7 +75,6 @@ public class AuthenticationServiceAdapter extends AuthenticationService {
         return userEntityAdapter.toUserEntity(registeredUser);
     }
 
-    @Override
     public UserDetailsEntity authenticate(LoginRequestDTO input) {
         logger.debug("Authenticating user with CPF: {}", input.cpf());
         
@@ -90,7 +93,6 @@ public class AuthenticationServiceAdapter extends AuthenticationService {
         return userEntityAdapter.toUserDetailsEntity(authenticatedUser);
     }
 
-    @Override
     public UserDetailsEntity findByCpf(String cpf) {
         logger.debug("Finding user by CPF: {}", cpf);
         
