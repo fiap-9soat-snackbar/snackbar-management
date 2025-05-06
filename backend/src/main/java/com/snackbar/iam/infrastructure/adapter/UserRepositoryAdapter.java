@@ -33,7 +33,7 @@ public class UserRepositoryAdapter implements UserRepository {
     private final PersistenceEntityAdapter persistenceEntityAdapter;
 
     public UserRepositoryAdapter(
-            com.snackbar.iam.infrastructure.persistence.UserRepository userRepository,
+            @Qualifier("userRepository") com.snackbar.iam.infrastructure.persistence.UserRepository userRepository,
             UserEntityAdapter userEntityAdapter,
             PersistenceEntityAdapter persistenceEntityAdapter
     ) {

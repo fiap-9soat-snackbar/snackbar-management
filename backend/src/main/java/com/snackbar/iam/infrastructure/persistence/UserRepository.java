@@ -10,7 +10,7 @@ import java.util.Optional;
  * Spring Data MongoDB repository for UserEntity.
  * Marked as @Primary to be preferred over the legacy repository during dependency injection.
  */
-@Repository
+@Repository("userRepository")
 @Primary
 public interface UserRepository extends MongoRepository<UserEntity, String> {
     /**

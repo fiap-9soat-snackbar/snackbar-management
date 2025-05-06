@@ -4,6 +4,9 @@ import com.snackbar.iam.application.gateways.UserGateway;
 import com.snackbar.iam.domain.entity.User;
 import com.snackbar.iam.infrastructure.persistence.UserEntity;
 import com.snackbar.iam.infrastructure.persistence.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
@@ -14,15 +17,18 @@ import java.util.stream.Collectors;
 /**
  * Implementation of the UserGateway interface that uses Spring Data MongoDB.
  * This class adapts between the domain and persistence layers.
+ * Marked as @Primary to be preferred over legacy repositories.
  */
-@Component
+@Component("userRepositoryGateway")
 @Primary
 public class UserRepositoryGateway implements UserGateway {
+    private static final Logger logger = LoggerFactory.getLogger(UserRepositoryGateway.class);
     
     private final UserRepository userRepository;
     
-    public UserRepositoryGateway(UserRepository userRepository) {
+    public UserRepositoryGateway(@Qualifier("userRepository") UserRepository userRepository) {
         this.userRepository = userRepository;
+        logger.info("UserRepositoryGateway initialized");
     }
     
     @Override

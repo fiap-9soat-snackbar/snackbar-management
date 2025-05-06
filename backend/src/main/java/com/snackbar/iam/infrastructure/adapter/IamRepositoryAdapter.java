@@ -34,7 +34,7 @@ public class IamRepositoryAdapter implements IamRepository {
     private final PersistenceEntityAdapter persistenceEntityAdapter;
 
     public IamRepositoryAdapter(
-            UserRepository userRepository,
+            @Qualifier("userRepository") UserRepository userRepository,
             UserEntityAdapter userEntityAdapter,
             PersistenceEntityAdapter persistenceEntityAdapter
     ) {
