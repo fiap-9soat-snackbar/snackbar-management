@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
  * Adapter for UserService that delegates to the new use cases.
  * This adapter maintains backward compatibility while using the new clean architecture components.
  */
-@Component
+@Component("userServiceAdapter")
 public class UserServiceAdapter extends UserService {
     private static final Logger logger = LoggerFactory.getLogger(UserServiceAdapter.class);
 

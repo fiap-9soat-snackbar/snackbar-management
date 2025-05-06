@@ -16,7 +16,7 @@ import java.util.List;
  * 
  * @deprecated This class is maintained for backward compatibility and will be removed in future versions.
  */
-@Service
+@Service("legacyUserService")
 @Deprecated
 public class UserService {
     protected final IamRepository iamRepository;

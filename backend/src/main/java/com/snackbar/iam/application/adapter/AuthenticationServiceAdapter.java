@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
  * Adapter for AuthenticationService that delegates to the new use cases.
  * This adapter maintains backward compatibility while using the new clean architecture components.
  */
-@Component
+@Component("authenticationServiceAdapter")
 public class AuthenticationServiceAdapter extends AuthenticationService {
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationServiceAdapter.class);
 
@@ -37,8 +37,8 @@ public class AuthenticationServiceAdapter extends AuthenticationService {
 
     public AuthenticationServiceAdapter(
             @Qualifier("iamRepositoryAdapter") IamRepository userRepository,
-            AuthenticationManager authenticationManager,
-            PasswordEncoder passwordEncoder,
+            @Qualifier("legacyAuthenticationManager") AuthenticationManager authenticationManager,
+            @Qualifier("legacyPasswordEncoder") PasswordEncoder passwordEncoder,
             RegisterUserInputPort registerUserUseCase,
             AuthenticateUserInputPort authenticateUserUseCase,
             UserEntityAdapter userEntityAdapter

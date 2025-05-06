@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
  * 
  * @deprecated This class is maintained for backward compatibility and will be removed in future versions.
  */
-@Service
+@Service("legacyAuthenticationService")
 @Deprecated
 public class AuthenticationService {
     protected final IamRepository userRepository;
@@ -27,8 +27,8 @@ public class AuthenticationService {
 
     public AuthenticationService(
             @Qualifier("iamRepositoryAdapter") IamRepository userRepository,
-            AuthenticationManager authenticationManager,
-            PasswordEncoder passwordEncoder
+            @Qualifier("legacyAuthenticationManager") AuthenticationManager authenticationManager,
+            @Qualifier("legacyPasswordEncoder") PasswordEncoder passwordEncoder
     ) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
