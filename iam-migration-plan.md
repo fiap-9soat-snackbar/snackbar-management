@@ -449,7 +449,8 @@ In case of issues during migration:
 - ✅ Updated service classes to use new DTOs
 - ✅ Added explicit bean names to adapter components
 - ✅ Added explicit qualifiers to repository components
-- ✅ Verified functionality with integration tests after repository updates
+- ✅ Added explicit bean names and qualifiers to security components
+- ✅ Verified functionality with integration tests after security component updates
 
 ### Current Work
 - Preparing repository adapters to properly delegate to the new repositories
