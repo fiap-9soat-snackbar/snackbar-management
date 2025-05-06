@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.FluentQuery;
 import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +24,7 @@ import java.util.stream.StreamSupport;
  * Adapter for UserRepository that delegates to the new UserRepository.
  * This adapter converts between legacy UserEntity and new persistence UserEntity.
  */
-@Component
+@Component("userRepositoryAdapter")
 public class UserRepositoryAdapter implements UserRepository {
     private static final Logger logger = LoggerFactory.getLogger(UserRepositoryAdapter.class);
 
