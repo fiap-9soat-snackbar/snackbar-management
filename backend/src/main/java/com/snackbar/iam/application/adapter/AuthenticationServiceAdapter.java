@@ -8,7 +8,7 @@ import com.snackbar.iam.domain.UserEntity;
 import com.snackbar.iam.domain.adapter.UserEntityAdapter;
 import com.snackbar.iam.domain.entity.User;
 import com.snackbar.iam.domain.exceptions.UserNotFoundException;
-import com.snackbar.iam.infrastructure.IamRepository;
+import com.snackbar.iam.infrastructure.adapter.IamRepositoryAdapter;
 import com.snackbar.iam.infrastructure.controllers.dto.LoginRequestDTO;
 import com.snackbar.iam.infrastructure.controllers.dto.RegisterUserRequestDTO;
 import org.slf4j.Logger;
@@ -28,7 +28,7 @@ import org.springframework.stereotype.Component;
 public class AuthenticationServiceAdapter {
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationServiceAdapter.class);
 
-    protected final IamRepository userRepository;
+    protected final IamRepositoryAdapter userRepository;
     protected final PasswordEncoder passwordEncoder;
     protected final AuthenticationManager authenticationManager;
     private final RegisterUserInputPort registerUserUseCase;
@@ -39,7 +39,7 @@ public class AuthenticationServiceAdapter {
     private AuthenticationManager authManager;
 
     public AuthenticationServiceAdapter(
-            @Qualifier("iamRepositoryAdapter") IamRepository userRepository,
+            @Qualifier("iamRepositoryAdapter") IamRepositoryAdapter userRepository,
             @Qualifier("legacyAuthenticationManager") AuthenticationManager authenticationManager,
             @Qualifier("legacyPasswordEncoder") PasswordEncoder passwordEncoder,
             RegisterUserInputPort registerUserUseCase,

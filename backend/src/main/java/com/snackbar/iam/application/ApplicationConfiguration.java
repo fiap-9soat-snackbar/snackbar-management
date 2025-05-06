@@ -2,7 +2,7 @@ package com.snackbar.iam.application;
 
 import com.snackbar.iam.domain.UserDetailsEntity;
 import com.snackbar.iam.domain.UserEntity;
-import com.snackbar.iam.infrastructure.IamRepository;
+import com.snackbar.iam.infrastructure.adapter.IamRepositoryAdapter;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,9 +24,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @EnableWebSecurity
 @Deprecated
 public class ApplicationConfiguration {
-    private final IamRepository userRepository;
+    private final IamRepositoryAdapter userRepository;
 
-    public ApplicationConfiguration(@Qualifier("iamRepositoryAdapter") IamRepository userRepository) {
+    public ApplicationConfiguration(@Qualifier("iamRepositoryAdapter") IamRepositoryAdapter userRepository) {
         this.userRepository = userRepository;
     }
 

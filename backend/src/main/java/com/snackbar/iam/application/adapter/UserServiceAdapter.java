@@ -6,8 +6,8 @@ import com.snackbar.iam.application.ports.in.GetUserByCpfInputPort;
 import com.snackbar.iam.domain.UserEntity;
 import com.snackbar.iam.domain.adapter.UserEntityAdapter;
 import com.snackbar.iam.domain.entity.User;
-import com.snackbar.iam.infrastructure.IamRepository;
-import com.snackbar.iam.infrastructure.UserRepository;
+import com.snackbar.iam.infrastructure.adapter.IamRepositoryAdapter;
+import com.snackbar.iam.infrastructure.adapter.UserRepositoryAdapter;
 import com.snackbar.iam.infrastructure.controllers.dto.UserResponseDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,16 +25,16 @@ import java.util.stream.Collectors;
 public class UserServiceAdapter {
     private static final Logger logger = LoggerFactory.getLogger(UserServiceAdapter.class);
 
-    protected final IamRepository iamRepository;
-    protected final UserRepository userRepository;
+    protected final IamRepositoryAdapter iamRepository;
+    protected final UserRepositoryAdapter userRepository;
     private final GetAllUsersInputPort getAllUsersUseCase;
     private final GetUserByCpfInputPort getUserByCpfUseCase;
     private final DeleteUserInputPort deleteUserUseCase;
     private final UserEntityAdapter userEntityAdapter;
 
     public UserServiceAdapter(
-            @Qualifier("iamRepositoryAdapter") IamRepository iamRepository,
-            @Qualifier("userRepositoryAdapter") UserRepository userRepository,
+            @Qualifier("iamRepositoryAdapter") IamRepositoryAdapter iamRepository,
+            @Qualifier("userRepositoryAdapter") UserRepositoryAdapter userRepository,
             GetAllUsersInputPort getAllUsersUseCase,
             GetUserByCpfInputPort getUserByCpfUseCase,
             DeleteUserInputPort deleteUserUseCase,
