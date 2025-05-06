@@ -447,6 +447,7 @@ In case of issues during migration:
 - ✅ Verified functionality with integration tests
 - ✅ Updated adapter classes to use new DTOs from `infrastructure.controllers.dto`
 - ✅ Updated service classes to use new DTOs
+- ✅ Added explicit bean names to adapter components
 - ✅ Verified functionality with integration tests after DTO migration
 
 ### Current Work
