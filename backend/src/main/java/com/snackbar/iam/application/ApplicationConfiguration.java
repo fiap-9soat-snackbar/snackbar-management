@@ -1,6 +1,5 @@
 package com.snackbar.iam.application;
 
-import com.snackbar.iam.domain.UserEntity;
 import com.snackbar.iam.domain.entity.User;
 import com.snackbar.iam.infrastructure.adapter.IamRepositoryAdapter;
 import com.snackbar.iam.infrastructure.security.UserDetailsAdapter;
@@ -34,20 +33,19 @@ public class ApplicationConfiguration {
     @Bean("legacyUserDetailsService")
     UserDetailsService userDetailsService() {
         return cpf -> {
-            UserEntity userEntity = userRepository.findByCpf(cpf)
+            // Use the adapter to get the domain entity directly
+            User user = userRepository.findByCpf(cpf)
+                    .map(userEntity -> new User(
+                        userEntity.getId(),
+                        userEntity.getName(),
+                        userEntity.getEmail(),
+                        userEntity.getCpf(),
+                        userEntity.getRole(),
+                        userEntity.getPassword()
+                    ))
                     .orElseThrow(() -> new UsernameNotFoundException("User not found with CPF: " + cpf));
             
-            // Convert UserEntity to User domain entity
-            User user = new User(
-                userEntity.getId(),
-                userEntity.getName(),
-                userEntity.getEmail(),
-                userEntity.getCpf(),
-                userEntity.getRole(),
-                userEntity.getPassword()
-            );
-            
-            // Use UserDetailsAdapter instead of UserDetailsEntity
+            // Use UserDetailsAdapter
             return new UserDetailsAdapter(user);
         };
     }
