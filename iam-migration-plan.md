@@ -448,13 +448,15 @@ In case of issues during migration:
 - ✅ Updated adapter classes to use new DTOs from `infrastructure.controllers.dto`
 - ✅ Updated service classes to use new DTOs
 - ✅ Added explicit bean names to adapter components
-- ✅ Verified functionality with integration tests after DTO migration
+- ✅ Added explicit qualifiers to repository components
+- ✅ Verified functionality with integration tests after repository updates
 
 ### Current Work
 - Preparing repository adapters to properly delegate to the new repositories
-- Creating interface bridges to support gradual migration
+- Reducing dependencies on legacy repositories throughout the codebase
 
 ### Next Steps
+- Create interface bridges if needed to support gradual migration
 - Remove legacy repositories in infrastructure root
 - Verify replacement repositories in infrastructure.persistence
 
