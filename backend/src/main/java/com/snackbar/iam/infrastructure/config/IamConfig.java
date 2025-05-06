@@ -6,6 +6,7 @@ import com.snackbar.iam.application.ports.out.IamDomainEventPublisher;
 import com.snackbar.iam.application.usecases.*;
 import com.snackbar.iam.infrastructure.gateways.UserRepositoryGateway;
 import com.snackbar.iam.infrastructure.persistence.UserRepository;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,7 +34,7 @@ public class IamConfig {
      * @return The user gateway
      */
     @Bean
-    public UserGateway userGateway(UserRepository userRepository) {
+    public UserGateway userGateway(@Qualifier("userRepository") UserRepository userRepository) {
         return new UserRepositoryGateway(userRepository);
     }
 
