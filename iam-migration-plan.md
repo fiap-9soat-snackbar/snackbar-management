@@ -452,15 +452,286 @@ In case of issues during migration:
 - ✅ Added explicit bean names and qualifiers to security components
 - ✅ Added explicit bean names and qualifiers to application service components
 - ✅ Verified functionality with integration tests after application service component updates
+- ✅ Completed comprehensive dependency audit
 
 ### Current Work
-- Preparing repository adapters to properly delegate to the new repositories
-- Reducing dependencies on legacy repositories throughout the codebase
+- Preparing for systematic removal of legacy components
 
 ### Next Steps
-- Create interface bridges if needed to support gradual migration
-- Remove legacy repositories in infrastructure root
-- Verify replacement repositories in infrastructure.persistence
+- Begin removing legacy components following the detailed removal plan
+
+## Dependency Audit Results
+
+### Legacy Domain Entities
+- `UserEntity.java` is used by:
+  - Application layer: `ApplicationConfiguration`, `AuthenticationService`, `UserService`
+  - Adapters: `AuthenticationServiceAdapter`, `UserServiceAdapter`, `UserEntityAdapter`
+  - Infrastructure: `IamRepository`, `UserRepository`, `IamRepositoryAdapter`, `UserRepositoryAdapter`
+
+- `UserDetailsEntity.java` is used by:
+  - Application layer: `ApplicationConfiguration`, `AuthenticationService`, `UserService`
+  - Adapters: `AuthenticationServiceAdapter`, `UserEntityAdapter`
+  - Infrastructure: `UserRepository`
+
+### Legacy Infrastructure Components
+- `IamRepository.java` is used by:
+  - Application layer: `ApplicationConfiguration`, `AuthenticationService`, `UserService`
+  - Adapters: `AuthenticationServiceAdapter`, `UserServiceAdapter`
+  - Infrastructure: `IamRepositoryAdapter`
+
+- `UserRepository.java` is used by:
+  - Application layer: `UserService`
+  - Adapters: `UserServiceAdapter`
+  - Infrastructure: `UserRepositoryAdapter`
+
+### Legacy Application Components
+- `AuthenticationService.java` is only used by `AuthenticationServiceAdapter`
+- `UserService.java` is only used by `UserServiceAdapter`
+- `JwtService.java` is used by `JwtAuthenticationFilter` and referenced in `UserAuthController`
+
+## Key Insights
+
+1. **Clean Controllers**: The new controllers (`UserAuthController`, `UserMgmtController`) are already using the clean architecture components (use cases, domain entities) directly, not the legacy services.
+
+2. **Adapter Pattern Working**: The adapter pattern is working as intended - legacy components are only referenced by their respective adapters or other legacy components.
+
+3. **Dependency Direction**: Dependencies flow in the correct direction, with outer layers depending on inner layers, which will make removal easier.
+
+4. **Isolated Legacy Components**: Most legacy components are well-isolated and only used by their adapters, making them good candidates for removal.
+
+## Detailed Removal Plan
+
+### Phase 1: Remove Legacy Application Components
+
+1. **Remove JwtService.java**
+   - Update `JwtAuthenticationFilter` to use the new `JwtService` directly
+   - Ensure `UserAuthController` is using the new `JwtService` with proper qualifiers
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+2. **Remove AuthenticationService.java**
+   - Update any remaining references to use `AuthenticationServiceAdapter` directly
+   - Remove the class and update `AuthenticationServiceAdapter` to implement the necessary interfaces directly
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+3. **Remove UserService.java**
+   - Update any remaining references to use `UserServiceAdapter` directly
+   - Remove the class and update `UserServiceAdapter` to implement the necessary interfaces directly
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+### Phase 2: Remove Legacy Infrastructure Components
+
+1. **Remove IamRepository.java**
+   - Update `ApplicationConfiguration` to use the new repository interfaces
+   - Update any remaining references to use `IamRepositoryAdapter` or the new repositories directly
+   - Remove the interface
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+2. **Remove UserRepository.java**
+   - Update any remaining references to use `UserRepositoryAdapter` or the new repositories directly
+   - Remove the interface
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+### Phase 3: Remove Legacy Domain Entities
+
+1. **Remove UserDetailsEntity.java**
+   - Update `ApplicationConfiguration` to use the new domain entities
+   - Update any remaining references to use `UserEntityAdapter` or the new domain entities directly
+   - Remove the class
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+2. **Remove UserEntity.java**
+   - Update any remaining references to use `UserEntityAdapter` or the new domain entities directly
+   - Remove the class
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+### Phase 4: Remove Adapter Components
+
+1. **Remove UserEntityAdapter.java**
+   - Update any remaining references to use the new domain entities directly
+   - Remove the class
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+2. **Remove IamRepositoryAdapter.java and UserRepositoryAdapter.java**
+   - Update any remaining references to use the new repositories directly
+   - Remove the classes
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+3. **Remove AuthenticationServiceAdapter.java and UserServiceAdapter.java**
+   - Update any remaining references to use the use cases directly
+   - Remove the classes
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+## Migration Strategy
+
+The migration will follow the natural dependency direction (from outer layers to inner layers) while leveraging the adapter pattern to maintain functionality throughout the process:
+
+1. **Start with Web Layer**: ✅ Remove legacy controllers and DTOs (COMPLETED)
+2. **Application Layer**: Remove legacy services and security components
+3. **Infrastructure Layer**: Remove legacy repositories and infrastructure components
+4. **Domain Layer**: Remove legacy domain entities
+5. **Remove Adapters**: Once all legacy components are removed, remove the adapter components
+
+After each step, we will run `iam_test_integration_v3.sh` to verify that everything still works correctly.
+
+## Detailed Migration Steps
+
+### Phase 1: Remove Web Layer Legacy Components ✅
+
+#### Step 1: Remove Legacy Web Controllers ✅
+
+1. **Verify Replacement Controllers** ✅
+   - Ensure `UserAuthController.java` covers all functionality of `AuthenticationController.java`
+   - Ensure `UserMgmtController.java` covers all functionality of `UserController.java`
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+2. **Remove Legacy Controllers** ✅
+   - Remove `AuthenticationController.java`
+   - Remove `UserController.java`
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+#### Step 2: Remove Legacy DTOs ✅
+
+1. **Verify Replacement DTOs** ✅
+   - Ensure all DTOs in `web.dto` package have equivalents in `infrastructure.controllers.dto`
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+2. **Remove Legacy DTOs** ✅
+   - Remove all DTOs in `web.dto` package
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+#### Step 3: Remove Web Package ✅
+
+1. **Remove Web Package** ✅
+   - After all controllers and DTOs are removed, remove the entire `web` package
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+### Phase 2: Remove Application Layer Legacy Components
+
+#### Step 1: Remove JwtService.java
+
+1. **Update JwtAuthenticationFilter**
+   - Modify `JwtAuthenticationFilter` to use the new `JwtService` directly
+   - Ensure proper qualifiers are used
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+2. **Remove Legacy JwtService**
+   - Remove `JwtService.java` from the application layer
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+#### Step 2: Remove AuthenticationService.java
+
+1. **Update References**
+   - Identify any remaining references to `AuthenticationService`
+   - Update them to use `AuthenticationServiceAdapter` directly
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+2. **Remove Legacy Service**
+   - Remove `AuthenticationService.java`
+   - Update `AuthenticationServiceAdapter` to implement necessary interfaces directly
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+#### Step 3: Remove UserService.java
+
+1. **Update References**
+   - Identify any remaining references to `UserService`
+   - Update them to use `UserServiceAdapter` directly
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+2. **Remove Legacy Service**
+   - Remove `UserService.java`
+   - Update `UserServiceAdapter` to implement necessary interfaces directly
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+### Phase 3: Remove Infrastructure Layer Legacy Components
+
+#### Step 1: Remove IamRepository.java
+
+1. **Update ApplicationConfiguration**
+   - Modify `ApplicationConfiguration` to use the new repository interfaces
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+2. **Update References**
+   - Identify any remaining references to `IamRepository`
+   - Update them to use `IamRepositoryAdapter` or the new repositories directly
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+3. **Remove Legacy Repository**
+   - Remove `IamRepository.java`
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+#### Step 2: Remove UserRepository.java
+
+1. **Update References**
+   - Identify any remaining references to `UserRepository`
+   - Update them to use `UserRepositoryAdapter` or the new repositories directly
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+2. **Remove Legacy Repository**
+   - Remove `UserRepository.java`
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+### Phase 4: Remove Domain Layer Legacy Components
+
+#### Step 1: Remove UserDetailsEntity.java
+
+1. **Update ApplicationConfiguration**
+   - Modify `ApplicationConfiguration` to use the new domain entities
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+2. **Update References**
+   - Identify any remaining references to `UserDetailsEntity`
+   - Update them to use `UserEntityAdapter` or the new domain entities directly
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+3. **Remove Legacy Entity**
+   - Remove `UserDetailsEntity.java`
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+#### Step 2: Remove UserEntity.java
+
+1. **Update References**
+   - Identify any remaining references to `UserEntity`
+   - Update them to use `UserEntityAdapter` or the new domain entities directly
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+2. **Remove Legacy Entity**
+   - Remove `UserEntity.java`
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+### Phase 5: Remove Adapter Components
+
+#### Step 1: Remove Domain Layer Adapters
+
+1. **Update References to UserEntityAdapter**
+   - Identify any remaining references to `UserEntityAdapter`
+   - Update them to use the new domain entities directly
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+2. **Remove Domain Adapters**
+   - Remove `UserEntityAdapter.java`
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+#### Step 2: Remove Infrastructure Layer Adapters
+
+1. **Update References to Repository Adapters**
+   - Update all references to `IamRepositoryAdapter` and `UserRepositoryAdapter` to use the new repositories directly
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+2. **Remove Infrastructure Adapters**
+   - Remove `IamRepositoryAdapter.java`
+   - Remove `UserRepositoryAdapter.java`
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+#### Step 3: Remove Application Layer Adapters
+
+1. **Update References to Service Adapters**
+   - Update all references to `AuthenticationServiceAdapter` and `UserServiceAdapter` to use the use cases directly
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+2. **Remove Application Adapters**
+   - Remove `AuthenticationServiceAdapter.java`
+   - Remove `UserServiceAdapter.java`
+   - Run `iam_test_integration_v3.sh` to verify functionality
 
 ## Conclusion
 
