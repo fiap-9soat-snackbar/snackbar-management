@@ -1,6 +1,5 @@
 package com.snackbar.iam.application.adapter;
 
-import com.snackbar.iam.application.UserService;
 import com.snackbar.iam.application.ports.in.DeleteUserInputPort;
 import com.snackbar.iam.application.ports.in.GetAllUsersInputPort;
 import com.snackbar.iam.application.ports.in.GetUserByCpfInputPort;
@@ -19,13 +18,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Adapter for UserService that delegates to the new use cases.
- * This adapter maintains backward compatibility while using the new clean architecture components.
+ * Adapter that implements the legacy UserService functionality
+ * while using the new clean architecture components.
  */
 @Component("userServiceAdapter")
-public class UserServiceAdapter extends UserService {
+public class UserServiceAdapter {
     private static final Logger logger = LoggerFactory.getLogger(UserServiceAdapter.class);
 
+    protected final IamRepository iamRepository;
+    protected final UserRepository userRepository;
     private final GetAllUsersInputPort getAllUsersUseCase;
     private final GetUserByCpfInputPort getUserByCpfUseCase;
     private final DeleteUserInputPort deleteUserUseCase;
@@ -39,7 +40,8 @@ public class UserServiceAdapter extends UserService {
             DeleteUserInputPort deleteUserUseCase,
             UserEntityAdapter userEntityAdapter
     ) {
-        super(iamRepository, userRepository);
+        this.iamRepository = iamRepository;
+        this.userRepository = userRepository;
         this.getAllUsersUseCase = getAllUsersUseCase;
         this.getUserByCpfUseCase = getUserByCpfUseCase;
         this.deleteUserUseCase = deleteUserUseCase;
@@ -47,7 +49,6 @@ public class UserServiceAdapter extends UserService {
         logger.info("UserServiceAdapter initialized");
     }
 
-    @Override
     public List<UserEntity> allUsers() {
         logger.debug("Getting all users");
         
@@ -60,7 +61,6 @@ public class UserServiceAdapter extends UserService {
                 .collect(Collectors.toList());
     }
 
-    @Override
     public UserResponseDTO getUserByCpf(String cpf) {
         logger.debug("Getting user by CPF: {}", cpf);
         
@@ -77,7 +77,6 @@ public class UserServiceAdapter extends UserService {
         );
     }
 
-    @Override
     public void deleteUser(String id) {
         logger.debug("Deleting user with ID: {}", id);
         

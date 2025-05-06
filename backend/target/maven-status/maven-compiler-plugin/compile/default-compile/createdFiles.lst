@@ -96,7 +96,6 @@ com/snackbar/product/application/ports/in/ListProductInputPort.class
 com/snackbar/product/infrastructure/messaging/sqs/model/StandardProductMessage.class
 com/snackbar/product/application/ports/in/GetProductByIdInputPort.class
 com/snackbar/product/infrastructure/messaging/mapper/ProductMessageMapper.class
-com/snackbar/iam/application/UserService.class
 com/snackbar/product/application/usecases/DeleteProductByIdUseCase.class
 com/snackbar/iam/application/ports/in/UpdateUserInputPort.class
 com/snackbar/product/infrastructure/controllers/ProductDTOMapper.class

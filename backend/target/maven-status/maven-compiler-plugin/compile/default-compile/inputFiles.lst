@@ -48,7 +48,6 @@
 /home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/application/ports/in/GetProductByIdInputPort.java
 /home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/infrastructure/gateways/ProductRepositoryGateway.java
 /home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/application/usecases/GetAllUsersUseCase.java
-/home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/application/UserService.java
 /home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/infrastructure/messaging/sqs/model/SQSMessage.java
 /home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/application/SecurityConfigurationAdapter.java
 /home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/infrastructure/security/IamJwtAuthenticationFilter.java
