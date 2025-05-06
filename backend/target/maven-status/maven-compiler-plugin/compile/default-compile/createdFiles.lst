@@ -39,7 +39,6 @@ com/snackbar/iam/application/adapter/AuthenticationServiceAdapter.class
 com/snackbar/product/application/ports/in/GetProductByNameInputPort.class
 com/snackbar/product/domain/entity/Product.class
 com/snackbar/iam/domain/UserDetailsEntity$UserDetailsEntityBuilder.class
-com/snackbar/iam/infrastructure/IamRepository.class
 com/snackbar/iam/infrastructure/event/IamEventListener.class
 com/snackbar/iam/application/gateways/UserGateway.class
 com/snackbar/iam/infrastructure/security/IamJwtAuthenticationFilter.class
@@ -76,7 +75,6 @@ com/snackbar/iam/infrastructure/config/IamConfig.class
 com/snackbar/product/infrastructure/messaging/sqs/consumer/SQSProductMessageConsumer.class
 com/snackbar/iam/application/JwtAuthenticationFilter.class
 com/snackbar/iam/infrastructure/persistence/UserEntity$Builder.class
-com/snackbar/iam/infrastructure/UserRepository.class
 com/snackbar/iam/infrastructure/security/exception/JwtAuthenticationException.class
 com/snackbar/product/domain/event/ProductDeletedEvent.class
 com/snackbar/product/infrastructure/messaging/sqs/model/ProductMessage.class

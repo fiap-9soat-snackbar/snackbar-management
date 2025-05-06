@@ -10,7 +10,6 @@
 /home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/application/adapter/UserServiceAdapter.java
 /home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/infrastructure/controllers/IamGlobalExceptionHandler.java
 /home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/infrastructure/controllers/dto/UserResponseDTO.java
-/home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/infrastructure/IamRepository.java
 /home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/application/ports/in/RegisterUserInputPort.java
 /home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/application/ports/in/GetUserByCpfInputPort.java
 /home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/domain/exceptions/DuplicateUserException.java
@@ -33,7 +32,6 @@
 /home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/infrastructure/adapter/UserDetailsServiceAdapter.java
 /home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/infrastructure/messaging/sqs/consumer/SQSMessageConsumer.java
 /home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/domain/UserEntity.java
-/home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/infrastructure/UserRepository.java
 /home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/product/infrastructure/controllers/GetProductResponse.java
 /home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/iam/application/ports/in/DeleteUserInputPort.java
 /home/saulo/workspace/fiap/fase04/snackbar-management/backend/src/main/java/com/snackbar/infrastructure/messaging/sqs/producer/SQSMessageProducer.java
