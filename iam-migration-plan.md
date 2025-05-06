@@ -450,7 +450,8 @@ In case of issues during migration:
 - ✅ Added explicit bean names to adapter components
 - ✅ Added explicit qualifiers to repository components
 - ✅ Added explicit bean names and qualifiers to security components
-- ✅ Verified functionality with integration tests after security component updates
+- ✅ Added explicit bean names and qualifiers to application service components
+- ✅ Verified functionality with integration tests after application service component updates
 
 ### Current Work
 - Preparing repository adapters to properly delegate to the new repositories
