@@ -23,7 +23,7 @@ The IAM module is currently in a hybrid state with:
    - ✅ `web` package with controllers (REMOVED)
    - ✅ `web` package with DTOs (REMOVED)
    - `UserEntity.java` in domain layer
-   - `UserDetailsEntity.java` in domain layer
+   - ✅ `UserDetailsEntity.java` in domain layer (REMOVED)
    - ✅ `AuthenticationService.java` in application layer (REMOVED)
    - ✅ `UserService.java` in application layer (REMOVED)
    - ✅ `JwtService.java` in application layer (REMOVED)
@@ -216,18 +216,18 @@ After each step, we will run `iam_test_integration_v3.sh` to verify that everyth
 
 ### Phase 4: Remove Domain Layer Legacy Components
 
-#### Step 1: Remove UserDetailsEntity.java
+#### Step 1: Remove UserDetailsEntity.java ✅
 
-1. **Update ApplicationConfiguration**
+1. **Update ApplicationConfiguration** ✅
    - Modify `ApplicationConfiguration` to use the new domain entities
    - Run `iam_test_integration_v3.sh` to verify functionality
 
-2. **Update References**
+2. **Update References** ✅
    - Identify any remaining references to `UserDetailsEntity`
    - Update them to use `UserEntityAdapter` or the new domain entities directly
    - Run `iam_test_integration_v3.sh` to verify functionality
 
-3. **Remove Legacy Entity**
+3. **Remove Legacy Entity** ✅
    - Remove `UserDetailsEntity.java`
    - Run `iam_test_integration_v3.sh` to verify functionality
 
@@ -301,13 +301,16 @@ After each step, we will run `iam_test_integration_v3.sh` to verify that everyth
 - ✅ Removed UserRepository.java from infrastructure layer
 - ✅ Modified adapter classes to no longer implement legacy interfaces
 - ✅ Verified functionality with integration tests after removing legacy repositories
+- ✅ Removed UserDetailsEntity.java from domain layer
+- ✅ Updated AuthenticationServiceAdapter to use UserDetailsAdapter instead of UserDetailsEntity
+- ✅ Updated ApplicationConfiguration to use domain entities directly
+- ✅ Verified functionality with integration tests after removing UserDetailsEntity
 
 ### Current Work
-- Preparing for removal of legacy domain entities
+- Working on removing UserEntity.java from domain layer
 
 ### Next Steps
-- Remove UserDetailsEntity.java from domain layer
-- Remove UserEntity.java from domain layer
+- Update references to use the domain entity User directly instead of UserEntity
 - Begin removing adapter components
 
 ## Conclusion
