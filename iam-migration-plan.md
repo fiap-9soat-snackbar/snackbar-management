@@ -308,13 +308,14 @@ After each step, we will run `iam_test_integration_v3.sh` to verify that everyth
 - ✅ Removed UserEntity.java from domain layer
 - ✅ Updated adapter classes to use infrastructure.persistence.UserEntity instead of domain.UserEntity
 - ✅ Verified functionality with integration tests after removing UserEntity
+- ✅ Updated adapter classes to use UserEntityMapper instead of UserEntityAdapter
+- ✅ Verified functionality with integration tests after updating adapter references
 
 ### Current Work
-- Working on removing adapter components
+- Working on removing domain layer adapters (UserEntityAdapter)
 
 ### Next Steps
-- Begin removing domain layer adapters (UserEntityAdapter)
-- Update references to use the domain entity User directly instead of through adapters
+- Remove UserEntityAdapter.java
 - Continue with infrastructure and application layer adapter removal
 
 ## Conclusion
