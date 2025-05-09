@@ -244,14 +244,14 @@ After each step, we will run `iam_test_integration_v3.sh` to verify that everyth
 
 ### Phase 5: Remove Adapter Components
 
-#### Step 1: Remove Domain Layer Adapters
+#### Step 1: Remove Domain Layer Adapters ✅
 
 1. **Update References to UserEntityAdapter** ✅
    - Identify any remaining references to `UserEntityAdapter`
    - Update them to use the new domain entities directly
    - Run `iam_test_integration_v3.sh` to verify functionality
 
-2. **Remove Domain Adapters**
+2. **Remove Domain Adapters** ✅
    - Remove `UserEntityAdapter.java`
    - Run `iam_test_integration_v3.sh` to verify functionality
 
