@@ -330,7 +330,7 @@ After each step, we will run `iam_test_integration_v3.sh` to verify that everyth
 
 #### Step 1: Remove Legacy Configuration Classes
 
-1. **Identify Legacy Configuration Dependencies** ❌
+1. **Identify Legacy Configuration Dependencies** ✅
    - Check if ApplicationConfiguration.java is still being referenced
    - Ensure all beans defined in it are properly migrated to clean architecture components
    - Run `iam_test_integration_v3.sh` to verify functionality
@@ -341,7 +341,7 @@ After each step, we will run `iam_test_integration_v3.sh` to verify that everyth
 
 #### Step 2: Remove Legacy Security Components
 
-1. **Identify Legacy Security Dependencies** ❌
+1. **Identify Legacy Security Dependencies** ✅
    - Check if SecurityConfigurationAdapter.java is still being referenced
    - Check if SecurityConfiguration.java is still being referenced
    - Check if JwtAuthenticationFilter.java is still being referenced
@@ -353,6 +353,67 @@ After each step, we will run `iam_test_integration_v3.sh` to verify that everyth
    - Remove SecurityConfiguration.java
    - Remove JwtAuthenticationFilter.java
    - Run `iam_test_integration_v3.sh` to verify functionality
+
+#### Step 3: Remove Legacy Adapter Infrastructure
+
+1. **Identify Legacy Adapter Dependencies** ✅
+   - Check if PersistenceEntityAdapter.java is still being referenced
+   - Check if UserDetailsServiceAdapter.java is still being referenced
+   - Ensure all functionality is properly migrated to clean architecture components
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+2. **Remove Legacy Adapters** ❌
+   - Remove PersistenceEntityAdapter.java
+   - Remove UserDetailsServiceAdapter.java
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+#### Step 4: Remove Legacy Client Configuration
+
+1. **Identify Legacy Client Dependencies** ✅
+   - Check if FeignClientConfig.java is still being referenced
+   - Ensure all client functionality is properly migrated to clean architecture components
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+2. **Remove Legacy Client Configuration** ❌
+   - Remove FeignClientConfig.java
+   - Run `iam_test_integration_v3.sh` to verify functionality
+
+### Dependency Analysis
+
+After attempting to remove legacy components, we've identified the following dependencies that need to be addressed:
+
+1. **ApplicationConfiguration.java**
+   - Provides `legacyUserDetailsService` bean used by JwtAuthenticationFilter
+   - Provides `legacyPasswordEncoder` bean (now migrated to IamAuthenticationConfig)
+   - Provides `legacyAuthenticationManager` bean
+   - Provides `legacyAuthenticationProvider` bean used by SecurityConfiguration
+
+2. **JwtAuthenticationFilter.java**
+   - Modified to use "userDetailsServiceAdapter" instead of "legacyUserDetailsService"
+   - Used by SecurityConfigurationAdapter and SecurityConfiguration
+
+3. **SecurityConfigurationAdapter.java**
+   - Depends on JwtAuthenticationFilter
+   - Depends on legacyAuthenticationProvider from ApplicationConfiguration
+
+4. **SecurityConfiguration.java**
+   - Depends on JwtAuthenticationFilter
+   - Depends on legacyAuthenticationProvider from ApplicationConfiguration
+
+5. **UserDetailsServiceAdapter.java**
+   - Used by IamJwtAuthenticationFilter and IamAuthenticationConfig
+
+### Migration Strategy
+
+To safely remove these components, we need to:
+
+1. Create a new AuthenticationProvider bean in IamAuthenticationConfig with the qualifier "legacyAuthenticationProvider"
+2. Update SecurityConfiguration to use this new bean
+3. Remove ApplicationConfiguration
+4. Test functionality
+5. Gradually remove other legacy components one by one, testing after each removal
+
+This approach will allow us to maintain backward compatibility while progressively removing legacy code.
 
 #### Step 3: Remove Legacy Adapter Infrastructure
 
