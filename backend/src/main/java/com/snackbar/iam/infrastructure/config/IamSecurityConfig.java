@@ -39,7 +39,7 @@ public class IamSecurityConfig {
 
     public IamSecurityConfig(
             IamJwtAuthenticationFilter iamJwtAuthenticationFilter,
-            @Qualifier("iamAuthenticationProvider") AuthenticationProvider authenticationProvider) {
+            AuthenticationProvider authenticationProvider) {
         this.iamJwtAuthenticationFilter = iamJwtAuthenticationFilter;
         this.authenticationProvider = authenticationProvider;
     }

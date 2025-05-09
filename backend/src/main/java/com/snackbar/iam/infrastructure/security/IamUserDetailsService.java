@@ -11,8 +11,7 @@ import org.springframework.stereotype.Service;
  * Implementation of Spring Security's UserDetailsService that uses our domain UserGateway.
  * This service loads user-specific data for authentication purposes.
  */
-@Service("userDetailsServiceAdapter")
-@Primary
+@Service
 public class IamUserDetailsService implements UserDetailsService {
 
     private final UserGateway userGateway;

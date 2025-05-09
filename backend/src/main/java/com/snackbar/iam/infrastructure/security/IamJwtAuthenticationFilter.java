@@ -43,8 +43,8 @@ public class IamJwtAuthenticationFilter extends OncePerRequestFilter {
     private final ObjectMapper objectMapper;
 
     public IamJwtAuthenticationFilter(
-            @Qualifier("jwtService") JwtService jwtService,
-            @Qualifier("userDetailsServiceAdapter") UserDetailsService userDetailsService,
+            JwtService jwtService,
+            UserDetailsService userDetailsService,
             ObjectMapper objectMapper
     ) {
         this.jwtService = jwtService;

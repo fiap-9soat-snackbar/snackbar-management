@@ -31,46 +31,25 @@ public class IamAuthenticationConfig {
 
     private final UserDetailsService userDetailsService;
 
-    public IamAuthenticationConfig(
-            @Qualifier("userDetailsServiceAdapter") UserDetailsService userDetailsService) {
+    public IamAuthenticationConfig(UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
 
     @Bean
-    @Primary
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean(name = "iamAuthenticationProvider")
-    @Primary
-    public AuthenticationProvider iamAuthenticationProvider() {
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
 
-    @Bean(name = "legacyAuthenticationProvider")
-    public AuthenticationProvider legacyAuthenticationProvider() {
-        // This is a duplicate of iamAuthenticationProvider but with a different name
-        // to satisfy legacy dependencies
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
-    }
-
-    @Bean(name = "iamAuthenticationManager")
-    @Primary
-    public AuthenticationManager iamAuthenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
-    }
-
-    @Bean(name = "legacyAuthenticationManager")
-    public AuthenticationManager legacyAuthenticationManager(AuthenticationConfiguration config) throws Exception {
-        // This is a duplicate of iamAuthenticationManager but with a different name
-        // to satisfy legacy dependencies
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 }
