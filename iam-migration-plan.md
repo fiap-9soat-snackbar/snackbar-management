@@ -231,14 +231,14 @@ After each step, we will run `iam_test_integration_v3.sh` to verify that everyth
    - Remove `UserDetailsEntity.java`
    - Run `iam_test_integration_v3.sh` to verify functionality
 
-#### Step 2: Remove UserEntity.java
+#### Step 2: Remove UserEntity.java ✅
 
-1. **Update References**
+1. **Update References** ✅
    - Identify any remaining references to `UserEntity`
    - Update them to use `UserEntityAdapter` or the new domain entities directly
    - Run `iam_test_integration_v3.sh` to verify functionality
 
-2. **Remove Legacy Entity**
+2. **Remove Legacy Entity** ✅
    - Remove `UserEntity.java`
    - Run `iam_test_integration_v3.sh` to verify functionality
 
@@ -246,7 +246,7 @@ After each step, we will run `iam_test_integration_v3.sh` to verify that everyth
 
 #### Step 1: Remove Domain Layer Adapters
 
-1. **Update References to UserEntityAdapter**
+1. **Update References to UserEntityAdapter** ✅
    - Identify any remaining references to `UserEntityAdapter`
    - Update them to use the new domain entities directly
    - Run `iam_test_integration_v3.sh` to verify functionality
@@ -309,14 +309,16 @@ After each step, we will run `iam_test_integration_v3.sh` to verify that everyth
 - ✅ Updated adapter classes to use infrastructure.persistence.UserEntity instead of domain.UserEntity
 - ✅ Verified functionality with integration tests after removing UserEntity
 - ✅ Updated adapter classes to use UserEntityMapper instead of UserEntityAdapter
-- ✅ Verified functionality with integration tests after updating adapter references
+- ✅ Removed UserEntityAdapter.java from domain layer
+- ✅ Verified functionality with integration tests after removing UserEntityAdapter
 
 ### Current Work
-- Working on removing domain layer adapters (UserEntityAdapter)
+- Working on removing infrastructure layer adapters
 
 ### Next Steps
-- Remove UserEntityAdapter.java
-- Continue with infrastructure and application layer adapter removal
+- Update references to Repository Adapters
+- Remove Repository Adapters
+- Continue with application layer adapter removal
 
 ## Conclusion
 
