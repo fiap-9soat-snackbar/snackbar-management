@@ -1,7 +1,6 @@
-package com.snackbar.iam.infrastructure.adapter;
+package com.snackbar.iam.infrastructure.security;
 
 import com.snackbar.iam.application.gateways.UserGateway;
-import com.snackbar.iam.infrastructure.security.UserDetailsAdapter;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -9,18 +8,16 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 /**
- * Adapter that bridges between our domain User entity and Spring Security's UserDetailsService.
- * This is a temporary component to maintain compatibility during the transition to clean architecture.
- * Marked as @Primary to be preferred over the legacy UserDetailsService.
- * Explicitly named with @Qualifier to ensure consistent reference across the application.
+ * Implementation of Spring Security's UserDetailsService that uses our domain UserGateway.
+ * This service loads user-specific data for authentication purposes.
  */
 @Service("userDetailsServiceAdapter")
 @Primary
-public class UserDetailsServiceAdapter implements UserDetailsService {
+public class IamUserDetailsService implements UserDetailsService {
 
     private final UserGateway userGateway;
 
-    public UserDetailsServiceAdapter(UserGateway userGateway) {
+    public IamUserDetailsService(UserGateway userGateway) {
         this.userGateway = userGateway;
     }
 

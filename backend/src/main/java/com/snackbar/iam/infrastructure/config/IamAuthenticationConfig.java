@@ -9,6 +9,7 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
@@ -29,13 +30,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class IamAuthenticationConfig {
 
     private final UserDetailsService userDetailsService;
-    private final PasswordEncoder passwordEncoder;
 
     public IamAuthenticationConfig(
-            @Qualifier("userDetailsServiceAdapter") UserDetailsService userDetailsService,
-            PasswordEncoder passwordEncoder) {
+            @Qualifier("userDetailsServiceAdapter") UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
-        this.passwordEncoder = passwordEncoder;
+    }
+
+    @Bean
+    @Primary
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
     @Bean(name = "iamAuthenticationProvider")
@@ -43,13 +47,30 @@ public class IamAuthenticationConfig {
     public AuthenticationProvider iamAuthenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder);
+        authProvider.setPasswordEncoder(passwordEncoder());
+        return authProvider;
+    }
+
+    @Bean(name = "legacyAuthenticationProvider")
+    public AuthenticationProvider legacyAuthenticationProvider() {
+        // This is a duplicate of iamAuthenticationProvider but with a different name
+        // to satisfy legacy dependencies
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
 
     @Bean(name = "iamAuthenticationManager")
     @Primary
     public AuthenticationManager iamAuthenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
+
+    @Bean(name = "legacyAuthenticationManager")
+    public AuthenticationManager legacyAuthenticationManager(AuthenticationConfiguration config) throws Exception {
+        // This is a duplicate of iamAuthenticationManager but with a different name
+        // to satisfy legacy dependencies
         return config.getAuthenticationManager();
     }
 }
