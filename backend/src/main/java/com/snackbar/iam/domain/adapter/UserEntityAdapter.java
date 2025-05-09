@@ -1,7 +1,7 @@
 package com.snackbar.iam.domain.adapter;
 
-import com.snackbar.iam.domain.UserEntity;
 import com.snackbar.iam.domain.entity.User;
+import com.snackbar.iam.infrastructure.persistence.UserEntity;
 import com.snackbar.iam.infrastructure.security.UserDetailsAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,25 +9,28 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 /**
- * Adapter class that converts between legacy entities and new User domain entity.
+ * Adapter class that converts between persistence entities and domain entities.
  * This adapter facilitates the transition from the legacy domain model to the new clean architecture model.
+ * 
+ * @deprecated This adapter will be removed once the migration to clean architecture is complete.
+ * Direct use of domain entities and mappers is preferred.
  */
 @Component
 public class UserEntityAdapter {
     private static final Logger logger = LoggerFactory.getLogger(UserEntityAdapter.class);
 
     /**
-     * Converts a legacy UserEntity to a new User domain entity.
+     * Converts a persistence UserEntity to a domain User entity.
      *
-     * @param userEntity The legacy entity to convert
-     * @return A new User domain entity with the same data
+     * @param userEntity The persistence entity to convert
+     * @return A domain User entity with the same data
      */
     public User toUser(UserEntity userEntity) {
         if (userEntity == null) {
             return null;
         }
 
-        logger.debug("Converting UserEntity to User: {}", userEntity.getId());
+        logger.debug("Converting persistence UserEntity to User: {}", userEntity.getId());
         
         return new User(
             userEntity.getId(),
@@ -56,17 +59,17 @@ public class UserEntityAdapter {
     }
 
     /**
-     * Converts a new User domain entity to a legacy UserEntity.
+     * Converts a domain User entity to a persistence UserEntity.
      *
-     * @param user The new domain entity to convert
-     * @return A legacy UserEntity with the same data
+     * @param user The domain entity to convert
+     * @return A persistence UserEntity with the same data
      */
     public UserEntity toUserEntity(User user) {
         if (user == null) {
             return null;
         }
 
-        logger.debug("Converting User to UserEntity: {}", user.getId());
+        logger.debug("Converting User to persistence UserEntity: {}", user.getId());
         
         return UserEntity.builder()
             .id(user.getId())
@@ -79,19 +82,19 @@ public class UserEntityAdapter {
     }
 
     /**
-     * Updates an existing UserEntity with data from a User domain entity.
+     * Updates an existing persistence UserEntity with data from a domain User entity.
      * This is useful for updating entities without creating new instances.
      *
-     * @param existingEntity The existing entity to update
-     * @param user The user domain entity containing the new data
-     * @return The updated UserEntity
+     * @param existingEntity The existing persistence entity to update
+     * @param user The domain User entity containing the new data
+     * @return The updated persistence UserEntity
      */
     public UserEntity updateUserEntity(UserEntity existingEntity, User user) {
         if (existingEntity == null || user == null) {
             return existingEntity;
         }
 
-        logger.debug("Updating UserEntity with User data: {}", user.getId());
+        logger.debug("Updating persistence UserEntity with User data: {}", user.getId());
         
         existingEntity.setName(user.getName());
         existingEntity.setEmail(user.getEmail());

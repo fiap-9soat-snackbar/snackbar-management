@@ -2,12 +2,12 @@ package com.snackbar.iam.application.adapter;
 
 import com.snackbar.iam.application.ports.in.AuthenticateUserInputPort;
 import com.snackbar.iam.application.ports.in.RegisterUserInputPort;
-import com.snackbar.iam.domain.UserEntity;
 import com.snackbar.iam.domain.adapter.UserEntityAdapter;
 import com.snackbar.iam.domain.entity.User;
 import com.snackbar.iam.infrastructure.adapter.IamRepositoryAdapter;
 import com.snackbar.iam.infrastructure.controllers.dto.LoginRequestDTO;
 import com.snackbar.iam.infrastructure.controllers.dto.RegisterUserRequestDTO;
+import com.snackbar.iam.infrastructure.persistence.UserEntity;
 import com.snackbar.iam.infrastructure.security.UserDetailsAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

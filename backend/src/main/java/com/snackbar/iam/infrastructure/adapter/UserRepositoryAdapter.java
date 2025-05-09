@@ -1,8 +1,8 @@
 package com.snackbar.iam.infrastructure.adapter;
 
-import com.snackbar.iam.domain.UserEntity;
 import com.snackbar.iam.domain.adapter.UserEntityAdapter;
 import com.snackbar.iam.domain.entity.User;
+import com.snackbar.iam.infrastructure.persistence.UserEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Example;
