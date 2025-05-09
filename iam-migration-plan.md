@@ -22,7 +22,7 @@ The IAM module is currently in a hybrid state with:
 2. **Legacy Components** (to be removed):
    - ✅ `web` package with controllers (REMOVED)
    - ✅ `web` package with DTOs (REMOVED)
-   - `UserEntity.java` in domain layer
+   - ✅ `UserEntity.java` in domain layer (REMOVED)
    - ✅ `UserDetailsEntity.java` in domain layer (REMOVED)
    - ✅ `AuthenticationService.java` in application layer (REMOVED)
    - ✅ `UserService.java` in application layer (REMOVED)
@@ -33,9 +33,11 @@ The IAM module is currently in a hybrid state with:
    - ✅ `UserRepository.java` in infrastructure root (REMOVED)
 
 3. **Adapter Components** (temporary):
-   - `UserEntityAdapter.java` in domain.adapter
-   - `AuthenticationServiceAdapter.java` and `UserServiceAdapter.java` in application.adapter
-   - `UserRepositoryAdapter.java`, `IamRepositoryAdapter.java`, `UserDetailsServiceAdapter.java` in infrastructure.adapter
+   - ✅ `UserEntityAdapter.java` in domain.adapter (REMOVED)
+   - ✅ `AuthenticationServiceAdapter.java` and `UserServiceAdapter.java` in application.adapter (REMOVED)
+   - ✅ `UserRepositoryAdapter.java`, `IamRepositoryAdapter.java` in infrastructure.adapter (REMOVED)
+   - `UserDetailsServiceAdapter.java` in infrastructure.adapter
+   - `PersistenceEntityAdapter.java` in infrastructure.adapter
 
 ## Target Package Structure
 
@@ -112,8 +114,8 @@ The migration will follow the natural dependency direction (from outer layers to
 1. **Start with Web Layer**: ✅ Remove legacy controllers and DTOs (COMPLETED)
 2. **Application Layer**: ✅ Remove legacy services and security components (COMPLETED)
 3. **Infrastructure Layer**: ✅ Remove legacy repositories and infrastructure components (COMPLETED)
-4. **Domain Layer**: Remove legacy domain entities
-5. **Remove Adapters**: Once all legacy components are removed, remove the adapter components
+4. **Domain Layer**: ✅ Remove legacy domain entities (COMPLETED)
+5. **Remove Adapters**: ✅ Once all legacy components are removed, remove the adapter components (COMPLETED)
 
 After each step, we will run `iam_test_integration_v3.sh` to verify that everything still works correctly.
 
@@ -214,7 +216,7 @@ After each step, we will run `iam_test_integration_v3.sh` to verify that everyth
    - Remove `UserRepository.java`
    - Run `iam_test_integration_v3.sh` to verify functionality
 
-### Phase 4: Remove Domain Layer Legacy Components
+### Phase 4: Remove Domain Layer Legacy Components ✅
 
 #### Step 1: Remove UserDetailsEntity.java ✅
 
@@ -242,7 +244,7 @@ After each step, we will run `iam_test_integration_v3.sh` to verify that everyth
    - Remove `UserEntity.java`
    - Run `iam_test_integration_v3.sh` to verify functionality
 
-### Phase 5: Remove Adapter Components
+### Phase 5: Remove Adapter Components ✅
 
 #### Step 1: Remove Domain Layer Adapters ✅
 
@@ -277,55 +279,6 @@ After each step, we will run `iam_test_integration_v3.sh` to verify that everyth
    - Remove `UserServiceAdapter.java`
    - Run `iam_test_integration_v3.sh` to verify functionality
 
-## Progress Tracking
-
-### Completed Steps
-- ✅ Updated controller mappings from `/api/v2/user/*` to `/api/user/*`
-- ✅ Removed legacy web controllers (`AuthenticationController.java`, `UserController.java`)
-- ✅ Removed legacy DTOs in web.dto package
-- ✅ Removed entire web package
-- ✅ Updated test script to use new endpoint paths
-- ✅ Verified functionality with integration tests
-- ✅ Updated adapter classes to use new DTOs from `infrastructure.controllers.dto`
-- ✅ Updated service classes to use new DTOs
-- ✅ Added explicit bean names to adapter components
-- ✅ Added explicit qualifiers to repository components
-- ✅ Added explicit bean names and qualifiers to security components
-- ✅ Added explicit bean names and qualifiers to application service components
-- ✅ Verified functionality with integration tests after application service component updates
-- ✅ Completed comprehensive dependency audit
-- ✅ Removed JwtService.java from application layer
-- ✅ Removed AuthenticationService.java from application layer
-- ✅ Removed UserService.java from application layer
-- ✅ Removed IamRepository.java from infrastructure layer
-- ✅ Removed UserRepository.java from infrastructure layer
-- ✅ Modified adapter classes to no longer implement legacy interfaces
-- ✅ Verified functionality with integration tests after removing legacy repositories
-- ✅ Removed UserDetailsEntity.java from domain layer
-- ✅ Updated AuthenticationServiceAdapter to use UserDetailsAdapter instead of UserDetailsEntity
-- ✅ Updated ApplicationConfiguration to use domain entities directly
-- ✅ Verified functionality with integration tests after removing UserDetailsEntity
-- ✅ Removed UserEntity.java from domain layer
-- ✅ Updated adapter classes to use infrastructure.persistence.UserEntity instead of domain.UserEntity
-- ✅ Verified functionality with integration tests after removing UserEntity
-- ✅ Updated adapter classes to use UserEntityMapper instead of UserEntityAdapter
-- ✅ Removed UserEntityAdapter.java from domain layer
-- ✅ Verified functionality with integration tests after removing UserEntityAdapter
-- ✅ Updated references to Repository Adapters to use UserGateway directly
-- ✅ Verified functionality with integration tests after updating repository references
-- ✅ Removed Application Layer Adapters (AuthenticationServiceAdapter.java and UserServiceAdapter.java)
-- ✅ Verified functionality with integration tests after removing application adapters
-
-### Current Work
-- Working on removing remaining legacy components
-
-### Next Steps
-- Remove legacy configuration classes (ApplicationConfiguration.java)
-- Remove legacy security components (SecurityConfigurationAdapter.java, SecurityConfiguration.java, JwtAuthenticationFilter.java)
-- Remove legacy adapter infrastructure (PersistenceEntityAdapter.java, UserDetailsServiceAdapter.java)
-- Remove legacy client configuration (FeignClientConfig.java)
-- Update documentation to reflect the new clean architecture
-
 ### Phase 6: Remove Remaining Legacy Components
 
 #### Step 1: Remove Legacy Configuration Classes
@@ -335,7 +288,7 @@ After each step, we will run `iam_test_integration_v3.sh` to verify that everyth
    - Ensure all beans defined in it are properly migrated to clean architecture components
    - Run `iam_test_integration_v3.sh` to verify functionality
 
-2. **Remove Legacy Configuration** ❌
+2. **Remove Legacy Configuration** ✅
    - Remove ApplicationConfiguration.java
    - Run `iam_test_integration_v3.sh` to verify functionality
 
@@ -382,11 +335,12 @@ After each step, we will run `iam_test_integration_v3.sh` to verify that everyth
 
 After attempting to remove legacy components, we've identified the following dependencies that need to be addressed:
 
-1. **ApplicationConfiguration.java**
-   - Provides `legacyUserDetailsService` bean used by JwtAuthenticationFilter
-   - Provides `legacyPasswordEncoder` bean (now migrated to IamAuthenticationConfig)
-   - Provides `legacyAuthenticationManager` bean
-   - Provides `legacyAuthenticationProvider` bean used by SecurityConfiguration
+1. **ApplicationConfiguration.java** ✅
+   - Provided `legacyUserDetailsService` bean used by JwtAuthenticationFilter
+   - Provided `legacyPasswordEncoder` bean (migrated to IamAuthenticationConfig)
+   - Provided `legacyAuthenticationManager` bean (migrated to IamAuthenticationConfig)
+   - Provided `legacyAuthenticationProvider` bean (migrated to IamAuthenticationConfig)
+   - Successfully removed by adding the necessary beans to IamAuthenticationConfig
 
 2. **JwtAuthenticationFilter.java**
    - Modified to use "userDetailsServiceAdapter" instead of "legacyUserDetailsService"
@@ -394,50 +348,80 @@ After attempting to remove legacy components, we've identified the following dep
 
 3. **SecurityConfigurationAdapter.java**
    - Depends on JwtAuthenticationFilter
-   - Depends on legacyAuthenticationProvider from ApplicationConfiguration
+   - Depends on legacyAuthenticationProvider from IamAuthenticationConfig
 
 4. **SecurityConfiguration.java**
    - Depends on JwtAuthenticationFilter
-   - Depends on legacyAuthenticationProvider from ApplicationConfiguration
+   - Depends on legacyAuthenticationProvider from IamAuthenticationConfig
 
 5. **UserDetailsServiceAdapter.java**
    - Used by IamJwtAuthenticationFilter and IamAuthenticationConfig
 
 ### Migration Strategy
 
-To safely remove these components, we need to:
+To safely remove the remaining components, we need to:
 
-1. Create a new AuthenticationProvider bean in IamAuthenticationConfig with the qualifier "legacyAuthenticationProvider"
-2. Update SecurityConfiguration to use this new bean
-3. Remove ApplicationConfiguration
-4. Test functionality
-5. Gradually remove other legacy components one by one, testing after each removal
+1. ✅ Create a new AuthenticationProvider bean in IamAuthenticationConfig with the qualifier "legacyAuthenticationProvider"
+2. ✅ Create a new AuthenticationManager bean in IamAuthenticationConfig with the qualifier "legacyAuthenticationManager"
+3. ✅ Update JwtAuthenticationFilter to use "userDetailsServiceAdapter" instead of "legacyUserDetailsService"
+4. ✅ Remove ApplicationConfiguration
+5. ❌ Remove SecurityConfigurationAdapter, SecurityConfiguration, and JwtAuthenticationFilter
+6. ❌ Remove PersistenceEntityAdapter and UserDetailsServiceAdapter
+7. ❌ Remove FeignClientConfig
 
 This approach will allow us to maintain backward compatibility while progressively removing legacy code.
 
-#### Step 3: Remove Legacy Adapter Infrastructure
+## Progress Tracking
 
-1. **Identify Legacy Adapter Dependencies**
-   - Check if PersistenceEntityAdapter.java is still being referenced
-   - Check if UserDetailsServiceAdapter.java is still being referenced
-   - Ensure all functionality is properly migrated to clean architecture components
-   - Run `iam_test_integration_v3.sh` to verify functionality
+### Completed Steps
+- ✅ Updated controller mappings from `/api/v2/user/*` to `/api/user/*`
+- ✅ Removed legacy web controllers (`AuthenticationController.java`, `UserController.java`)
+- ✅ Removed legacy DTOs in web.dto package
+- ✅ Removed entire web package
+- ✅ Updated test script to use new endpoint paths
+- ✅ Verified functionality with integration tests
+- ✅ Updated adapter classes to use new DTOs from `infrastructure.controllers.dto`
+- ✅ Updated service classes to use new DTOs
+- ✅ Added explicit bean names to adapter components
+- ✅ Added explicit qualifiers to repository components
+- ✅ Added explicit bean names and qualifiers to security components
+- ✅ Added explicit bean names and qualifiers to application service components
+- ✅ Verified functionality with integration tests after application service component updates
+- ✅ Completed comprehensive dependency audit
+- ✅ Removed JwtService.java from application layer
+- ✅ Removed AuthenticationService.java from application layer
+- ✅ Removed UserService.java from application layer
+- ✅ Removed IamRepository.java from infrastructure layer
+- ✅ Removed UserRepository.java from infrastructure layer
+- ✅ Modified adapter classes to no longer implement legacy interfaces
+- ✅ Verified functionality with integration tests after removing legacy repositories
+- ✅ Removed UserDetailsEntity.java from domain layer
+- ✅ Updated AuthenticationServiceAdapter to use UserDetailsAdapter instead of UserDetailsEntity
+- ✅ Updated ApplicationConfiguration to use domain entities directly
+- ✅ Verified functionality with integration tests after removing UserDetailsEntity
+- ✅ Removed UserEntity.java from domain layer
+- ✅ Updated adapter classes to use infrastructure.persistence.UserEntity instead of domain.UserEntity
+- ✅ Verified functionality with integration tests after removing UserEntity
+- ✅ Updated adapter classes to use UserEntityMapper instead of UserEntityAdapter
+- ✅ Removed UserEntityAdapter.java from domain layer
+- ✅ Verified functionality with integration tests after removing UserEntityAdapter
+- ✅ Updated references to Repository Adapters to use UserGateway directly
+- ✅ Verified functionality with integration tests after updating repository references
+- ✅ Removed Application Layer Adapters (AuthenticationServiceAdapter.java and UserServiceAdapter.java)
+- ✅ Verified functionality with integration tests after removing application adapters
+- ✅ Added PasswordEncoder, AuthenticationProvider, and AuthenticationManager beans to IamAuthenticationConfig
+- ✅ Updated JwtAuthenticationFilter to use userDetailsServiceAdapter instead of legacyUserDetailsService
+- ✅ Removed ApplicationConfiguration.java
+- ✅ Verified functionality with integration tests after removing ApplicationConfiguration
 
-2. **Remove Legacy Adapters**
-   - Remove PersistenceEntityAdapter.java
-   - Remove UserDetailsServiceAdapter.java
-   - Run `iam_test_integration_v3.sh` to verify functionality
+### Current Work
+- Working on removing remaining legacy components
 
-#### Step 4: Remove Legacy Client Configuration
-
-1. **Identify Legacy Client Dependencies**
-   - Check if FeignClientConfig.java is still being referenced
-   - Ensure all client functionality is properly migrated to clean architecture components
-   - Run `iam_test_integration_v3.sh` to verify functionality
-
-2. **Remove Legacy Client Configuration**
-   - Remove FeignClientConfig.java
-   - Run `iam_test_integration_v3.sh` to verify functionality
+### Next Steps
+- Remove legacy security components (SecurityConfigurationAdapter.java, SecurityConfiguration.java, JwtAuthenticationFilter.java)
+- Remove legacy adapter infrastructure (PersistenceEntityAdapter.java, UserDetailsServiceAdapter.java)
+- Remove legacy client configuration (FeignClientConfig.java)
+- Update documentation to reflect the new clean architecture
 
 ## Conclusion
 
