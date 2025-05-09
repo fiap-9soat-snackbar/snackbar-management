@@ -255,13 +255,13 @@ After each step, we will run `iam_test_integration_v3.sh` to verify that everyth
    - Remove `UserEntityAdapter.java`
    - Run `iam_test_integration_v3.sh` to verify functionality
 
-#### Step 2: Remove Infrastructure Layer Adapters
+#### Step 2: Remove Infrastructure Layer Adapters ✅
 
 1. **Update References to Repository Adapters** ✅
    - Update all references to `IamRepositoryAdapter` and `UserRepositoryAdapter` to use the new repositories directly
    - Run `iam_test_integration_v3.sh` to verify functionality
 
-2. **Remove Infrastructure Adapters**
+2. **Remove Infrastructure Adapters** ✅
    - Remove `IamRepositoryAdapter.java`
    - Remove `UserRepositoryAdapter.java`
    - Run `iam_test_integration_v3.sh` to verify functionality
