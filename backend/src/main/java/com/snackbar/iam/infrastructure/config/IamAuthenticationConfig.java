@@ -1,14 +1,9 @@
 package com.snackbar.iam.infrastructure.config;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -17,10 +12,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * 
  * This configuration class is responsible for setting up authentication mechanisms:
  * 
- * - Configuring authentication providers
  * - Setting up authentication managers
  * - Defining password encoders
- * - Connecting UserDetailsService to the authentication system
  * 
  * This class focuses specifically on authentication mechanisms and works in conjunction with
  * IamSecurityConfig (which handles web security) and IamConfig (which handles business
@@ -29,23 +22,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 public class IamAuthenticationConfig {
 
-    private final UserDetailsService userDetailsService;
-
-    public IamAuthenticationConfig(UserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
-    }
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
     }
 
     @Bean
