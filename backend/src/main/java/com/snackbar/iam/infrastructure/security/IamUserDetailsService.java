@@ -1,7 +1,6 @@
 package com.snackbar.iam.infrastructure.security;
 
 import com.snackbar.iam.application.gateways.UserGateway;
-import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
