@@ -1,7 +1,7 @@
 package com.snackbar.iam.infrastructure.adapter;
 
-import com.snackbar.iam.domain.adapter.UserEntityAdapter;
 import com.snackbar.iam.domain.entity.User;
+import com.snackbar.iam.infrastructure.gateways.UserEntityMapper;
 import com.snackbar.iam.infrastructure.persistence.UserEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +9,6 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.FluentQuery;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -29,16 +28,13 @@ public class UserRepositoryAdapter {
     private static final Logger logger = LoggerFactory.getLogger(UserRepositoryAdapter.class);
 
     private final com.snackbar.iam.infrastructure.persistence.UserRepository userRepository;
-    private final UserEntityAdapter userEntityAdapter;
     private final PersistenceEntityAdapter persistenceEntityAdapter;
 
     public UserRepositoryAdapter(
             @Qualifier("userRepository") com.snackbar.iam.infrastructure.persistence.UserRepository userRepository,
-            UserEntityAdapter userEntityAdapter,
             PersistenceEntityAdapter persistenceEntityAdapter
     ) {
         this.userRepository = userRepository;
-        this.userEntityAdapter = userEntityAdapter;
         this.persistenceEntityAdapter = persistenceEntityAdapter;
         logger.info("UserRepositoryAdapter initialized");
     }
@@ -49,8 +45,8 @@ public class UserRepositoryAdapter {
                 .map(persistenceEntity -> {
                     // Convert from persistence entity to domain entity
                     User user = persistenceEntityAdapter.toDomainEntity(persistenceEntity);
-                    // Convert from domain entity to legacy entity
-                    return userEntityAdapter.toUserEntity(user);
+                    // Convert from domain entity to persistence entity using mapper
+                    return UserEntityMapper.toEntity(user);
                 });
     }
 
@@ -60,15 +56,15 @@ public class UserRepositoryAdapter {
                 .map(persistenceEntity -> {
                     // Convert from persistence entity to domain entity
                     User user = persistenceEntityAdapter.toDomainEntity(persistenceEntity);
-                    // Convert from domain entity to legacy entity
-                    return userEntityAdapter.toUserEntity(user);
+                    // Convert from domain entity to persistence entity using mapper
+                    return UserEntityMapper.toEntity(user);
                 });
     }
 
     public <S extends UserEntity> S save(S entity) {
         logger.debug("Saving user entity: {}", entity.getId());
-        // Convert from legacy entity to domain entity
-        User user = userEntityAdapter.toUser(entity);
+        // Convert from persistence entity to domain entity using mapper
+        User user = UserEntityMapper.toDomain(entity);
         // Convert from domain entity to persistence entity
         com.snackbar.iam.infrastructure.persistence.UserEntity persistenceEntity = 
                 persistenceEntityAdapter.toPersistenceEntity(user);
@@ -77,8 +73,8 @@ public class UserRepositoryAdapter {
                 userRepository.save(persistenceEntity);
         // Convert back to domain entity
         User savedUser = persistenceEntityAdapter.toDomainEntity(savedEntity);
-        // Convert back to legacy entity and return
-        UserEntity resultEntity = userEntityAdapter.toUserEntity(savedUser);
+        // Convert back to persistence entity and return
+        UserEntity resultEntity = UserEntityMapper.toEntity(savedUser);
         @SuppressWarnings("unchecked")
         S result = (S) resultEntity;
         return result;
@@ -97,8 +93,8 @@ public class UserRepositoryAdapter {
                 .map(persistenceEntity -> {
                     // Convert from persistence entity to domain entity
                     User user = persistenceEntityAdapter.toDomainEntity(persistenceEntity);
-                    // Convert from domain entity to legacy entity
-                    return userEntityAdapter.toUserEntity(user);
+                    // Convert from domain entity to persistence entity using mapper
+                    return UserEntityMapper.toEntity(user);
                 });
     }
 
@@ -113,8 +109,8 @@ public class UserRepositoryAdapter {
                 .map(persistenceEntity -> {
                     // Convert from persistence entity to domain entity
                     User user = persistenceEntityAdapter.toDomainEntity(persistenceEntity);
-                    // Convert from domain entity to legacy entity
-                    return userEntityAdapter.toUserEntity(user);
+                    // Convert from domain entity to persistence entity using mapper
+                    return UserEntityMapper.toEntity(user);
                 })
                 .collect(Collectors.toList());
     }
@@ -125,8 +121,8 @@ public class UserRepositoryAdapter {
                 .map(persistenceEntity -> {
                     // Convert from persistence entity to domain entity
                     User user = persistenceEntityAdapter.toDomainEntity(persistenceEntity);
-                    // Convert from domain entity to legacy entity
-                    return userEntityAdapter.toUserEntity(user);
+                    // Convert from domain entity to persistence entity using mapper
+                    return UserEntityMapper.toEntity(user);
                 })
                 .collect(Collectors.toList());
     }
@@ -170,8 +166,8 @@ public class UserRepositoryAdapter {
                 .map(persistenceEntity -> {
                     // Convert from persistence entity to domain entity
                     User user = persistenceEntityAdapter.toDomainEntity(persistenceEntity);
-                    // Convert from domain entity to legacy entity
-                    return userEntityAdapter.toUserEntity(user);
+                    // Convert from domain entity to persistence entity using mapper
+                    return UserEntityMapper.toEntity(user);
                 })
                 .collect(Collectors.toList());
     }
@@ -182,8 +178,8 @@ public class UserRepositoryAdapter {
         return page.map(persistenceEntity -> {
             // Convert from persistence entity to domain entity
             User user = persistenceEntityAdapter.toDomainEntity(persistenceEntity);
-            // Convert from domain entity to legacy entity
-            return userEntityAdapter.toUserEntity(user);
+            // Convert from domain entity to persistence entity using mapper
+            return UserEntityMapper.toEntity(user);
         });
     }
 
