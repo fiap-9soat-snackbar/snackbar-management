@@ -257,7 +257,7 @@ After each step, we will run `iam_test_integration_v3.sh` to verify that everyth
 
 #### Step 2: Remove Infrastructure Layer Adapters
 
-1. **Update References to Repository Adapters**
+1. **Update References to Repository Adapters** ✅
    - Update all references to `IamRepositoryAdapter` and `UserRepositoryAdapter` to use the new repositories directly
    - Run `iam_test_integration_v3.sh` to verify functionality
 
@@ -311,13 +311,14 @@ After each step, we will run `iam_test_integration_v3.sh` to verify that everyth
 - ✅ Updated adapter classes to use UserEntityMapper instead of UserEntityAdapter
 - ✅ Removed UserEntityAdapter.java from domain layer
 - ✅ Verified functionality with integration tests after removing UserEntityAdapter
+- ✅ Updated references to Repository Adapters to use UserGateway directly
+- ✅ Verified functionality with integration tests after updating repository references
 
 ### Current Work
 - Working on removing infrastructure layer adapters
 
 ### Next Steps
-- Update references to Repository Adapters
-- Remove Repository Adapters
+- Remove Repository Adapters (IamRepositoryAdapter.java and UserRepositoryAdapter.java)
 - Continue with application layer adapter removal
 
 ## Conclusion
