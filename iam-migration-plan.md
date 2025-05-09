@@ -305,13 +305,17 @@ After each step, we will run `iam_test_integration_v3.sh` to verify that everyth
 - ✅ Updated AuthenticationServiceAdapter to use UserDetailsAdapter instead of UserDetailsEntity
 - ✅ Updated ApplicationConfiguration to use domain entities directly
 - ✅ Verified functionality with integration tests after removing UserDetailsEntity
+- ✅ Removed UserEntity.java from domain layer
+- ✅ Updated adapter classes to use infrastructure.persistence.UserEntity instead of domain.UserEntity
+- ✅ Verified functionality with integration tests after removing UserEntity
 
 ### Current Work
-- Working on removing UserEntity.java from domain layer
+- Working on removing adapter components
 
 ### Next Steps
-- Update references to use the domain entity User directly instead of UserEntity
-- Begin removing adapter components
+- Begin removing domain layer adapters (UserEntityAdapter)
+- Update references to use the domain entity User directly instead of through adapters
+- Continue with infrastructure and application layer adapter removal
 
 ## Conclusion
 
