@@ -1,13 +1,12 @@
 package com.snackbar.iam.application.adapter;
 
+import com.snackbar.iam.application.gateways.UserGateway;
 import com.snackbar.iam.application.ports.in.DeleteUserInputPort;
 import com.snackbar.iam.application.ports.in.GetAllUsersInputPort;
 import com.snackbar.iam.application.ports.in.GetUserByCpfInputPort;
-import com.snackbar.iam.domain.adapter.UserEntityAdapter;
 import com.snackbar.iam.domain.entity.User;
-import com.snackbar.iam.infrastructure.adapter.IamRepositoryAdapter;
-import com.snackbar.iam.infrastructure.adapter.UserRepositoryAdapter;
 import com.snackbar.iam.infrastructure.controllers.dto.UserResponseDTO;
+import com.snackbar.iam.infrastructure.gateways.UserEntityMapper;
 import com.snackbar.iam.infrastructure.persistence.UserEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,27 +24,21 @@ import java.util.stream.Collectors;
 public class UserServiceAdapter {
     private static final Logger logger = LoggerFactory.getLogger(UserServiceAdapter.class);
 
-    protected final IamRepositoryAdapter iamRepository;
-    protected final UserRepositoryAdapter userRepository;
+    protected final UserGateway userGateway;
     private final GetAllUsersInputPort getAllUsersUseCase;
     private final GetUserByCpfInputPort getUserByCpfUseCase;
     private final DeleteUserInputPort deleteUserUseCase;
-    private final UserEntityAdapter userEntityAdapter;
 
     public UserServiceAdapter(
-            @Qualifier("iamRepositoryAdapter") IamRepositoryAdapter iamRepository,
-            @Qualifier("userRepositoryAdapter") UserRepositoryAdapter userRepository,
+            @Qualifier("userRepositoryGateway") UserGateway userGateway,
             GetAllUsersInputPort getAllUsersUseCase,
             GetUserByCpfInputPort getUserByCpfUseCase,
-            DeleteUserInputPort deleteUserUseCase,
-            UserEntityAdapter userEntityAdapter
+            DeleteUserInputPort deleteUserUseCase
     ) {
-        this.iamRepository = iamRepository;
-        this.userRepository = userRepository;
+        this.userGateway = userGateway;
         this.getAllUsersUseCase = getAllUsersUseCase;
         this.getUserByCpfUseCase = getUserByCpfUseCase;
         this.deleteUserUseCase = deleteUserUseCase;
-        this.userEntityAdapter = userEntityAdapter;
         logger.info("UserServiceAdapter initialized");
     }
 
@@ -55,9 +48,9 @@ public class UserServiceAdapter {
         // Get all users using the use case
         List<User> users = getAllUsersUseCase.getAllUsers();
         
-        // Convert the domain entities to legacy entities
+        // Convert the domain entities to persistence entities using the mapper
         return users.stream()
-                .map(user -> userEntityAdapter.toUserEntity(user))
+                .map(UserEntityMapper::toEntity)
                 .collect(Collectors.toList());
     }
 

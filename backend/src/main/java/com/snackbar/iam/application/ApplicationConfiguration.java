@@ -1,7 +1,8 @@
 package com.snackbar.iam.application;
 
 import com.snackbar.iam.domain.entity.User;
-import com.snackbar.iam.infrastructure.adapter.IamRepositoryAdapter;
+import com.snackbar.iam.infrastructure.persistence.UserRepository;
+import com.snackbar.iam.infrastructure.gateways.UserEntityMapper;
 import com.snackbar.iam.infrastructure.security.UserDetailsAdapter;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -24,25 +25,18 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @EnableWebSecurity
 @Deprecated
 public class ApplicationConfiguration {
-    private final IamRepositoryAdapter userRepository;
+    private final UserRepository userRepository;
 
-    public ApplicationConfiguration(@Qualifier("iamRepositoryAdapter") IamRepositoryAdapter userRepository) {
+    public ApplicationConfiguration(@Qualifier("userRepository") UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
     @Bean("legacyUserDetailsService")
     UserDetailsService userDetailsService() {
         return cpf -> {
-            // Use the adapter to get the domain entity directly
+            // Use the repository directly to get the entity
             User user = userRepository.findByCpf(cpf)
-                    .map(userEntity -> new User(
-                        userEntity.getId(),
-                        userEntity.getName(),
-                        userEntity.getEmail(),
-                        userEntity.getCpf(),
-                        userEntity.getRole(),
-                        userEntity.getPassword()
-                    ))
+                    .map(UserEntityMapper::toDomain)
                     .orElseThrow(() -> new UsernameNotFoundException("User not found with CPF: " + cpf));
             
             // Use UserDetailsAdapter

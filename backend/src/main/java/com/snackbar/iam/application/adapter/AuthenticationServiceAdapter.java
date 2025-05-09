@@ -1,12 +1,12 @@
 package com.snackbar.iam.application.adapter;
 
+import com.snackbar.iam.application.gateways.UserGateway;
 import com.snackbar.iam.application.ports.in.AuthenticateUserInputPort;
 import com.snackbar.iam.application.ports.in.RegisterUserInputPort;
-import com.snackbar.iam.domain.adapter.UserEntityAdapter;
 import com.snackbar.iam.domain.entity.User;
-import com.snackbar.iam.infrastructure.adapter.IamRepositoryAdapter;
 import com.snackbar.iam.infrastructure.controllers.dto.LoginRequestDTO;
 import com.snackbar.iam.infrastructure.controllers.dto.RegisterUserRequestDTO;
+import com.snackbar.iam.infrastructure.gateways.UserEntityMapper;
 import com.snackbar.iam.infrastructure.persistence.UserEntity;
 import com.snackbar.iam.infrastructure.security.UserDetailsAdapter;
 import org.slf4j.Logger;
@@ -27,30 +27,27 @@ import org.springframework.stereotype.Component;
 public class AuthenticationServiceAdapter {
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationServiceAdapter.class);
 
-    protected final IamRepositoryAdapter userRepository;
+    protected final UserGateway userGateway;
     protected final PasswordEncoder passwordEncoder;
     protected final AuthenticationManager authenticationManager;
     private final RegisterUserInputPort registerUserUseCase;
     private final AuthenticateUserInputPort authenticateUserUseCase;
-    private final UserEntityAdapter userEntityAdapter;
     
     @Autowired
     private AuthenticationManager authManager;
 
     public AuthenticationServiceAdapter(
-            @Qualifier("iamRepositoryAdapter") IamRepositoryAdapter userRepository,
+            @Qualifier("userRepositoryGateway") UserGateway userGateway,
             @Qualifier("legacyAuthenticationManager") AuthenticationManager authenticationManager,
             @Qualifier("legacyPasswordEncoder") PasswordEncoder passwordEncoder,
             RegisterUserInputPort registerUserUseCase,
-            AuthenticateUserInputPort authenticateUserUseCase,
-            UserEntityAdapter userEntityAdapter
+            AuthenticateUserInputPort authenticateUserUseCase
     ) {
-        this.userRepository = userRepository;
+        this.userGateway = userGateway;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.registerUserUseCase = registerUserUseCase;
         this.authenticateUserUseCase = authenticateUserUseCase;
-        this.userEntityAdapter = userEntityAdapter;
         logger.info("AuthenticationServiceAdapter initialized");
     }
 
@@ -70,8 +67,8 @@ public class AuthenticationServiceAdapter {
         // Register the user using the use case
         User registeredUser = registerUserUseCase.registerUser(user);
         
-        // Convert the domain entity back to a legacy entity
-        return userEntityAdapter.toUserEntity(registeredUser);
+        // Convert the domain entity to a persistence entity using the mapper
+        return UserEntityMapper.toEntity(registeredUser);
     }
 
     public UserDetails authenticate(LoginRequestDTO input) {
