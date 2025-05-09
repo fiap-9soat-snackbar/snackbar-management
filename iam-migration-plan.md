@@ -27,17 +27,18 @@ The IAM module is currently in a hybrid state with:
    - ✅ `AuthenticationService.java` in application layer (REMOVED)
    - ✅ `UserService.java` in application layer (REMOVED)
    - ✅ `JwtService.java` in application layer (REMOVED)
-   - `SecurityConfiguration.java` and `SecurityConfigurationAdapter.java` in application layer
-   - `JwtAuthenticationFilter.java` in application layer
+   - ✅ `SecurityConfiguration.java` and `SecurityConfigurationAdapter.java` in application layer (REMOVED)
+   - ✅ `JwtAuthenticationFilter.java` in application layer (REMOVED)
    - ✅ `IamRepository.java` in infrastructure root (REMOVED)
    - ✅ `UserRepository.java` in infrastructure root (REMOVED)
+   - ✅ `FeignClientConfig.java` in config package (REMOVED)
 
 3. **Adapter Components** (temporary):
    - ✅ `UserEntityAdapter.java` in domain.adapter (REMOVED)
    - ✅ `AuthenticationServiceAdapter.java` and `UserServiceAdapter.java` in application.adapter (REMOVED)
    - ✅ `UserRepositoryAdapter.java`, `IamRepositoryAdapter.java` in infrastructure.adapter (REMOVED)
-   - `UserDetailsServiceAdapter.java` in infrastructure.adapter
-   - `PersistenceEntityAdapter.java` in infrastructure.adapter
+   - ✅ `PersistenceEntityAdapter.java` in infrastructure.adapter (REMOVED)
+   - ✅ `UserDetailsServiceAdapter.java` in infrastructure.adapter (REPLACED with IamUserDetailsService)
 
 ## Target Package Structure
 
@@ -98,6 +99,7 @@ com.snackbar.iam
     ├── security
     │   ├── JwtService.java
     │   ├── UserDetailsAdapter.java
+    │   ├── IamUserDetailsService.java
     │   ├── IamJwtAuthenticationFilter.java
     │   └── exception
     │       └── [Security exceptions]
@@ -279,9 +281,9 @@ After each step, we will run `iam_test_integration_v3.sh` to verify that everyth
    - Remove `UserServiceAdapter.java`
    - Run `iam_test_integration_v3.sh` to verify functionality
 
-### Phase 6: Remove Remaining Legacy Components
+### Phase 6: Remove Remaining Legacy Components ✅
 
-#### Step 1: Remove Legacy Configuration Classes
+#### Step 1: Remove Legacy Configuration Classes ✅
 
 1. **Identify Legacy Configuration Dependencies** ✅
    - Check if ApplicationConfiguration.java is still being referenced
@@ -292,7 +294,7 @@ After each step, we will run `iam_test_integration_v3.sh` to verify that everyth
    - Remove ApplicationConfiguration.java
    - Run `iam_test_integration_v3.sh` to verify functionality
 
-#### Step 2: Remove Legacy Security Components
+#### Step 2: Remove Legacy Security Components ✅
 
 1. **Identify Legacy Security Dependencies** ✅
    - Check if SecurityConfigurationAdapter.java is still being referenced
@@ -301,13 +303,13 @@ After each step, we will run `iam_test_integration_v3.sh` to verify that everyth
    - Ensure all security functionality is properly migrated to clean architecture components
    - Run `iam_test_integration_v3.sh` to verify functionality
 
-2. **Remove Legacy Security Components** ❌
+2. **Remove Legacy Security Components** ✅
    - Remove SecurityConfigurationAdapter.java
    - Remove SecurityConfiguration.java
    - Remove JwtAuthenticationFilter.java
    - Run `iam_test_integration_v3.sh` to verify functionality
 
-#### Step 3: Remove Legacy Adapter Infrastructure
+#### Step 3: Remove Legacy Adapter Infrastructure ✅
 
 1. **Identify Legacy Adapter Dependencies** ✅
    - Check if PersistenceEntityAdapter.java is still being referenced
@@ -315,61 +317,51 @@ After each step, we will run `iam_test_integration_v3.sh` to verify that everyth
    - Ensure all functionality is properly migrated to clean architecture components
    - Run `iam_test_integration_v3.sh` to verify functionality
 
-2. **Remove Legacy Adapters** ❌
+2. **Remove Legacy Adapters** ✅
    - Remove PersistenceEntityAdapter.java
-   - Remove UserDetailsServiceAdapter.java
+   - Replace UserDetailsServiceAdapter.java with IamUserDetailsService
    - Run `iam_test_integration_v3.sh` to verify functionality
 
-#### Step 4: Remove Legacy Client Configuration
+#### Step 4: Remove Legacy Client Configuration ✅
 
 1. **Identify Legacy Client Dependencies** ✅
    - Check if FeignClientConfig.java is still being referenced
    - Ensure all client functionality is properly migrated to clean architecture components
    - Run `iam_test_integration_v3.sh` to verify functionality
 
-2. **Remove Legacy Client Configuration** ❌
+2. **Remove Legacy Client Configuration** ✅
    - Remove FeignClientConfig.java
    - Run `iam_test_integration_v3.sh` to verify functionality
 
-### Dependency Analysis
+### Phase 7: Final Clean-up and Improvements ✅
 
-After attempting to remove legacy components, we've identified the following dependencies that need to be addressed:
+1. **Rename UserDetailsServiceAdapter to IamUserDetailsService** ✅
+   - Create new IamUserDetailsService class in infrastructure.security package
+   - Keep the same functionality and qualifiers
+   - Remove the old UserDetailsServiceAdapter class
+   - Run `iam_test_integration_v3.sh` to verify functionality
 
-1. **ApplicationConfiguration.java** ✅
-   - Provided `legacyUserDetailsService` bean used by JwtAuthenticationFilter
-   - Provided `legacyPasswordEncoder` bean (migrated to IamAuthenticationConfig)
-   - Provided `legacyAuthenticationManager` bean (migrated to IamAuthenticationConfig)
-   - Provided `legacyAuthenticationProvider` bean (migrated to IamAuthenticationConfig)
-   - Successfully removed by adding the necessary beans to IamAuthenticationConfig
+## Security Components Architecture
 
-2. **JwtAuthenticationFilter.java**
-   - Modified to use "userDetailsServiceAdapter" instead of "legacyUserDetailsService"
-   - Used by SecurityConfigurationAdapter and SecurityConfiguration
+The IAM module's security components follow a clear separation of responsibilities:
 
-3. **SecurityConfigurationAdapter.java**
-   - Depends on JwtAuthenticationFilter
-   - Depends on legacyAuthenticationProvider from IamAuthenticationConfig
+1. **IamUserDetailsService**
+   - **Role**: Infrastructure service that bridges our domain model with Spring Security
+   - **Implements**: Spring Security's `UserDetailsService` interface
+   - **Purpose**: Loads user-specific data for authentication purposes
+   - **Key method**: `loadUserByUsername(String cpf)` which finds a user by CPF
+   - **Dependencies**: UserGateway, UserDetailsAdapter
 
-4. **SecurityConfiguration.java**
-   - Depends on JwtAuthenticationFilter
-   - Depends on legacyAuthenticationProvider from IamAuthenticationConfig
+2. **UserDetailsAdapter**
+   - **Role**: Adapter that translates our domain User to Spring Security's format
+   - **Implements**: Spring Security's `UserDetails` interface
+   - **Purpose**: Adapts our domain User entity to Spring Security's expected format
+   - **Key methods**: Various methods required by UserDetails like `getAuthorities()`, `getPassword()`, etc.
+   - **Dependencies**: Domain User entity
 
-5. **UserDetailsServiceAdapter.java**
-   - Used by IamJwtAuthenticationFilter and IamAuthenticationConfig
-
-### Migration Strategy
-
-To safely remove the remaining components, we need to:
-
-1. ✅ Create a new AuthenticationProvider bean in IamAuthenticationConfig with the qualifier "legacyAuthenticationProvider"
-2. ✅ Create a new AuthenticationManager bean in IamAuthenticationConfig with the qualifier "legacyAuthenticationManager"
-3. ✅ Update JwtAuthenticationFilter to use "userDetailsServiceAdapter" instead of "legacyUserDetailsService"
-4. ✅ Remove ApplicationConfiguration
-5. ❌ Remove SecurityConfigurationAdapter, SecurityConfiguration, and JwtAuthenticationFilter
-6. ❌ Remove PersistenceEntityAdapter and UserDetailsServiceAdapter
-7. ❌ Remove FeignClientConfig
-
-This approach will allow us to maintain backward compatibility while progressively removing legacy code.
+This separation follows clean architecture principles:
+- IamUserDetailsService is correctly named as a "Service" because it provides a service to Spring Security
+- UserDetailsAdapter is correctly named as an "Adapter" because it adapts our domain model to an external interface
 
 ## Progress Tracking
 
@@ -412,16 +404,16 @@ This approach will allow us to maintain backward compatibility while progressive
 - ✅ Added PasswordEncoder, AuthenticationProvider, and AuthenticationManager beans to IamAuthenticationConfig
 - ✅ Updated JwtAuthenticationFilter to use userDetailsServiceAdapter instead of legacyUserDetailsService
 - ✅ Removed ApplicationConfiguration.java
-- ✅ Verified functionality with integration tests after removing ApplicationConfiguration
+- ✅ Removed SecurityConfigurationAdapter.java
+- ✅ Removed SecurityConfiguration.java
+- ✅ Removed JwtAuthenticationFilter.java
+- ✅ Removed PersistenceEntityAdapter.java
+- ✅ Removed FeignClientConfig.java
+- ✅ Renamed UserDetailsServiceAdapter to IamUserDetailsService
+- ✅ Verified functionality with integration tests after all changes
 
 ### Current Work
-- Working on removing remaining legacy components
-
-### Next Steps
-- Remove legacy security components (SecurityConfigurationAdapter.java, SecurityConfiguration.java, JwtAuthenticationFilter.java)
-- Remove legacy adapter infrastructure (PersistenceEntityAdapter.java, UserDetailsServiceAdapter.java)
-- Remove legacy client configuration (FeignClientConfig.java)
-- Update documentation to reflect the new clean architecture
+- Migration completed successfully!
 
 ## Conclusion
 
@@ -429,4 +421,13 @@ This migration plan provided a detailed roadmap for removing legacy code from th
 
 The plan acknowledged that many clean architecture components were already in place and focused on removing legacy components and adapters in a systematic way. After each step, we ran `iam_test_integration_v3.sh` to verify that everything still worked correctly, ensuring a smooth migration process.
 
-The core migration has been successfully completed, resulting in a cleaner, more maintainable architecture that follows clean architecture principles. The final steps involve removing any remaining legacy components that are no longer needed.
+The migration has been successfully completed, resulting in a cleaner, more maintainable architecture that follows clean architecture principles. All legacy components have been removed or replaced with clean architecture equivalents, and the code now follows a consistent naming convention with the "Iam" prefix for IAM module components.
+
+The final architecture clearly separates concerns:
+- Domain entities represent business concepts
+- Use cases implement business rules
+- Infrastructure components handle technical concerns
+- Adapters translate between layers
+- Services provide functionality to external systems
+
+This separation makes the code more maintainable, testable, and adaptable to future changes.
