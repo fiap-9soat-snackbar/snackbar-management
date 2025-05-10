@@ -1,5 +1,148 @@
 # IAM Module Test Implementation Plan
 
+## Implementation Status
+
+We have successfully implemented tests for the first two phases of the plan. The current test coverage is as follows:
+
+### Domain Layer
+- **IamRole Enum**: 100% coverage
+- **Domain Exceptions**: 100% coverage
+- **Domain Events**: 100% coverage
+- **User Entity**: 97% coverage (283 of 290 instructions)
+
+### Application Use Cases
+- **GetAllUsersUseCase**: 100% coverage
+- **GetUserByCpfUseCase**: 100% coverage
+- **DeleteUserUseCase**: 100% coverage
+- **RegisterUserUseCase**: 100% coverage
+- **AuthenticateUserUseCase**: 96% coverage (10 of 314 instructions missed)
+- **UpdateUserUseCase**: 100% coverage
+
+### Overall Coverage
+- **Domain Layer**: 99% coverage
+- **Application Layer**: 96% coverage
+
+## Test Execution Notes
+
+When running tests with `mvn clean test jacoco:report`, all tests are executed correctly, including those for the product and infrastructure modules. The JaCoCo report now shows much better coverage for these modules:
+
+- Product domain entity: 100% coverage
+- Product domain events: 100% coverage
+- Product domain exceptions: 100% coverage
+- Product infrastructure controllers: 99% coverage
+- Product infrastructure messaging: 91-100% coverage
+- Infrastructure messaging SQS model: 100% coverage
+
+The overall project coverage is now at 63% (up from 18% in the previous report), which is a significant improvement.
+
+## Test Log Management
+
+To reduce log pollution during test execution, we've implemented the following strategies:
+
+### 1. Custom Logback Configuration for Tests
+
+Create a `logback-test.xml` file in `src/test/resources` to control logging during test execution:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <!-- Set specific loggers to ERROR level to suppress expected warnings -->
+    <logger name="com.snackbar.infrastructure.messaging.sqs.consumer.SQSMessageConsumerImpl" level="ERROR" />
+    <logger name="com.snackbar.infrastructure.messaging.sqs.producer.SQSMessageProducerImpl" level="ERROR" />
+    <logger name="com.snackbar.product.infrastructure.messaging.sqs.consumer.SQSProductMessageConsumer" level="ERROR" />
+    <logger name="com.snackbar.product.infrastructure.gateways.ProductEntityMapper" level="ERROR" />
+    
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />
+    </root>
+</configuration>
+```
+
+### 2. Mockito Settings for Lenient Stubbing
+
+Use the following annotations in test classes to prevent "unnecessary stubbing" warnings:
+
+```java
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+class YourTestClass {
+    // Test methods
+}
+```
+
+### 3. LoggerRule for Temporary Log Suppression
+
+Implement a custom JUnit rule to temporarily suppress logs during specific test methods:
+
+```java
+public class LoggerRule extends ExternalResource {
+    private Map<Logger, Level> originalLevels = new HashMap<>();
+    
+    public void suppress(Class<?> clazz, Level level) {
+        Logger logger = (Logger) LoggerFactory.getLogger(clazz);
+        originalLevels.put(logger, logger.getLevel());
+        logger.setLevel(level);
+    }
+    
+    @Override
+    protected void after() {
+        originalLevels.forEach(Logger::setLevel);
+    }
+}
+```
+
+Usage in test classes:
+
+```java
+@Rule
+public LoggerRule loggerRule = new LoggerRule();
+
+@Test
+public void testWithSuppressedLogs() {
+    loggerRule.suppress(SQSMessageConsumerImpl.class, Level.OFF);
+    // Test code that generates expected errors
+}
+```
+
+### 4. Try-Finally Block for Log Level Management
+
+For individual test methods that expect exceptions:
+
+```java
+@Test
+void deserializeMessage_shouldThrowException_whenDeserializationFails() {
+    Logger logger = (Logger) LoggerFactory.getLogger(SQSMessageConsumerImpl.class);
+    Level originalLevel = logger.getLevel();
+    logger.setLevel(Level.OFF);
+    
+    try {
+        // Test code that throws expected exception
+        assertThrows(RuntimeException.class, () -> consumer.deserializeMessage("{invalid-json}"));
+    } finally {
+        // Restore original log level
+        logger.setLevel(originalLevel);
+    }
+}
+```
+
+### 5. @SuppressWarnings Annotation
+
+Use the `@SuppressWarnings` annotation to silence specific compiler warnings:
+
+```java
+@SuppressWarnings("unchecked")
+@Test
+void testMethod() {
+    // Test code
+}
+```
+
 ## Revised Approach
 
 Based on the JaCoCo coverage report, we'll implement tests with the following key principles:
