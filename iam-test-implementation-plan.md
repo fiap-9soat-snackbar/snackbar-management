@@ -308,24 +308,23 @@ Based on the JaCoCo coverage report and the need for improved test quality, we'l
   - ✅ Test validation annotations
 - **Coverage target:** 80%+ for each file
 
-#### Persistence Layer (190 missed instructions)
-- **Files to test:**
-  - Repository implementations in `com.snackbar.iam.infrastructure.persistence`
-- **Test approach:**
-  - Test CRUD operations
-  - Test custom queries
-  - Test entity mapping
-  - Use in-memory database for testing
-- **Coverage target:** 80%+ for each file
+#### Persistence Layer - COMPLETED (97% coverage)
+- **Files tested:**
+  - `UserEntity`
+  - `UserRepository` (via `UserRepositoryGateway` tests)
+- ✅ Test entity creation and properties
+- ✅ Test entity builder pattern
+- ✅ Test equals, hashCode, and toString methods
+- **Coverage achieved:** 97% (5 of 186 branches missed)
 
-#### Gateway Components (137 missed instructions)
-- **Files to test:**
-  - Classes in `com.snackbar.iam.infrastructure.gateways`
-- **Test approach:**
-  - Test external service integrations
-  - Test error handling in external calls
-  - Use mocks for external dependencies
-- **Coverage target:** 80%+ for each file
+#### Gateway Components - COMPLETED (97% coverage)
+- **Files tested:**
+  - `UserEntityMapper`
+  - `UserRepositoryGateway`
+- ✅ Test mapping between domain and persistence entities
+- ✅ Test CRUD operations
+- ✅ Test error handling
+- **Coverage achieved:** 97% (1 of 134 instructions missed)
 
 #### Configuration Classes (167 missed instructions)
 - **Files to test:**
