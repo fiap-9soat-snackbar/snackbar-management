@@ -1,9 +1,12 @@
 package com.snackbar.product.infrastructure.messaging.sqs.consumer;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -21,6 +24,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.Logger;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.snackbar.infrastructure.messaging.sqs.consumer.SQSMessageConsumer;
@@ -28,6 +32,7 @@ import com.snackbar.product.application.ports.in.CreateProductInputPort;
 import com.snackbar.product.application.ports.in.DeleteProductByIdInputPort;
 import com.snackbar.product.application.ports.in.UpdateProductByIdInputPort;
 import com.snackbar.product.domain.entity.Product;
+import com.snackbar.product.domain.exceptions.ProductNotFoundException;
 import com.snackbar.product.infrastructure.messaging.mapper.ProductMessageMapper;
 import com.snackbar.product.infrastructure.messaging.sqs.model.StandardProductMessage;
 
@@ -50,6 +55,9 @@ class SQSProductMessageConsumerTest {
 
     @Mock
     private DeleteProductByIdInputPort deleteProductUseCase;
+    
+    @Mock
+    private Logger mockLogger;
 
     @InjectMocks
     private SQSProductMessageConsumer consumer;
@@ -78,6 +86,9 @@ class SQSProductMessageConsumerTest {
         ReflectionTestUtils.setField(consumer, "pollingDelayMs", 1000L);
         ReflectionTestUtils.setField(consumer, "maxMessages", 10);
         ReflectionTestUtils.setField(consumer, "waitTimeSeconds", 5);
+        
+        // Set mock logger to avoid log pollution during tests
+        consumer.setLogger(mockLogger);
     }
 
     @Test
@@ -289,5 +300,87 @@ class SQSProductMessageConsumerTest {
         verify(messageConsumer, times(1)).receiveMessages(queueUrl, 10, 5);
         verify(messageConsumer, times(1)).deserializeMessage(message, StandardProductMessage.class);
         verify(messageConsumer, never()).deleteMessage(anyString(), anyString());
+    }
+    
+    @Test
+    @DisplayName("Should test setLogger method")
+    void setLogger_ShouldSetLoggerCorrectly() {
+        // Given
+        Logger newLogger = mock(Logger.class);
+        
+        // When
+        consumer.setLogger(newLogger);
+        
+        // Then
+        // Verification is implicit - no exception means success
+        assertDoesNotThrow(() -> consumer.pollMessages());
+    }
+
+    @Test
+    @DisplayName("Should handle exception in handleProductCreated")
+    void handleProductCreated_ShouldHandleException() {
+        // Given
+        productMessage.setEventType(StandardProductMessage.EVENT_TYPE_CREATED);
+        
+        when(messageConsumer.receiveMessages(queueUrl, 10, 5)).thenReturn(List.of(message));
+        when(messageConsumer.deserializeMessage(message, StandardProductMessage.class)).thenReturn(productMessage);
+        when(messageMapper.toDomainObject(productMessage)).thenReturn(product);
+        doThrow(new RuntimeException("Error creating product")).when(createProductUseCase).createProduct(product);
+
+        // When
+        consumer.pollMessages();
+
+        // Then
+        verify(messageConsumer, times(1)).receiveMessages(queueUrl, 10, 5);
+        verify(messageConsumer, times(1)).deserializeMessage(message, StandardProductMessage.class);
+        verify(messageMapper, times(1)).toDomainObject(productMessage);
+        verify(createProductUseCase, times(1)).createProduct(product);
+        verify(messageConsumer, never()).deleteMessage(queueUrl, "receipt-handle");
+        verify(mockLogger).error(eq("Failed to create product from message: {}"), eq("1"), any(RuntimeException.class));
+    }
+
+    @Test
+    @DisplayName("Should handle exception in handleProductUpdated")
+    void handleProductUpdated_ShouldHandleException() {
+        // Given
+        productMessage.setEventType(StandardProductMessage.EVENT_TYPE_UPDATED);
+        
+        when(messageConsumer.receiveMessages(queueUrl, 10, 5)).thenReturn(List.of(message));
+        when(messageConsumer.deserializeMessage(message, StandardProductMessage.class)).thenReturn(productMessage);
+        when(messageMapper.toDomainObject(productMessage)).thenReturn(product);
+        doThrow(new RuntimeException("Error updating product")).when(updateProductUseCase).updateProductById(anyString(), any(Product.class));
+
+        // When
+        consumer.pollMessages();
+
+        // Then
+        verify(messageConsumer, times(1)).receiveMessages(queueUrl, 10, 5);
+        verify(messageConsumer, times(1)).deserializeMessage(message, StandardProductMessage.class);
+        verify(messageMapper, times(1)).toDomainObject(productMessage);
+        verify(updateProductUseCase, times(1)).updateProductById("1", product);
+        verify(messageConsumer, never()).deleteMessage(queueUrl, "receipt-handle");
+        verify(mockLogger).error(eq("Failed to update product from message: {}"), eq("1"), any(RuntimeException.class));
+    }
+
+    @Test
+    @DisplayName("Should handle exception in handleProductDeleted")
+    void handleProductDeleted_ShouldHandleException() {
+        // Given
+        productMessage.setEventType(StandardProductMessage.EVENT_TYPE_DELETED);
+        
+        when(messageConsumer.receiveMessages(queueUrl, 10, 5)).thenReturn(List.of(message));
+        when(messageConsumer.deserializeMessage(message, StandardProductMessage.class)).thenReturn(productMessage);
+        doThrow(new ProductNotFoundException("Product not found")).when(deleteProductUseCase).deleteProductById(anyString());
+
+        // When
+        consumer.pollMessages();
+
+        // Then
+        verify(messageConsumer, times(1)).receiveMessages(queueUrl, 10, 5);
+        verify(messageConsumer, times(1)).deserializeMessage(message, StandardProductMessage.class);
+        verify(messageMapper, never()).toDomainObject(productMessage); // No mapping needed for delete
+        verify(deleteProductUseCase, times(1)).deleteProductById("1");
+        verify(messageConsumer, never()).deleteMessage(queueUrl, "receipt-handle");
+        verify(mockLogger).error(eq("Failed to delete product from message: {}"), eq("1"), any(ProductNotFoundException.class));
     }
 }
