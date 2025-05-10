@@ -288,6 +288,16 @@ Based on the JaCoCo coverage report and the need for improved test quality, we'l
 
 ### Phase 3: Infrastructure Components (Increasing Complexity)
 
+#### Event Infrastructure - COMPLETED (100% coverage)
+- **Files tested:**
+  - Classes in `com.snackbar.iam.infrastructure.event`
+  - `SimpleIamDomainEventPublisher`
+  - `IamEventListener`
+- ✅ Test event publishing
+- ✅ Test event handling
+- ✅ Test integration with domain events
+- **Coverage achieved:** 100%
+
 #### DTOs and Mappers - PARTIALLY COMPLETED
 - **Files to test:**
   - Classes in `com.snackbar.iam.infrastructure.controllers.dto`
@@ -296,15 +306,6 @@ Based on the JaCoCo coverage report and the need for improved test quality, we'l
   - ✅ Test mapping from domain entities to DTOs
   - ✅ Test mapping from DTOs to domain entities
   - ✅ Test validation annotations
-- **Coverage target:** 80%+ for each file
-
-#### Event Infrastructure (100 missed instructions)
-- **Files to test:**
-  - Classes in `com.snackbar.iam.infrastructure.event`
-- **Test approach:**
-  - Test event publishing
-  - Test event handling
-  - Test integration with domain events
 - **Coverage target:** 80%+ for each file
 
 #### Persistence Layer (190 missed instructions)
