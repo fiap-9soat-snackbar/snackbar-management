@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.SecurityFilterChain;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,9 +21,6 @@ class IamSecurityConfigTest {
     @Mock
     private UserDetailsService userDetailsService;
 
-    @Mock
-    private HttpSecurity httpSecurity;
-
     @Test
     @DisplayName("Should create IamSecurityConfig with required dependencies")
     void shouldCreateIamSecurityConfigWithRequiredDependencies() {
@@ -34,18 +32,44 @@ class IamSecurityConfigTest {
     }
     
     @Test
-    @DisplayName("Should configure security filter chain")
-    void shouldConfigureSecurityFilterChain() throws Exception {
-        // Given
-        IamSecurityConfig securityConfig = new IamSecurityConfig(jwtAuthenticationFilter, userDetailsService);
+    @DisplayName("Should have securityFilterChain method that returns SecurityFilterChain")
+    void shouldHaveSecurityFilterChainMethod() {
+        // When/Then - Verify the method exists and has the correct signature
+        assertDoesNotThrow(() -> {
+            java.lang.reflect.Method method = IamSecurityConfig.class.getMethod("securityFilterChain", HttpSecurity.class);
+            assertEquals(SecurityFilterChain.class, method.getReturnType());
+        });
+    }
+    
+    @Test
+    @DisplayName("Should have proper annotations on securityFilterChain method")
+    void shouldHaveProperAnnotationsOnSecurityFilterChainMethod() throws Exception {
+        // When/Then - Verify the method has the required annotations
+        java.lang.reflect.Method method = IamSecurityConfig.class.getMethod("securityFilterChain", HttpSecurity.class);
         
-        // This test is limited because HttpSecurity is a final class and difficult to mock properly
-        // We're just verifying that the method doesn't throw an exception when called with a real HttpSecurity
+        // Check for @Bean annotation
+        assertTrue(method.isAnnotationPresent(org.springframework.context.annotation.Bean.class));
         
-        // For a real test, we would need to use Spring's testing support
-        // This is just a placeholder to show the intent
+        // Check for @Order annotation
+        assertTrue(method.isAnnotationPresent(org.springframework.core.annotation.Order.class));
+        org.springframework.core.annotation.Order orderAnnotation = 
+                method.getAnnotation(org.springframework.core.annotation.Order.class);
+        assertEquals(1, orderAnnotation.value());
+    }
+    
+    @Test
+    @DisplayName("Should have proper class annotations")
+    void shouldHaveProperClassAnnotations() {
+        // When/Then - Verify the class has the required annotations
+        Class<?> clazz = IamSecurityConfig.class;
         
-        // The actual test would be an integration test using Spring's testing support
-        assertNotNull(securityConfig);
+        // Check for @Configuration annotation
+        assertTrue(clazz.isAnnotationPresent(org.springframework.context.annotation.Configuration.class));
+        
+        // Check for @EnableWebSecurity annotation
+        assertTrue(clazz.isAnnotationPresent(org.springframework.security.config.annotation.web.configuration.EnableWebSecurity.class));
+        
+        // Check for @EnableMethodSecurity annotation
+        assertTrue(clazz.isAnnotationPresent(org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity.class));
     }
 }
