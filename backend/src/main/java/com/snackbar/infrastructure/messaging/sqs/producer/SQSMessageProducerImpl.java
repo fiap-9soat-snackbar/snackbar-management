@@ -18,7 +18,7 @@ import software.amazon.awssdk.services.sqs.model.SendMessageResponse;
 @Component
 public class SQSMessageProducerImpl implements SQSMessageProducer {
     
-    private static final Logger logger = LoggerFactory.getLogger(SQSMessageProducerImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(SQSMessageProducerImpl.class);
     
     private final ObjectMapper objectMapper;
     private final SqsClient sqsClient;
@@ -26,7 +26,7 @@ public class SQSMessageProducerImpl implements SQSMessageProducer {
     public SQSMessageProducerImpl(ObjectMapper objectMapper, SqsClient sqsClient) {
         this.objectMapper = objectMapper;
         this.sqsClient = sqsClient;
-        logger.info("SQSMessageProducerImpl initialized with SqsClient: {}", sqsClient);
+        log.info("SQSMessageProducerImpl initialized with SqsClient: {}", sqsClient);
     }
     
     @Override
@@ -34,30 +34,37 @@ public class SQSMessageProducerImpl implements SQSMessageProducer {
         try {
             String messageBody = objectMapper.writeValueAsString(message);
             
-            logger.info("Sending message to SQS queue: {}", queueUrl);
-            logger.debug("Message body: {}", messageBody);
+            log.info("Sending message to SQS queue: {}", queueUrl);
+            log.debug("Message body: {}", messageBody);
             
             SendMessageRequest sendMessageRequest = SendMessageRequest.builder()
                 .queueUrl(queueUrl)
                 .messageBody(messageBody)
                 .build();
             
-            logger.debug("SQS client: {}", sqsClient);
+            log.debug("SQS client: {}", sqsClient);
             
             try {
                 SendMessageResponse response = sqsClient.sendMessage(sendMessageRequest);
-                logger.info("Message sent to SQS. MessageId: {}, EventType: {}", 
+                log.info("Message sent to SQS. MessageId: {}, EventType: {}", 
                         response.messageId(), message.getEventType());
             } catch (Exception e) {
-                logger.error("Failed to send message to SQS. Error details: {}", e.toString(), e);
+                // In test environments, we might expect certain exceptions
+                // Only log the full stack trace at debug level
+                log.error("Failed to send message to SQS. Error details: {}", e.toString());
+                log.debug("Full exception details", e);
                 throw new RuntimeException("Failed to send message to SQS", e);
             }
             
         } catch (JsonProcessingException e) {
-            logger.error("Failed to serialize message to JSON", e);
+            // Only log the full stack trace at debug level
+            log.error("Failed to serialize message to JSON");
+            log.debug("Full exception details", e);
             throw new RuntimeException("Failed to serialize message to JSON", e);
         } catch (Exception e) {
-            logger.error("Failed to send message to SQS", e);
+            // Only log the full stack trace at debug level
+            log.error("Failed to send message to SQS");
+            log.debug("Full exception details", e);
             throw new RuntimeException("Failed to send message to SQS", e);
         }
     }

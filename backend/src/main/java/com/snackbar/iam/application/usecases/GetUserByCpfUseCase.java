@@ -17,6 +17,10 @@ public class GetUserByCpfUseCase implements GetUserByCpfInputPort {
 
     @Override
     public User getUserByCpf(String cpf) {
+        if (cpf == null) {
+            throw new IllegalArgumentException("CPF cannot be null");
+        }
+        
         return userGateway.findByCpf(cpf)
                 .orElseThrow(() -> new UserNotFoundException("User not found with CPF: " + cpf));
     }

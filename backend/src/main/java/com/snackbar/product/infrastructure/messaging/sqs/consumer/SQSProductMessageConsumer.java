@@ -25,7 +25,8 @@ import java.util.List;
 @Component
 public class SQSProductMessageConsumer {
     
-    private static final Logger logger = LoggerFactory.getLogger(SQSProductMessageConsumer.class);
+    // Changed from static final to instance variable for easier testing
+    private Logger logger = LoggerFactory.getLogger(SQSProductMessageConsumer.class);
     
     private final SQSMessageConsumer messageConsumer;
     private final ProductMessageMapper messageMapper;
@@ -208,5 +209,10 @@ public class SQSProductMessageConsumer {
             }
             throw e; // Rethrow to trigger retry mechanism
         }
+    }
+    
+    // For testing purposes - allows setting a mock logger
+    public void setLogger(Logger logger) {
+        this.logger = logger;
     }
 }

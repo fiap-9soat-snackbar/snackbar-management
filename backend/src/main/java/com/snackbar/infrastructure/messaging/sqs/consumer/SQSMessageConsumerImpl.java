@@ -26,7 +26,8 @@ import com.snackbar.product.infrastructure.messaging.sqs.model.StandardProductMe
 @Component
 public class SQSMessageConsumerImpl implements SQSMessageConsumer {
     
-    private static final Logger logger = LoggerFactory.getLogger(SQSMessageConsumerImpl.class);
+    // Using instance logger instead of static logger to make testing easier
+    private Logger log = LoggerFactory.getLogger(SQSMessageConsumerImpl.class);
     
     private final SqsClient sqsClient;
     private final ObjectMapper objectMapper;
@@ -49,14 +50,17 @@ public class SQSMessageConsumerImpl implements SQSMessageConsumer {
             List<Message> messages = response.messages();
             
             if (!messages.isEmpty()) {
-                logger.info("Received {} messages from queue {}", messages.size(), queueUrl);
+                log.info("Received {} messages from queue {}", messages.size(), queueUrl);
             } else {
-                logger.debug("No messages received from queue {}", queueUrl);
+                log.debug("No messages received from queue {}", queueUrl);
             }
             
             return messages;
         } catch (Exception e) {
-            logger.error("Error receiving messages from SQS queue {}", queueUrl, e);
+            // In test environments, we might expect certain exceptions
+            // Only log the error message at ERROR level, full stack trace at DEBUG level
+            log.error("Error receiving messages from SQS queue {}", queueUrl);
+            log.debug("Full exception details", e);
             return Collections.emptyList();
         }
     }
@@ -70,9 +74,11 @@ public class SQSMessageConsumerImpl implements SQSMessageConsumer {
                 .build();
             
             sqsClient.deleteMessage(deleteRequest);
-            logger.debug("Deleted message with receipt handle: {}", receiptHandle);
+            log.debug("Deleted message with receipt handle: {}", receiptHandle);
         } catch (Exception e) {
-            logger.error("Error deleting message from SQS queue {}", queueUrl, e);
+            // Only log the error message at ERROR level, full stack trace at DEBUG level
+            log.error("Error deleting message from SQS queue {}", queueUrl);
+            log.debug("Full exception details", e);
             throw new RuntimeException("Failed to delete message from SQS", e);
         }
     }
@@ -89,7 +95,9 @@ public class SQSMessageConsumerImpl implements SQSMessageConsumer {
             // Default deserialization for other types
             return objectMapper.readValue(message.body(), messageType);
         } catch (JsonProcessingException e) {
-            logger.error("Failed to deserialize message: {}", message.body(), e);
+            // Only log the error message at ERROR level, full stack trace at DEBUG level
+            log.error("Failed to deserialize message: {}", message.body());
+            log.debug("Full exception details", e);
             throw new RuntimeException("Failed to deserialize message", e);
         }
     }
@@ -139,8 +147,15 @@ public class SQSMessageConsumerImpl implements SQSMessageConsumer {
             // Standard format - direct mapping
             return objectMapper.readValue(messageBody, StandardProductMessage.class);
         } catch (Exception e) {
-            logger.error("Error deserializing message to StandardProductMessage: {}", messageBody, e);
+            // Only log the error message at ERROR level, full stack trace at DEBUG level
+            log.error("Error deserializing message to StandardProductMessage: {}", messageBody);
+            log.debug("Full exception details", e);
             throw e;
         }
+    }
+    
+    // For testing purposes - allows setting a mock logger
+    public void setLogger(Logger logger) {
+        this.log = logger;
     }
 }

@@ -35,121 +35,180 @@ When running tests with `mvn clean test jacoco:report`, all tests are executed c
 
 The overall project coverage is now at 63% (up from 18% in the previous report), which is a significant improvement.
 
-## Test Log Management
+## Test Quality Improvement Plan
 
-To reduce log pollution during test execution, we've implemented the following strategies:
+To address the warnings and exceptions in test logs, we'll implement the following improvements:
 
-### 1. Custom Logback Configuration for Tests
+### 1. Mockito Warning Resolution
 
-Create a `logback-test.xml` file in `src/test/resources` to control logging during test execution:
+For "unnecessary stubbing" warnings:
+- Only stub methods that will actually be called in the test
+- Use `lenient()` for stubs that may or may not be called depending on test path
+- Refactor tests to avoid setting up unused mocks
+- Add `@MockitoSettings(strictness = Strictness.LENIENT)` only when necessary
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<configuration>
-    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
-        </encoder>
-    </appender>
-    
-    <!-- Set specific loggers to ERROR level to suppress expected warnings -->
-    <logger name="com.snackbar.infrastructure.messaging.sqs.consumer.SQSMessageConsumerImpl" level="ERROR" />
-    <logger name="com.snackbar.infrastructure.messaging.sqs.producer.SQSMessageProducerImpl" level="ERROR" />
-    <logger name="com.snackbar.product.infrastructure.messaging.sqs.consumer.SQSProductMessageConsumer" level="ERROR" />
-    <logger name="com.snackbar.product.infrastructure.gateways.ProductEntityMapper" level="ERROR" />
-    
-    <root level="INFO">
-        <appender-ref ref="CONSOLE" />
-    </root>
-</configuration>
+Example:
+```java
+// Instead of this:
+when(userGateway.findByCpf(cpf)).thenReturn(Optional.empty());
+when(userGateway.findByEmail(email)).thenReturn(Optional.empty()); // Unnecessary if test fails at first check
+
+// Do this:
+when(userGateway.findByCpf(cpf)).thenReturn(Optional.empty());
+// Only add the second stub if the test will reach that point
 ```
 
-### 2. Mockito Settings for Lenient Stubbing
+### 2. Improved Exception Testing
 
-Use the following annotations in test classes to prevent "unnecessary stubbing" warnings:
+For tests that expect exceptions:
+- Use JUnit 5's assertThrows with specific exception types
+- Verify exception message content when relevant
+- Avoid catching exceptions in test methods unless necessary for verification
+- Test both success and failure paths explicitly
 
+Example:
+```java
+@Test
+void shouldThrowExceptionWhenUserDoesNotExist() {
+    // Given
+    String cpf = "nonexistent";
+    when(userGateway.findByCpf(cpf)).thenReturn(Optional.empty());
+    
+    // When/Then
+    UserNotFoundException exception = assertThrows(
+        UserNotFoundException.class,
+        () -> getUserByCpfUseCase.getUserByCpf(cpf)
+    );
+    
+    // Additional verification
+    assertEquals("User not found with CPF: " + cpf, exception.getMessage());
+}
+```
+
+### 3. Enhanced Test Structure
+
+Improve test organization and readability:
+- Follow the Arrange-Act-Assert (Given-When-Then) pattern consistently
+- Use descriptive test method names that explain the scenario
+- Group related tests using nested classes
+- Use setup methods for common test fixtures
+
+Example:
+```java
+@Nested
+class WhenUserExists {
+    @BeforeEach
+    void setUp() {
+        // Common setup for all tests in this context
+    }
+    
+    @Test
+    void shouldReturnUserWhenFoundByCpf() {
+        // Test implementation
+    }
+}
+
+@Nested
+class WhenUserDoesNotExist {
+    @BeforeEach
+    void setUp() {
+        // Different setup for this context
+    }
+    
+    @Test
+    void shouldThrowExceptionWhenUserNotFound() {
+        // Test implementation
+    }
+}
+```
+
+### 4. Improved Mock Verification
+
+Enhance mock verification to ensure correct interactions:
+- Verify exact number of method calls
+- Use ArgumentCaptor to verify complex arguments
+- Verify order of interactions when relevant
+- Verify no unexpected interactions occurred
+
+Example:
+```java
+@Test
+void shouldPublishEventAfterUserCreation() {
+    // Test setup and execution
+    
+    // Verification
+    ArgumentCaptor<UserCreatedEvent> eventCaptor = ArgumentCaptor.forClass(UserCreatedEvent.class);
+    verify(eventPublisher).publish(eventCaptor.capture());
+    
+    UserCreatedEvent capturedEvent = eventCaptor.getValue();
+    assertEquals(userId, capturedEvent.getUserId());
+    assertEquals(email, capturedEvent.getUserEmail());
+}
+```
+
+### 5. Better Test Isolation
+
+Ensure tests are properly isolated:
+- Reset shared resources between tests
+- Use @BeforeEach and @AfterEach for setup/teardown
+- Consider using separate test profiles
+- Avoid static state that persists between tests
+
+Example:
 ```java
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
-class YourTestClass {
+class SomeTest {
+    @Mock
+    private UserGateway userGateway;
+    
+    private UserService userService;
+    
+    @BeforeEach
+    void setUp() {
+        userService = new UserService(userGateway);
+        // Additional setup
+    }
+    
+    @AfterEach
+    void tearDown() {
+        // Clean up any resources
+    }
+}
+```
+
+### 6. Improved Integration Testing
+
+For tests involving external systems:
+- Use TestContainers for database and AWS service testing
+- Use WireMock for HTTP service mocking
+- Create appropriate test profiles
+- Implement proper cleanup after tests
+
+Example:
+```java
+@Testcontainers
+class MongoRepositoryTest {
+    @Container
+    static MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:4.4.6");
+    
+    @DynamicPropertySource
+    static void setProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
+    }
+    
     // Test methods
-}
-```
-
-### 3. LoggerRule for Temporary Log Suppression
-
-Implement a custom JUnit rule to temporarily suppress logs during specific test methods:
-
-```java
-public class LoggerRule extends ExternalResource {
-    private Map<Logger, Level> originalLevels = new HashMap<>();
-    
-    public void suppress(Class<?> clazz, Level level) {
-        Logger logger = (Logger) LoggerFactory.getLogger(clazz);
-        originalLevels.put(logger, logger.getLevel());
-        logger.setLevel(level);
-    }
-    
-    @Override
-    protected void after() {
-        originalLevels.forEach(Logger::setLevel);
-    }
-}
-```
-
-Usage in test classes:
-
-```java
-@Rule
-public LoggerRule loggerRule = new LoggerRule();
-
-@Test
-public void testWithSuppressedLogs() {
-    loggerRule.suppress(SQSMessageConsumerImpl.class, Level.OFF);
-    // Test code that generates expected errors
-}
-```
-
-### 4. Try-Finally Block for Log Level Management
-
-For individual test methods that expect exceptions:
-
-```java
-@Test
-void deserializeMessage_shouldThrowException_whenDeserializationFails() {
-    Logger logger = (Logger) LoggerFactory.getLogger(SQSMessageConsumerImpl.class);
-    Level originalLevel = logger.getLevel();
-    logger.setLevel(Level.OFF);
-    
-    try {
-        // Test code that throws expected exception
-        assertThrows(RuntimeException.class, () -> consumer.deserializeMessage("{invalid-json}"));
-    } finally {
-        // Restore original log level
-        logger.setLevel(originalLevel);
-    }
-}
-```
-
-### 5. @SuppressWarnings Annotation
-
-Use the `@SuppressWarnings` annotation to silence specific compiler warnings:
-
-```java
-@SuppressWarnings("unchecked")
-@Test
-void testMethod() {
-    // Test code
 }
 ```
 
 ## Revised Approach
 
-Based on the JaCoCo coverage report, we'll implement tests with the following key principles:
+Based on the JaCoCo coverage report and the need for improved test quality, we'll implement tests with the following key principles:
 
 1. **Start with simpler components** to build momentum and establish testing patterns
 2. **Achieve 80% coverage for each file** before moving to the next component
 3. **Progress from simpler to more complex components** to establish testing patterns that can be reused
+4. **Focus on test quality** not just coverage metrics
+5. **Improve testability** of the code through better design
 
 ## Implementation Order
 
@@ -370,6 +429,10 @@ Based on the JaCoCo coverage report, we'll implement tests with the following ke
 4. **Test Data Management:**
    - Test fixtures for common test data
    - Test data builders for complex objects
+
+5. **Integration Testing:**
+   - TestContainers for database and external services
+   - WireMock for HTTP service mocking
 
 ## Continuous Coverage Monitoring
 

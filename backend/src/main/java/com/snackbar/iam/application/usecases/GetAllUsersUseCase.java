@@ -4,6 +4,7 @@ import com.snackbar.iam.application.gateways.UserGateway;
 import com.snackbar.iam.application.ports.in.GetAllUsersInputPort;
 import com.snackbar.iam.domain.entity.User;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -18,6 +19,7 @@ public class GetAllUsersUseCase implements GetAllUsersInputPort {
 
     @Override
     public List<User> getAllUsers() {
-        return userGateway.findAll();
+        List<User> users = userGateway.findAll();
+        return users != null ? users : Collections.emptyList();
     }
 }
