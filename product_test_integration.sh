@@ -284,7 +284,14 @@ print_section "5" "Check SQS Queue Status"
 
 # Check SQS queue for messages
 echo -e "${GREEN}Checking SQS queue for messages...${NC}"
-QUEUE_URL="https://sqs.us-east-1.amazonaws.com/953430082388/snackbar-management-product-events-queue"
+
+# Use AWS_ACCOUNT_ID from environment, fail if not set
+if [ -z "${AWS_ACCOUNT_ID}" ]; then
+  echo -e "${RED}Error: AWS_ACCOUNT_ID environment variable is not set. Cannot continue.${NC}"
+  exit 1
+fi
+
+QUEUE_URL="https://sqs.us-east-1.amazonaws.com/${AWS_ACCOUNT_ID}/snackbar-management-product-events-queue"
 echo -e "${YELLOW}Using queue URL: $QUEUE_URL${NC}"
 
 SQS_MESSAGES=$(aws sqs receive-message --queue-url $QUEUE_URL --max-number-of-messages 10)
