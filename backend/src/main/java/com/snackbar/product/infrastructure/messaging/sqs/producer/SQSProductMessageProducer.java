@@ -19,7 +19,8 @@ import com.snackbar.product.infrastructure.messaging.mapper.ProductMessageMapper
 @Component
 public class SQSProductMessageProducer {
     
-    private static final Logger logger = LoggerFactory.getLogger(SQSProductMessageProducer.class);
+    // Changed from static final to instance variable for easier testing
+    private Logger logger = LoggerFactory.getLogger(SQSProductMessageProducer.class);
     
     private final SQSMessageProducer messageProducer;
     private final ProductMessageMapper messageMapper;
