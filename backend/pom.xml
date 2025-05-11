@@ -18,7 +18,7 @@
         <aws.sdk.version>2.31.25</aws.sdk.version>
         <jwt.version>0.11.5</jwt.version>
         <lombok.version>1.18.34</lombok.version>
-        <springdoc.version>2.6.0</springdoc.version>
+        <springdoc.version>2.8.8</springdoc.version>
         <spring.cloud.version>4.2.0</spring.cloud.version>
         <spring.security.version>5.8.4</spring.security.version>
         <mockito.version>5.11.0</mockito.version>

@@ -9,10 +9,10 @@ services:
       - "5005:5005"  # Debug port
     volumes:
       - .:/app
-    #  - ${MOUNT_AWS_CREDENTIALS}:/root/.aws:ro
+      - ${MOUNT_AWS_CREDENTIALS}:/root/.aws:ro
     depends_on:
       - mongodb
-    network_mode: host
+    #network_mode: host
     environment:
       # Database configuration
       - DB_HOST=${DB_HOST}
@@ -37,7 +37,7 @@ services:
       - AWS_SQS_POLLING_DELAY_MS=${AWS_SQS_POLLING_DELAY_MS}
       - AWS_SQS_MAX_MESSAGES=${AWS_SQS_MAX_MESSAGES}
       - AWS_SQS_WAIT_TIME_SECONDS=${AWS_SQS_WAIT_TIME_SECONDS}
-      - AWS_EC2_METADATA_DISABLED=false
+      #- AWS_EC2_METADATA_DISABLED=false
       
       # Logging configuration
       - LOG_LEVEL_ROOT=${LOG_LEVEL_ROOT}
