@@ -47,15 +47,15 @@ public class IamSecurityConfig {
     @Order(1)  // Higher precedence than the default filter chain
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // Only apply this filter chain to v2 API endpoints
-            .securityMatcher("/api/v2/**")
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
-                    new AntPathRequestMatcher("/api/v2/user/auth/**"),
+                    new AntPathRequestMatcher("/api/user/auth/**"),
                     new AntPathRequestMatcher("/v3/api-docs/**"),
                     new AntPathRequestMatcher("/swagger-ui/**"),
-                    new AntPathRequestMatcher("/swagger-ui.html")
+                    new AntPathRequestMatcher("/swagger-ui.html"),
+                    new AntPathRequestMatcher("/actuator/health/**"),
+                    new AntPathRequestMatcher("/actuator/info")
                 ).permitAll()
                 .anyRequest().authenticated()
             )
