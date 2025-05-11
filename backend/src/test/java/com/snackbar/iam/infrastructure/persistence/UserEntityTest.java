@@ -2,6 +2,7 @@ package com.snackbar.iam.infrastructure.persistence;
 
 import com.snackbar.iam.domain.IamRole;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
@@ -92,28 +93,100 @@ class UserEntityTest {
         assertEquals(password, userEntity.getPassword());
     }
 
-    @Test
-    @DisplayName("Should correctly implement equals and hashCode")
-    void shouldCorrectlyImplementEqualsAndHashCode() {
-        // Given
-        String id = UUID.randomUUID().toString();
-        String name1 = "Test User 1";
-        String name2 = "Test User 2";
-        String email = "test@example.com";
-        String cpf = "52998224725";
-        IamRole role = IamRole.CONSUMER;
-        String password = "password123";
-
-        // When
-        UserEntity userEntity1 = new UserEntity(id, name1, email, cpf, role, password);
-        UserEntity userEntity2 = new UserEntity(id, name2, email, cpf, role, password);
-        UserEntity userEntity3 = new UserEntity(UUID.randomUUID().toString(), name1, email, cpf, role, password);
-
-        // Then
-        assertEquals(userEntity1, userEntity2, "Entities with same id, email, and cpf should be equal");
-        assertNotEquals(userEntity1, userEntity3, "Entities with different ids should not be equal");
-        assertEquals(userEntity1.hashCode(), userEntity2.hashCode(), "Hash codes should be equal for equal entities");
-        assertNotEquals(userEntity1.hashCode(), userEntity3.hashCode(), "Hash codes should differ for different entities");
+    @Nested
+    @DisplayName("Equals and HashCode Tests")
+    class EqualsAndHashCodeTests {
+        @Test
+        @DisplayName("Should return true when comparing same object instance")
+        void shouldReturnTrueWhenComparingSameObjectInstance() {
+            // Given
+            UserEntity userEntity = new UserEntity("1", "Test User", "test@example.com", "12345678900", IamRole.CONSUMER, "password");
+            
+            // When & Then
+            assertTrue(userEntity.equals(userEntity), "An object should be equal to itself");
+        }
+        
+        @Test
+        @DisplayName("Should return false when comparing with null")
+        void shouldReturnFalseWhenComparingWithNull() {
+            // Given
+            UserEntity userEntity = new UserEntity("1", "Test User", "test@example.com", "12345678900", IamRole.CONSUMER, "password");
+            
+            // When & Then
+            assertFalse(userEntity.equals(null), "An object should not be equal to null");
+        }
+        
+        @Test
+        @DisplayName("Should return false when comparing with different class")
+        void shouldReturnFalseWhenComparingWithDifferentClass() {
+            // Given
+            UserEntity userEntity = new UserEntity("1", "Test User", "test@example.com", "12345678900", IamRole.CONSUMER, "password");
+            
+            // When & Then
+            assertFalse(userEntity.equals("Not a UserEntity"), "An object should not be equal to an object of a different class");
+        }
+        
+        @Test
+        @DisplayName("Should return true when id, cpf, and email are equal")
+        void shouldReturnTrueWhenIdCpfAndEmailAreEqual() {
+            // Given
+            UserEntity userEntity1 = new UserEntity("1", "Test User 1", "test@example.com", "12345678900", IamRole.CONSUMER, "password1");
+            UserEntity userEntity2 = new UserEntity("1", "Test User 2", "test@example.com", "12345678900", IamRole.ADMIN, "password2");
+            
+            // When & Then
+            assertTrue(userEntity1.equals(userEntity2), "Entities with same id, email, and cpf should be equal");
+            assertEquals(userEntity1.hashCode(), userEntity2.hashCode(), "Hash codes should be equal for equal entities");
+        }
+        
+        @Test
+        @DisplayName("Should return false when id is different")
+        void shouldReturnFalseWhenIdIsDifferent() {
+            // Given
+            UserEntity userEntity1 = new UserEntity("1", "Test User", "test@example.com", "12345678900", IamRole.CONSUMER, "password");
+            UserEntity userEntity2 = new UserEntity("2", "Test User", "test@example.com", "12345678900", IamRole.CONSUMER, "password");
+            
+            // When & Then
+            assertFalse(userEntity1.equals(userEntity2), "Entities with different ids should not be equal");
+            assertNotEquals(userEntity1.hashCode(), userEntity2.hashCode(), "Hash codes should differ for entities with different ids");
+        }
+        
+        @Test
+        @DisplayName("Should return false when email is different")
+        void shouldReturnFalseWhenEmailIsDifferent() {
+            // Given
+            UserEntity userEntity1 = new UserEntity("1", "Test User", "test1@example.com", "12345678900", IamRole.CONSUMER, "password");
+            UserEntity userEntity2 = new UserEntity("1", "Test User", "test2@example.com", "12345678900", IamRole.CONSUMER, "password");
+            
+            // When & Then
+            assertFalse(userEntity1.equals(userEntity2), "Entities with different emails should not be equal");
+            assertNotEquals(userEntity1.hashCode(), userEntity2.hashCode(), "Hash codes should differ for entities with different emails");
+        }
+        
+        @Test
+        @DisplayName("Should return false when cpf is different")
+        void shouldReturnFalseWhenCpfIsDifferent() {
+            // Given
+            UserEntity userEntity1 = new UserEntity("1", "Test User", "test@example.com", "12345678900", IamRole.CONSUMER, "password");
+            UserEntity userEntity2 = new UserEntity("1", "Test User", "test@example.com", "98765432100", IamRole.CONSUMER, "password");
+            
+            // When & Then
+            assertFalse(userEntity1.equals(userEntity2), "Entities with different CPFs should not be equal");
+            assertNotEquals(userEntity1.hashCode(), userEntity2.hashCode(), "Hash codes should differ for entities with different CPFs");
+        }
+        
+        @Test
+        @DisplayName("Should handle null fields in equals comparison")
+        void shouldHandleNullFieldsInEqualsComparison() {
+            // Given
+            UserEntity userEntity1 = new UserEntity(null, "Test User", null, null, IamRole.CONSUMER, "password");
+            UserEntity userEntity2 = new UserEntity(null, "Test User", null, null, IamRole.CONSUMER, "password");
+            UserEntity userEntity3 = new UserEntity("1", "Test User", null, null, IamRole.CONSUMER, "password");
+            
+            // When & Then
+            assertTrue(userEntity1.equals(userEntity2), "Entities with same null fields should be equal");
+            assertEquals(userEntity1.hashCode(), userEntity2.hashCode(), "Hash codes should be equal for entities with same null fields");
+            assertFalse(userEntity1.equals(userEntity3), "Entity with null id should not equal entity with non-null id");
+        }
     }
 
     @Test
