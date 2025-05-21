@@ -16,6 +16,7 @@
 <p align="center">
 <a href="#about">About</a> •
 <a href="#architecture">Architecture</a> •
+<a href="#modules">Modules</a> •
 <a href="#run">Running the Application</a> •
 <a href="#endpoints">API Endpoints</a> •
 <a href="#swagger">Swagger UI</a> •
@@ -114,6 +115,36 @@ The application can use one of two database configurations:
    - Can be configured through environment variables
 
 The MongoDB database name is "snackbar" and includes collections for products and users. The database requires authentication and comes pre-loaded with an administrative user and a regular user with read/write access to the "snackbar" database.
+
+</p>
+
+<p id="modules">
+
+## 📦 Modules
+
+The application is divided into two main modules:
+
+### Product Module
+
+The Product module handles all product-related functionality. For detailed documentation, see:
+- [Product Module Documentation](./backend/src/main/java/com/snackbar/product/product.md)
+
+Key features:
+- Product creation, retrieval, update, and deletion
+- Category-based product filtering
+- Product validation rules
+- Event publishing for product changes
+
+### IAM Module
+
+The IAM (Identity and Access Management) module handles user authentication and authorization. For detailed documentation, see:
+- [IAM Module Documentation](./backend/src/main/java/com/snackbar/iam/iam.md)
+
+Key features:
+- User registration and authentication
+- JWT token generation and validation
+- Role-based access control
+- User profile management
 
 </p>
 
@@ -256,6 +287,8 @@ If you need to run the application directly using Java and Maven:
 | PUT    | `/api/product/id/{id}`         | Update a product                 | Yes           |
 | DELETE | `/api/product/id/{id}`         | Delete a product                 | Yes           |
 
+For detailed request/response examples, see the [Product Module Documentation](./backend/src/main/java/com/snackbar/product/product.md).
+
 ### User Management
 
 | Method | Endpoint                       | Description                      | Auth Required |
@@ -266,6 +299,8 @@ If you need to run the application directly using Java and Maven:
 | GET    | `/api/user/cpf/{cpf}`          | Get user by CPF                  | Yes           |
 | PUT    | `/api/user/{id}`               | Update user                      | Yes           |
 | DELETE | `/api/user/{id}`               | Delete user                      | Yes           |
+
+For detailed request/response examples, see the [IAM Module Documentation](./backend/src/main/java/com/snackbar/iam/iam.md).
 
 ### Health Check
 
@@ -309,6 +344,21 @@ The application includes comprehensive unit tests for all layers:
 # Run unit tests
 mvn test
 ```
+
+### Unit Test Coverage
+
+* Project Coverage: 95.5%
+* Sonar Cloud: https://sonarcloud.io/summary/overall?id=fiap-9soat-snackbar_snackbar-management&branch=master
+* Test Coverage Report:
+
+<p align="center">
+  <a href="https://github.com/fiap-9soat-snackbar/snackbar-management/blob/main/Snackbar_Management_Sonar_Cloud_Unit_Test_Coverage.png">
+    <img src="./Snackbar_Management_Sonar_Cloud_Unit_Test_Coverage.png" alt="Test Coverage Report" width="800"/>
+  </a>
+  <br>
+  <em>Click on the image to view full size</em>
+</p>
+
 
 ### Integration Tests
 
