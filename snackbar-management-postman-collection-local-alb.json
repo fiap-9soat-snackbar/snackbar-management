@@ -1,0 +1,650 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-g7h8-i9j0-k1l2m3n4o5p6",
+		"name": "Snackbar Management API - User Journey",
+		"description": "Collection for testing the Snackbar Management microservice API endpoints following a natural user flow, considering that the application is deployed in a local environment or with an ALB (Application Load Balancer) in AWS. This collection includes health checks, user registration, authentication, product browsing, and admin operations.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. System Health Check",
+			"description": "Verify system availability before starting",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/actuator/health",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"actuator",
+								"health"
+							]
+						},
+						"description": "Checks the overall health of the application"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2. User Registration & Authentication",
+			"description": "First step in the user journey - creating an account and logging in",
+			"item": [
+				{
+					"name": "Register New User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData && jsonData.id) {",
+									"    pm.environment.set(\"user_id\", jsonData.id);",
+									"    // Store the CPF for later use",
+									"    pm.environment.set(\"user_cpf\", \"52998224725\");",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"test@example.com\",\n    \"password\": \"{{user_password}}\",\n    \"cpf\": \"{{user_cpf}}\",\n    \"role\": \"CONSUMER\",\n    \"fullName\": \"Test User\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/user/auth/signup",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"auth",
+								"signup"
+							]
+						},
+						"description": "Registers a new user in the system and stores the user ID and CPF"
+					},
+					"response": []
+				},
+				{
+					"name": "Login with New User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData && jsonData.token) {",
+									"    pm.environment.set(\"auth_token\", jsonData.token);",
+									"}",
+									"",
+									"// Store user ID if available in response",
+									"if (jsonData && jsonData.user && jsonData.user.id) {",
+									"    pm.environment.set(\"user_id\", jsonData.user.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cpf\": \"{{user_cpf}}\",\n    \"password\": \"{{user_password}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/user/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Authenticates the newly registered user and stores the JWT token"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Profile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Store available product categories for later use",
+									"pm.environment.set(\"product_category\", \"Bebida\");",
+									"pm.environment.set(\"product_name\", \"Hambúrguer\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/user/cpf/{{user_cpf}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"cpf",
+								"{{user_cpf}}"
+							]
+						},
+						"description": "Retrieves the user's profile information"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3. Browse Products",
+			"description": "User browses available products",
+			"item": [
+				{
+					"name": "List All Products",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/product",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"product"
+							]
+						},
+						"description": "Retrieves all products in the system"
+					},
+					"response": []
+				},
+				{
+					"name": "Browse Products by Category",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/product/category/{{product_category}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"product",
+								"category",
+								"{{product_category}}"
+							]
+						},
+						"description": "Retrieves products by category"
+					},
+					"response": []
+				},
+				{
+					"name": "Search Product by Name",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/product/name/{{product_name}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"product",
+								"name",
+								"{{product_name}}"
+							]
+						},
+						"description": "Searches for a product by its name"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "4. Product Management (Admin)",
+			"description": "Admin user manages products",
+			"item": [
+				{
+					"name": "Create New Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData && jsonData.data && jsonData.data.id) {",
+									"    pm.environment.set(\"product_id\", jsonData.data.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Test Burger\",\n    \"category\": \"Lanche\",\n    \"description\": \"A burger created via API\",\n    \"price\": 12.99,\n    \"cookingTime\": 10\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/product",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"product"
+							]
+						},
+						"description": "Creates a new product and stores its ID"
+					},
+					"response": []
+				},
+				{
+					"name": "View Product Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/product/id/{{product_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"product",
+								"id",
+								"{{product_id}}"
+							]
+						},
+						"description": "Retrieves details of the newly created product"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Product",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated Test Burger\",\n    \"category\": \"Lanche\",\n    \"description\": \"An updated burger via API\",\n    \"price\": 14.99,\n    \"cookingTime\": 12\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/product/id/{{product_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"product",
+								"id",
+								"{{product_id}}"
+							]
+						},
+						"description": "Updates the product information"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "5. User Profile Management",
+			"description": "User manages their profile",
+			"item": [
+				{
+					"name": "Update User Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated User Name\",\n    \"email\": \"updated@example.com\",\n    \"cpf\": \"{{user_cpf}}\",\n    \"role\": \"CONSUMER\",\n    \"password\": \"{{user_new_password}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/user/{{user_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"{{user_id}}"
+							]
+						},
+						"description": "Updates the user's profile information"
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Updated Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/user/cpf/{{user_cpf}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"cpf",
+								"{{user_cpf}}"
+							]
+						},
+						"description": "Verifies that the profile was updated correctly"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "6. Admin Operations",
+			"description": "Administrative operations",
+			"item": [
+				{
+					"name": "List All Users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/user/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								""
+							]
+						},
+						"description": "Admin retrieves all users in the system"
+					},
+					"response": []
+				},
+				{
+					"name": "Anonymous User Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData && jsonData.token) {",
+									"    pm.environment.set(\"anon_token\", jsonData.token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"anonymous\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/user/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Tests anonymous user login functionality"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "7. Cleanup",
+			"description": "Final cleanup operations",
+			"item": [
+				{
+					"name": "Delete Product",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/product/id/{{product_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"product",
+								"id",
+								"{{product_id}}"
+							]
+						},
+						"description": "Deletes the product created during testing"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/user/{{user_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"{{user_id}}"
+							]
+						},
+						"description": "Deletes the user account created during testing"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "product_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "user_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "auth_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "anon_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "user_cpf",
+			"value": "52998224725",
+			"type": "string"
+		},
+		{
+			"key": "product_category",
+			"value": "Bebida",
+			"type": "string"
+		},
+		{
+			"key": "product_name",
+			"value": "Hambúrguer",
+			"type": "string"
+		},
+		{
+			"key": "user_password",
+			"value": "Password123!",
+			"type": "string"
+		},
+		{
+			"key": "user_new_password",
+			"value": "NewPassword123!",
+			"type": "string"
+		}
+	]
+}
